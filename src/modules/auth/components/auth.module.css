@@ -1,0 +1,247 @@
+.accessPage {
+  max-width: 980px;
+}
+
+.accessHeading {
+  margin: 0 auto 32px;
+  max-width: 620px;
+  text-align: center;
+}
+
+.accessHeading h1 {
+  font-size: 44px;
+  margin-bottom: 10px;
+}
+
+.accessHeading > p:last-child {
+  font-size: 17px;
+  margin: 0;
+}
+
+.accessGrid {
+  align-items: stretch;
+  display: grid;
+  gap: 20px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.accessCard {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+.accessCard h2 {
+  margin-bottom: 6px;
+}
+
+.accessCard div > p:last-child {
+  font-size: 13px;
+  margin: 0;
+}
+
+.accessIcon {
+  align-items: center;
+  background: var(--color-primary-soft);
+  border-radius: 16px;
+  color: var(--color-accent);
+  display: flex;
+  height: 52px;
+  justify-content: center;
+  width: 52px;
+}
+
+.accessFields {
+  display: grid;
+  gap: 16px;
+}
+
+.cardAction {
+  margin-top: auto;
+  width: 100%;
+}
+
+.forgotLink {
+  align-self: center;
+  font-size: 12px;
+  margin-top: -12px;
+  min-height: auto;
+}
+
+.createAccountCard {
+  background: var(--color-surface-alt);
+}
+
+.createAccountCard ul {
+  display: grid;
+  gap: 11px;
+  list-style: none;
+  margin: 0 0 18px;
+  padding: 0;
+}
+
+.createAccountCard li {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  gap: 8px;
+}
+
+.createAccountCard li svg {
+  background: var(--color-success);
+  border-radius: 50%;
+  color: #ffffff;
+  padding: 2px;
+}
+
+.registerPage {
+  max-width: 1060px;
+}
+
+.pageHeading {
+  margin-bottom: 38px;
+  max-width: 660px;
+}
+
+.pageHeading > p:last-child {
+  font-size: 18px;
+  margin: 0;
+}
+
+.sectionTitle {
+  align-items: flex-start;
+  display: flex;
+  gap: 14px;
+  margin-bottom: 28px;
+}
+
+.sectionTitle h2,
+.sectionTitle p {
+  margin-bottom: 4px;
+}
+
+.sectionTitle p {
+  margin-top: 0;
+}
+
+.sectionNumber {
+  align-items: center;
+  background: var(--color-primary-soft);
+  border-radius: 10px;
+  color: var(--color-accent);
+  display: flex;
+  flex: 0 0 auto;
+  font-weight: 800;
+  height: 34px;
+  justify-content: center;
+  width: 34px;
+}
+
+.passwordLayout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.requirements {
+  background: var(--color-success-soft);
+  border-radius: 14px;
+  padding: 16px;
+}
+
+.requirements strong {
+  display: block;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+.requirementsGrid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 12px;
+}
+
+.requirementsGrid span {
+  align-items: center;
+  color: var(--color-success);
+  display: flex;
+  font-size: 12px;
+  gap: 4px;
+}
+
+.requirementsGrid svg {
+  background: var(--color-success);
+  border-radius: 50%;
+  color: #ffffff;
+  padding: 2px;
+}
+
+.pageCentered {
+  display: grid;
+  min-height: 74vh;
+  place-items: center;
+}
+
+.successCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  max-width: 570px;
+  padding: 54px;
+  text-align: center;
+}
+
+.successCard h1 {
+  font-size: 38px;
+}
+
+.successIcon {
+  align-items: center;
+  background: var(--color-success-soft);
+  border-radius: 50%;
+  color: var(--color-success);
+  display: flex;
+  height: 72px;
+  justify-content: center;
+  margin: 0 auto 22px;
+  width: 72px;
+}
+
+@media (max-width: 820px) {
+  .accessGrid,
+  .passwordLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .pageHeading {
+    margin-bottom: 28px;
+  }
+}
+
+@media (max-width: 560px) {
+  .accessHeading h1 {
+    font-size: 34px;
+  }
+
+  .pageHeading > p:last-child {
+    font-size: 16px;
+  }
+
+  .sectionTitle p {
+    font-size: 13px;
+  }
+
+  .sectionTitle h2 {
+    font-size: 21px;
+  }
+
+  .successCard {
+    padding: 36px 22px;
+  }
+
+  .successCard h1 {
+    font-size: 30px;
+  }
+}

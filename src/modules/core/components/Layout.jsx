@@ -1,15 +1,18 @@
-    import { Outlet } from 'react-router-dom';
-    import Navbar from './Navbar';
+import { Outlet } from 'react-router-dom';
+import ui from '../design-system/ui.module.css';
+import Footer from './Footer';
+import Navbar from './Navbar';
 
-    function Layout() {
-      return (
-        <>
-          <Navbar />
-          <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
-            <Outlet />
-          </main>
-        </>
-      );
-    }
+function Layout() {
+  return (
+    <div className={ui.appShell}>
+      <Navbar />
+      <main className={ui.appContent}>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  );
+}
 
-    export default Layout;
+export default Layout;

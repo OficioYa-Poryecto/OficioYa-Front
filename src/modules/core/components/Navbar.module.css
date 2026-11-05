@@ -1,28 +1,117 @@
 .navbar {
-  display: flex;
   align-items: center;
-  padding: 12px 32px;
-  background: var(--color-surface);
+  backdrop-filter: blur(14px);
+  background: rgba(255, 252, 247, 0.94);
   border-bottom: 1px solid var(--color-border);
+  display: flex;
+  height: 76px;
+  justify-content: space-between;
+  padding: 0 max(5vw, 28px);
+  position: sticky;
+  top: 0;
+  z-index: 50;
 }
 
 .logo {
-  height: 40px;
   display: block;
+  height: 56px;
 }
 
-  .links {
+.links {
+  align-items: center;
   display: flex;
-  gap: 24px;
-  margin-left: 32px;
+  gap: 8px;
 }
 
 .link {
-  text-decoration: none;
+  border-radius: 10px;
+  color: var(--color-text-muted);
   font-weight: 600;
+  padding: 10px 14px;
+  text-decoration: none;
+}
+
+.link:hover,
+.active {
+  background: var(--color-primary-soft);
+  color: var(--color-accent);
+}
+
+.userMenu {
+  align-items: center;
+  border-left: 1px solid var(--color-border);
+  display: flex;
+  gap: 10px;
+  margin-left: 12px;
+  padding-left: 20px;
+}
+
+.userText {
+  display: grid;
+}
+
+.userText strong {
+  font-size: 14px;
+}
+
+.userText small,
+.chevron {
   color: var(--color-text-muted);
 }
 
-.active {
-  color: var(--color-accent);
+.userText small {
+  font-size: 12px;
+}
+
+.chevron {
+  margin-left: 4px;
+}
+
+.mobileMenu {
+  background: transparent;
+  border: 0;
+  color: var(--color-text);
+  display: none;
+  padding: 8px;
+}
+
+@media (max-width: 820px) {
+  .navbar {
+    height: 66px;
+    padding: 0 18px;
+  }
+
+  .logo {
+    height: 48px;
+  }
+
+  .mobileMenu {
+    display: block;
+  }
+
+  .links {
+    align-items: stretch;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 16px;
+    box-shadow: var(--shadow-card);
+    display: none;
+    flex-direction: column;
+    left: 14px;
+    padding: 10px;
+    position: absolute;
+    right: 14px;
+    top: 58px;
+  }
+
+  .linksOpen {
+    display: flex;
+  }
+
+  .userMenu {
+    border-left: 0;
+    border-top: 1px solid var(--color-border);
+    margin: 6px 0 0;
+    padding: 12px 8px 4px;
+  }
 }

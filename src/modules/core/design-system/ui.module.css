@@ -1,0 +1,931 @@
+/* Estilos compartidos por las pantallas de todos los módulos. */
+
+.appShell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.appContent {
+  flex: 1;
+}
+
+.page {
+  margin: 0 auto;
+  max-width: 1200px;
+  padding: 58px 28px 88px;
+}
+
+.profilePage {
+  max-width: 1160px;
+}
+
+.editPage {
+  max-width: 1120px;
+}
+
+/* Avatares */
+.avatar {
+  align-items: center;
+  background: var(--color-sage);
+  color: var(--color-sage-dark);
+  display: inline-flex;
+  flex: 0 0 auto;
+  font-family: var(--font-heading);
+  font-weight: 800;
+  justify-content: center;
+}
+
+.avatarSmall {
+  border-radius: 50%;
+  font-size: 12px;
+  height: 36px;
+  width: 36px;
+}
+
+.avatarLarge {
+  border-radius: 24px;
+  font-size: 24px;
+  height: 88px;
+  width: 88px;
+}
+
+.avatarProfile {
+  border: 5px solid var(--color-surface);
+  border-radius: 30px 30px 30px 10px;
+  box-shadow: var(--shadow-sm);
+  font-size: 30px;
+  height: 108px;
+  width: 108px;
+}
+
+/* Tarjetas */
+.formCard,
+.infoCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 24px;
+}
+
+.formCard {
+  box-shadow: var(--shadow-card);
+  padding: 38px;
+}
+
+.infoCard {
+  box-shadow: var(--shadow-sm);
+  padding: 26px;
+}
+
+.infoCard h2 {
+  font-size: 20px;
+}
+
+/* Formularios */
+.formActions {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+}
+
+.inlineActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.formSection {
+  border-top: 1px solid var(--color-border);
+  padding: 30px 0;
+}
+
+.formSection:first-of-type {
+  border-top: 0;
+}
+
+.formGrid {
+  display: grid;
+  gap: 22px;
+  grid-template-columns: 1fr 1fr;
+}
+
+.field {
+  align-content: start;
+  display: grid;
+  font-size: 16px;
+  font-weight: 400;
+  gap: 7px;
+}
+
+.fieldLabel {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.fullField {
+  margin-top: 22px;
+}
+
+.inputShell {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 11px;
+  display: flex;
+  gap: 9px;
+  min-height: 48px;
+  padding: 0 14px;
+}
+
+.inputShell:focus-within {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(220, 98, 63, 0.1);
+}
+
+.inputShell input,
+.inputShell select {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+  color: var(--color-text);
+  min-width: 0;
+  outline: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.inputShell select {
+  appearance: none;
+}
+
+.inputShell svg {
+  color: var(--color-text-muted);
+  flex: 0 0 auto;
+}
+
+.inputError {
+  background: var(--color-danger-soft);
+  border-color: var(--color-danger);
+}
+
+.inputLocked {
+  background: #f0eee9;
+  color: var(--color-text-muted);
+}
+
+.errorText {
+  color: var(--color-danger);
+  font-size: 12px;
+}
+
+.fieldHint {
+  color: var(--color-text-muted);
+  font-size: 12px;
+  line-height: 1.45;
+}
+
+.selectArrow {
+  color: var(--color-text-muted);
+}
+
+.textarea {
+  border-radius: 11px;
+  min-height: 110px;
+  outline: 0;
+  padding: 13px 14px;
+  resize: vertical;
+}
+
+.textarea:focus {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(220, 98, 63, 0.1);
+}
+
+/* Teléfonos */
+.phoneFields {
+  display: grid;
+  gap: 14px;
+  grid-column: 1 / -1;
+  grid-template-columns: 1fr 1fr;
+}
+
+.phoneRow {
+  align-items: end;
+  display: flex;
+  gap: 8px;
+}
+
+.phoneRow .field {
+  flex: 1;
+}
+
+.removePhone {
+  flex: 0 0 auto;
+  margin-bottom: 2px;
+}
+
+.addField {
+  align-items: center;
+  align-self: end;
+  display: flex;
+  justify-content: space-between;
+  min-height: 48px;
+}
+
+.addField > span {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
+
+/* Foto de perfil */
+.photoUploader {
+  align-items: center;
+  background: var(--color-bg);
+  border: 1px dashed #cfc6b8;
+  border-radius: 18px;
+  display: flex;
+  gap: 20px;
+  padding: 22px;
+}
+
+.photoUploader strong {
+  display: block;
+}
+
+.photoUploader p {
+  font-size: 13px;
+  margin: 4px 0 12px;
+}
+
+/* Disponibilidad */
+.schedule {
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.scheduleRow {
+  align-items: center;
+  border-bottom: 1px solid var(--color-border);
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 22px 48px 1fr auto;
+  min-height: 52px;
+  padding: 8px 14px;
+}
+
+.scheduleRow:last-child {
+  border-bottom: 0;
+}
+
+.scheduleRow strong,
+.scheduleRow span {
+  font-size: 13px;
+}
+
+.scheduleRow button {
+  background: transparent;
+  border: 0;
+  color: var(--color-accent);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.scheduleRow input {
+  accent-color: var(--color-primary);
+  height: 16px;
+  padding: 0;
+  width: 16px;
+}
+
+.scheduleRead {
+  border: 0;
+}
+
+.scheduleRead .scheduleRow {
+  grid-template-columns: 55px 1fr;
+  padding-left: 0;
+  padding-right: 0;
+}
+
+.scheduleRow .muted {
+  color: var(--color-text-muted);
+}
+
+/* Galería */
+.gallery {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(4, 1fr);
+}
+
+.galleryItem {
+  aspect-ratio: 1.15;
+  border-radius: 14px;
+  margin: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.galleryItem img {
+  height: 100%;
+  object-fit: cover;
+  transition: 0.3s ease;
+  width: 100%;
+}
+
+.galleryItem:hover img {
+  transform: scale(1.03);
+}
+
+.galleryItem figcaption {
+  background: var(--color-text);
+  border-radius: 7px;
+  bottom: 8px;
+  color: #ffffff;
+  font-size: 10px;
+  left: 8px;
+  padding: 4px 7px;
+  position: absolute;
+}
+
+.galleryItem > button {
+  align-items: center;
+  background: rgba(36, 49, 45, 0.85);
+  border: 0;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  font-size: 18px;
+  height: 26px;
+  justify-content: center;
+  position: absolute;
+  right: 8px;
+  top: 8px;
+  width: 26px;
+}
+
+.galleryAdd {
+  align-items: center;
+  aspect-ratio: 1.15;
+  background: var(--color-bg);
+  border: 1px dashed #cfc6b8;
+  border-radius: 14px;
+  color: var(--color-accent);
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  justify-content: center;
+}
+
+.galleryAdd span {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.galleryAdd small {
+  color: var(--color-text-muted);
+  font-size: 10px;
+}
+
+/* Mensajes y estados */
+.statusMessage {
+  align-items: center;
+  border-radius: 13px;
+  display: flex;
+  gap: 11px;
+  margin-top: 16px;
+  padding: 13px 15px;
+}
+
+.statusMessage > span {
+  align-items: center;
+  border-radius: 50%;
+  color: #ffffff;
+  display: flex;
+  flex: 0 0 auto;
+  font-weight: 800;
+  height: 24px;
+  justify-content: center;
+  width: 24px;
+}
+
+.statusMessage p {
+  font-size: 13px;
+  margin: 0;
+}
+
+.statusMessage.warning {
+  background: var(--color-warning-soft);
+}
+
+.statusMessage.warning > span {
+  background: var(--color-warning);
+}
+
+.statusMessage.success {
+  background: var(--color-success-soft);
+}
+
+.statusMessage.success > span {
+  background: var(--color-success);
+}
+
+.roleAddedMessage {
+  margin: -18px 0 24px;
+}
+
+.statusPill {
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 5px 8px;
+  white-space: nowrap;
+}
+
+.pillSuccess {
+  background: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.pillWarning {
+  background: var(--color-warning-soft);
+  color: var(--color-warning);
+}
+
+.pillError {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.pillNeutral {
+  background: var(--color-surface-alt);
+  color: var(--color-text-muted);
+}
+
+.availability {
+  align-items: center;
+  background: var(--color-success-soft);
+  border-radius: 999px;
+  color: var(--color-success);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  padding: 6px 10px;
+}
+
+.availability > span {
+  background: var(--color-success);
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+/* Perfil */
+.profileTop {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 38px;
+}
+
+.profileActions {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.profileHero {
+  align-items: center;
+  display: flex;
+  gap: 22px;
+}
+
+.profileAvatarWrap {
+  position: relative;
+}
+
+.profileAvatarWrap > button {
+  background: var(--color-primary);
+  border: 3px solid #ffffff;
+  border-radius: 50%;
+  bottom: -2px;
+  color: #ffffff;
+  height: 32px;
+  padding: 0;
+  position: absolute;
+  right: -4px;
+  width: 32px;
+}
+
+.profileTitle h1 {
+  font-size: 38px;
+  margin: 3px 0 10px;
+}
+
+.onlineLine {
+  align-items: center;
+  color: var(--color-success);
+  display: flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 6px;
+  text-transform: uppercase;
+}
+
+.onlineLine > span {
+  background: var(--color-success);
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.badges {
+  display: flex;
+  gap: 8px;
+}
+
+.badges > span {
+  align-items: center;
+  background: var(--color-primary-soft);
+  border-radius: 999px;
+  color: var(--color-accent);
+  display: inline-flex;
+  font-size: 11px;
+  font-weight: 700;
+  gap: 5px;
+  padding: 6px 10px;
+}
+
+.badges > .badgeNeutral {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.profileLayout {
+  align-items: start;
+  display: grid;
+  gap: 24px;
+  grid-template-columns: 300px 1fr;
+}
+
+.profileSidebar,
+.profileContent {
+  display: grid;
+  gap: 24px;
+}
+
+.contactItem {
+  align-items: center;
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+}
+
+.contactItem + .contactItem {
+  border-top: 1px solid var(--color-border);
+}
+
+.contactItem > span {
+  align-items: center;
+  background: var(--color-surface-alt);
+  border-radius: 10px;
+  color: var(--color-accent);
+  display: flex;
+  height: 38px;
+  justify-content: center;
+  width: 38px;
+}
+
+.contactItem div,
+.neighborhoodCard div {
+  display: grid;
+}
+
+.contactItem small {
+  color: var(--color-text-muted);
+  font-size: 11px;
+}
+
+.contactItem strong,
+.neighborhoodCard strong {
+  font-size: 13px;
+}
+
+.privacyNote {
+  align-items: flex-start;
+  background: var(--color-surface-alt);
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  display: flex;
+  font-size: 10px;
+  gap: 7px;
+  line-height: 1.45;
+  margin-top: 12px;
+  padding: 10px;
+}
+
+.privacyNote svg {
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.neighborhoodCard {
+  align-items: flex-start;
+  background: var(--color-sage-dark);
+  border-radius: 20px;
+  color: #ffffff;
+  display: flex;
+  gap: 12px;
+  padding: 22px;
+}
+
+.mapPin {
+  align-items: center;
+  background: rgba(255, 255, 255, 0.13);
+  border-radius: 12px;
+  display: flex;
+  height: 42px;
+  justify-content: center;
+  width: 42px;
+}
+
+.neighborhoodCard small,
+.neighborhoodCard p {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.neighborhoodCard small {
+  font-size: 11px;
+}
+
+.neighborhoodCard p {
+  font-size: 12px;
+  margin: 7px 0 0;
+}
+
+.sectionHeader {
+  align-items: flex-start;
+  display: flex;
+  justify-content: space-between;
+}
+
+.sectionHeader h2 {
+  font-size: 25px;
+}
+
+.sectionHeaderSimple {
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+/* Edición de perfil */
+.editHeading {
+  align-items: flex-end;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 34px;
+}
+
+.editHeading h1 {
+  font-size: 42px;
+  margin-bottom: 8px;
+}
+
+.editHeading p:last-child {
+  margin: 0;
+}
+
+.editLayout {
+  align-items: start;
+  display: grid;
+  gap: 26px;
+  grid-template-columns: 220px 1fr;
+}
+
+.editNav {
+  display: grid;
+  gap: 5px;
+  position: sticky;
+  top: 104px;
+}
+
+.editNav button {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 11px;
+  color: var(--color-text-muted);
+  display: flex;
+  font-weight: 600;
+  gap: 10px;
+  padding: 10px;
+  text-align: left;
+}
+
+.editNav button span {
+  align-items: center;
+  background: var(--color-surface-alt);
+  border-radius: 50%;
+  display: flex;
+  font-size: 11px;
+  height: 26px;
+  justify-content: center;
+  width: 26px;
+}
+
+.editNav button.editNavActive {
+  background: var(--color-primary-soft);
+  color: var(--color-accent);
+}
+
+.editNav button.editNavActive span {
+  background: var(--color-primary);
+  color: #ffffff;
+}
+
+.editForm {
+  padding-top: 28px;
+}
+
+.editForm .profileHero {
+  margin-bottom: 30px;
+}
+
+.editForm .avatarProfile {
+  height: 88px;
+  width: 88px;
+}
+
+.editForm .profileTitle h1 {
+  font-size: 28px;
+}
+
+@media (max-width: 820px) {
+  .page {
+    padding: 38px 18px 64px;
+  }
+
+  .formCard {
+    border-radius: 20px;
+    padding: 22px 18px;
+  }
+
+  .formGrid,
+  .phoneFields {
+    grid-template-columns: 1fr;
+  }
+
+  .addField {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .gallery {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .photoUploader {
+    align-items: flex-start;
+  }
+
+  .profileTop {
+    align-items: flex-start;
+    gap: 20px;
+  }
+
+  .profileActions {
+    justify-content: flex-start;
+  }
+
+  .profileLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .profileSidebar {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .contentFirst .profileContent {
+    grid-row: 1;
+  }
+
+  .editHeading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  .editLayout {
+    grid-template-columns: 1fr;
+  }
+
+  .editNav {
+    display: flex;
+    overflow-x: auto;
+    position: static;
+  }
+
+  .editNav button {
+    flex: 0 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .formActions {
+    align-items: stretch;
+    flex-direction: column-reverse;
+    gap: 8px;
+  }
+
+  .formActions button {
+    width: 100%;
+  }
+
+  .formActions .inlineActions {
+    display: grid;
+    width: 100%;
+  }
+
+  .photoUploader {
+    flex-direction: column;
+  }
+
+  .photoUploader .inlineActions {
+    align-items: stretch;
+    display: grid;
+    width: 100%;
+  }
+
+  .scheduleRow {
+    grid-template-columns: 20px 40px 1fr auto;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .scheduleRow span {
+    font-size: 11px;
+  }
+
+  .profileTop {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profileActions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .profileHero {
+    align-items: flex-start;
+  }
+
+  .avatarProfile {
+    border-radius: 22px 22px 22px 8px;
+    font-size: 24px;
+    height: 82px;
+    width: 82px;
+  }
+
+  .profileTitle h1 {
+    font-size: 28px;
+  }
+
+  .profileSidebar {
+    grid-template-columns: 1fr;
+  }
+
+  .sectionHeader {
+    gap: 16px;
+  }
+
+  .sectionHeader h2 {
+    font-size: 21px;
+  }
+
+  .availability {
+    display: none;
+  }
+
+  .infoCard {
+    padding: 20px 16px;
+  }
+
+  .editForm .profileHero {
+    align-items: center;
+  }
+
+  .editForm .profileTitle h1 {
+    font-size: 24px;
+  }
+
+  .editForm .profileTitle .badges {
+    flex-wrap: wrap;
+  }
+}

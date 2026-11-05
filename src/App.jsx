@@ -1,25 +1,20 @@
+
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import Layout from './modules/core/components/Layout';
-import ErrorMessage from './modules/core/components/ErrorMessage';
-import Button from './modules/core/design-system/Button';
+import HomePage from './modules/core/components/HomePage';
+import NotFoundPage from './modules/core/components/NotFoundPage';
+import { moduleRoutes } from './modules/core/lib/moduleRegistry';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
         <Route element={<Layout />}>
-          <Route
-            path="/"
-            element={
-              <section className="card">
-                <span className="eyebrow">Bienvenido a OficioYa</span>
-                <h1>Estilo base</h1>
-                <p>Página temporal para verificar el estilo.</p>
-                <Button>Primario</Button> <Button variant="secondary">Secundario</Button>
-                <ErrorMessage error="Mensaje de error de ejemplo" />
-              </section>
-            }
-          />
+          <Route path="/" element={<HomePage />} />
+          {moduleRoutes.map((route) => (
+            <Route key={route.path} path={route.path} element={route.element} />
+          ))}
+          <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

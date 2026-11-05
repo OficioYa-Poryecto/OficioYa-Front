@@ -51,3 +51,14 @@ src/
 ```
 
 Regla del equipo: un componente nunca llama a `fetch` directamente. Siempre usa un *service*, y todos los services usan `core/lib/httpClient.js`.
+
+## Cómo agregar un módulo
+
+Crea `src/modules/<domain>/routes.jsx`. La aplicación lo detecta automáticamente, sin tocar `App.jsx` ni el navbar:
+
+```jsx
+import ExamplePage from './components/ExamplePage';
+
+export const routes = [{ path: '/example', element: <ExamplePage /> }];
+export const navLinks = [{ label: 'Ejemplo', to: '/example' }];
+```

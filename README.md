@@ -41,7 +41,16 @@ src/
 │   │   ├── components/
 │   │   ├── design-system/
 │   │   └── lib/           # httpClient: única puerta hacia la API
-│   └── <domain>/          # Un módulo por dominio (worker, service, ...)
+│   ├── auth/              # Acceso, registro y cuentas de contratante y administrador
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   ├── services/
+│   │   └── states/        # AuthContext y AuthProvider
+│   ├── trabajadores/      # Perfil y edición del trabajador
+│   │   ├── components/
+│   │   ├── hooks/
+│   │   └── services/
+│   └── solicitudes/       # Solicitudes de servicio
 │       ├── components/
 │       ├── hooks/
 │       └── services/

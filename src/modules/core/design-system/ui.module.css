@@ -433,6 +433,14 @@
   background: var(--color-success);
 }
 
+.statusMessage.error {
+  background: var(--color-danger-soft);
+}
+
+.statusMessage.error > span {
+  background: var(--color-danger);
+}
+
 .roleAddedMessage {
   margin: -18px 0 24px;
 }

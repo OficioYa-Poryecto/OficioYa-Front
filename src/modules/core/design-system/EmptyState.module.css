@@ -1,0 +1,29 @@
+.empty {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: 34px 20px;
+  text-align: center;
+}
+
+.empty > span {
+  align-items: center;
+  background: var(--color-surface-alt);
+  border-radius: 14px;
+  color: var(--color-text-muted);
+  display: flex;
+  height: 50px;
+  justify-content: center;
+  margin-bottom: 13px;
+  width: 50px;
+}
+
+.empty h3 {
+  margin: 0;
+}
+
+.empty p {
+  font-size: 13px;
+  margin: 6px 0 0;
+  max-width: 360px;
+}

@@ -1,23 +1,38 @@
 // Datos de ejemplo del mockup. Se reemplazan por llamadas con httpClient al conectar el microservicio Worker.
-const trabajador = {
-  initials: 'JM',
-  firstName: 'Julián',
-  name: 'Julián Martínez',
-  maskedEmail: 'ju••••@mail.com',
-  email: 'julian@mail.com',
-  maskedPhones: ['+57 310 ••• ••90', '+57 315 ••• ••00'],
-  phones: ['+57 310 456 7890'],
-  zone: 'Laureles, Medellín',
-  trade: 'Plomería e instalaciones',
-  rate: '$80.000',
-  skills: ['Plomería', 'Instalaciones', 'Mantenimiento'],
-  summary:
-    'Soluciono fugas, instalaciones y mantenimientos con cuidado y cumplimiento. Trabajo limpio, explico cada arreglo y dejo todo en orden.',
-  stats: [
-    { icon: 'briefcase', value: '47', label: 'Trabajos completados' },
-    { icon: 'star', value: '4,8', label: 'Calificación promedio · 39 reseñas' },
-  ],
+
+// El nombre viene de Identity: el backend de Worker solo guarda el userId.
+const cuenta = { userId: 99, initials: 'AS', firstName: 'Andrea', name: 'Andrea Salazar' };
+
+const categorias = {
+  tecnicos: { id: 1, name: 'Técnicos', detail: 'Oficios técnicos para el hogar y los negocios' },
+  profesores: { id: 2, name: 'Profesores', detail: 'Clases y acompañamiento educativo' },
+  mascotas: { id: 3, name: 'Cuidadores de mascotas', detail: 'Cuidado y bienestar de animales de compañía' },
+  hogar: { id: 4, name: 'Hogar', detail: 'Mantenimiento y mejora de espacios' },
 };
+
+const catalogoOficios = [
+  { id: 1, name: 'Plomería', description: 'Instalaciones y reparaciones', active: true, category: categorias.tecnicos },
+  { id: 2, name: 'Electricidad', description: 'Instalaciones y mantenimiento eléctrico', active: true, category: categorias.tecnicos },
+  { id: 3, name: 'Carpintería', description: 'Muebles, puertas y reparaciones en madera', active: true, category: categorias.hogar },
+  { id: 4, name: 'Pintura', description: 'Pintura interior y exterior', active: true, category: categorias.hogar },
+  { id: 5, name: 'Clases de matemáticas', description: 'Clases particulares y refuerzos', active: true, category: categorias.profesores },
+  { id: 6, name: 'Cuidado de mascotas', description: 'Visitas y cuidado en casa', active: true, category: categorias.mascotas },
+  { id: 7, name: 'Reparación de electrodomésticos', description: 'Diagnóstico y reparación', active: false, category: categorias.tecnicos },
+];
+
+// El backend solo guarda los id de las zonas; los nombres dependen de otro dominio.
+const zonas = [
+  { id: 1, name: 'Chapinero' },
+  { id: 2, name: 'Teusaquillo' },
+  { id: 3, name: 'La Soledad' },
+  { id: 4, name: 'Galerías' },
+  { id: 5, name: 'La Candelaria' },
+  { id: 6, name: 'Modelia' },
+  { id: 7, name: 'Cedritos' },
+  { id: 8, name: 'Quinta Paredes' },
+  { id: 9, name: 'San Luis' },
+  { id: 10, name: 'Normandía' },
+];
 
 const fotosTrabajo = [
   {
@@ -48,16 +63,16 @@ const horarioSemanal = [
   ['Dom', 'No disponible'],
 ];
 
-const oficios = [
-  'Plomería',
-  'Electricista',
-  'Costura y arreglos',
-  'Soporte técnico',
-  'Profesor particular',
-];
+export function obtenerCuenta() {
+  return cuenta;
+}
 
-export function obtenerTrabajador() {
-  return trabajador;
+export function listarOficiosActivos() {
+  return catalogoOficios.filter((oficio) => oficio.active);
+}
+
+export function listarZonas() {
+  return zonas;
 }
 
 export function listarFotosTrabajo() {
@@ -69,5 +84,5 @@ export function obtenerHorarioSemanal() {
 }
 
 export function listarOficios() {
-  return oficios;
+  return listarOficiosActivos().map((oficio) => oficio.name);
 }

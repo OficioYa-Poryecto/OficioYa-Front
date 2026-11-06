@@ -1,0 +1,31 @@
+.back {
+  display: block;
+  margin-bottom: 16px;
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
+.data {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 10px 16px;
+  margin: 16px 0 24px;
+}
+
+.data dt {
+  color: var(--color-text-muted);
+}
+
+.data dd {
+  margin: 0;
+}
+
+.active {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.inactive {
+  color: var(--color-danger);
+  font-weight: 700;
+}

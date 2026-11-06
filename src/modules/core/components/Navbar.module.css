@@ -1,6 +1,7 @@
 .navbar {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   padding: 12px 32px;
   background: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
@@ -9,20 +10,27 @@
 .logo {
   height: 40px;
   display: block;
+  object-fit: contain;
 }
 
-  .links {
+.links {
   display: flex;
   gap: 24px;
-  margin-left: 32px;
+  align-items: center;
 }
 
 .link {
   text-decoration: none;
   font-weight: 600;
   color: var(--color-text-muted);
+  font-size: 0.95rem;
+  transition: color 0.15s;
+}
+
+.link:hover {
+  color: var(--color-text);
 }
 
 .active {
-  color: var(--color-accent);
+  color: var(--color-text);
 }

@@ -1,12 +1,6 @@
+import { Navigate } from 'react-router-dom';
 
-function HomePage() {
-    return (
-    <section className="card">
-        <span className="eyebrow">Bienvenido a OficioYa</span>
-        <h1>Tu espacio en OficioYa</h1>
-        <p>Selecciona una opción del menú para comenzar.</p>
-    </section>
-    );
+// La home por defecto redirige a /auth
+export default function HomePage() {
+  return <Navigate to="/auth" replace />;
 }
-
-export default HomePage;

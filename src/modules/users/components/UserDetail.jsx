@@ -1,7 +1,6 @@
 import { Link, useParams } from 'react-router-dom';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import { useAdminUser } from '../hooks/useAdminUsers';
-import { TEMP_USER_ID } from '../provisional';
 import StatusSelector from './StatusSelector';
 import styles from './UserDetail.module.css';
 
@@ -17,7 +16,6 @@ function UserDetail() {
   }
 
   const isActive = user.accountStatus === 'ACTIVE';
-  const isSelf = user.id === TEMP_USER_ID;
 
   return (
     <section className="card">
@@ -42,11 +40,8 @@ function UserDetail() {
         <dd>{new Date(user.updatedAt).toLocaleString()}</dd>
       </dl>
 
-      {isSelf ? (
-        <p>No puedes cambiar el estado de tu propia cuenta.</p>
-      ) : (
-        <StatusSelector isActive={isActive} onSubmit={updateStatus} />
-      )}
+      {/* Si el admin intenta desactivarse a sí mismo, el back responde 403 y se muestra en actionError */}
+      <StatusSelector isActive={isActive} onSubmit={updateStatus} />
       <ErrorMessage error={actionError} />
     </section>
   );

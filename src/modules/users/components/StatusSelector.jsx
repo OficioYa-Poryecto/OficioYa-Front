@@ -2,7 +2,8 @@ import { useState } from 'react';
 import Button from '../../core/design-system/Button';
 import styles from './Form.module.css';
 
-// Mismo límite que valida el back (StatusChangeDTO)
+// Mismos límites que valida el back (StatusChangeDTO)
+const MIN_REASON = 10;
 const MAX_REASON = 500;
 
 function StatusSelector({ isActive, onSubmit }) {
@@ -12,7 +13,13 @@ function StatusSelector({ isActive, onSubmit }) {
 
   const action = isActive ? 'deactivate' : 'activate';
   const label = isActive ? 'Desactivar cuenta' : 'Activar cuenta';
-  const reasonError = reason.trim() === '' ? 'El motivo es obligatorio' : null;
+  const trimmed = reason.trim();
+  let reasonError = null;
+  if (trimmed === '') {
+    reasonError = 'El motivo es obligatorio';
+  } else if (trimmed.length < MIN_REASON) {
+    reasonError = `El motivo debe tener al menos ${MIN_REASON} caracteres`;
+  }
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -21,7 +28,7 @@ function StatusSelector({ isActive, onSubmit }) {
       return;
     }
     setSending(true);
-    const ok = await onSubmit(action, reason.trim());
+    const ok = await onSubmit(action, trimmed);
     setSending(false);
     if (ok) {
       setReason('');
@@ -43,17 +50,21 @@ function StatusSelector({ isActive, onSubmit }) {
           value={reason}
           onChange={(e) => setReason(e.target.value)}
           onBlur={() => setTouched(true)}
+          minLength={MIN_REASON}
           maxLength={MAX_REASON}
           rows={3}
           required
         />
-        <p className={styles.counter}>{reason.length}/{MAX_REASON}</p>
-        {touched && reasonError && <p className={styles.fieldError}>{reasonError}</p>}
-      </div>
-      <div className={styles.actions}>
-        <Button type="submit" disabled={sending}>
-          {sending ? 'Guardando...' : label}
-        </Button>
+        {/* Contador y error a la izquierda, botón a la derecha justo debajo del motivo */}
+        <div className={styles.fieldFooter}>
+          <div>
+            <p className={styles.counter}>{trimmed.length}/{MAX_REASON} (mínimo {MIN_REASON})</p>
+            {touched && reasonError && <p className={styles.fieldError}>{reasonError}</p>}
+          </div>
+          <Button type="submit" disabled={sending}>
+            {sending ? 'Guardando...' : label}
+          </Button>
+        </div>
       </div>
     </form>
   );

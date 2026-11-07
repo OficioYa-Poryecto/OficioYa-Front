@@ -4,6 +4,18 @@
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
 .form {
   display: grid;
   gap: 18px;
@@ -15,6 +27,7 @@
 }
 
 .label {
+  display: block;
   font-weight: 700;
 }
 
@@ -47,6 +60,12 @@
   gap: 12px;
 }
 
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+}
+
 .invite {
   display: grid;
   gap: 8px;
@@ -59,4 +78,43 @@
 
 .invite h3 {
   margin: 0;
+}
+
+/* Misma altura en modo lectura y en modo edición: no hay salto al pulsar "Modificar" */
+.phoneRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 60px;
+  padding: 0 7px 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.phoneRow input {
+  flex: 1;
+  margin-left: -9px;
+}
+
+/* Versión más baja para la edición de teléfonos */
+.compact input,
+.compact button {
+  height: 44px;
+  padding: 0 14px;
+}
+
+.fieldFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fieldFooter .counter {
+  justify-self: start;
+}
+
+.fieldFooter > button {
+  margin-top: 10px;
 }

@@ -1,0 +1,62 @@
+.page {
+  width: 100%;
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.form {
+  display: grid;
+  gap: 18px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font-weight: 700;
+}
+
+.required {
+  color: var(--color-danger);
+  margin-left: 4px;
+}
+
+.note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.counter {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  justify-self: end;
+  margin: 0;
+}
+
+.fieldError {
+  font-size: 0.85rem;
+  color: var(--color-danger);
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+}
+
+.invite {
+  display: grid;
+  gap: 8px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+}
+
+.invite h3 {
+  margin: 0;
+}

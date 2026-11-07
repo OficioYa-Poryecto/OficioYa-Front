@@ -4,6 +4,7 @@ import { useAdminUser } from '../hooks/useAdminUsers';
 import { useProfile } from '../hooks/useProfile';
 import StatusSelector from './StatusSelector';
 import styles from './UserDetail.module.css';
+import form from './Form.module.css';
 
 function UserDetail() {
   const { id } = useParams();
@@ -21,7 +22,7 @@ function UserDetail() {
   const isSelf = me?.id === user.id;
 
   return (
-    <section className="card">
+    <section className={`card ${form.page}`}>
       <Link to="/admin/users" className={styles.back}>← Volver a usuarios</Link>
       <span className="eyebrow">Detalle de usuario</span>
       <h1>{user.name}</h1>

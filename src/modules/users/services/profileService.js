@@ -1,8 +1,9 @@
 import { request } from '../../core/lib/httpClient';
 
-// RF-01: no lleva token, el visitante todavía no tiene cuenta
-export function registrarUsuario(datos) {
-  return request('/users', { method: 'POST', body: datos });
+// RF-01: el front solo llama al registro de Identity (orquestador).
+// Identity valida la contraseña, nos pide crear el perfil (POST /users con rol SERVICE) y guarda las credenciales.
+export function registrarCuenta(datos) {
+  return request('/auth/register', { method: 'POST', body: datos });
 }
 
 // RF-01: el correo y la contraseña los guarda Identity, no este microservicio.

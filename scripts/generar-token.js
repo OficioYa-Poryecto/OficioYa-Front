@@ -5,31 +5,39 @@
 import { createHmac } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 
-const [userId, roles] = process.argv.slice(2);
+const [userId, role] = process.argv.slice(2);
 const secret = process.env.JWT_SECRET;
-const HORAS_VALIDEZ = 8;
+const VALID_HOURS = 8;
 
-if (!secret || secret.length < 32) {
-  console.error('Falta JWT_SECRET (mínimo 32 caracteres, el mismo del .env del back)');
-  process.exit(1);
-}
-if (!userId || !roles) {
-  console.error('Uso: node scripts/generar-token.js <idUsuario> <ROL[,ROL]>');
+if (!secret) {
+  console.error('Falta JWT_SECRET (el mismo secreto en Base64 del back)');
   process.exit(1);
 }
 
-const base64url = (texto) => Buffer.from(texto).toString('base64url');
-const ahora = Math.floor(Date.now() / 1000);
+const key = Buffer.from(secret, 'base64');
+
+if (key.length < 32) {
+  console.error('JWT_SECRET debe tener mínimo 32 bytes después de decodificarlo de Base64');
+  process.exit(1);
+}
+
+if (!userId || !role) {
+  console.error('Uso: node scripts/generar-token.js <idUsuario> <ROL>');
+  process.exit(1);
+}
+
+const base64url = (text) => Buffer.from(text).toString('base64url');
+const now = Math.floor(Date.now() / 1000);
 
 const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
 const payload = base64url(JSON.stringify({
   sub: userId,
-  roles: roles.split(',').map((r) => r.trim().toUpperCase()),
-  iat: ahora,
-  exp: ahora + HORAS_VALIDEZ * 3600,
+  roles: role.trim().toUpperCase(),
+  iat: now,
+  exp: now + VALID_HOURS * 3600,
 }));
-const firma = createHmac('sha256', secret).update(`${header}.${payload}`).digest('base64url');
-const token = `${header}.${payload}.${firma}`;
+const signature = createHmac('sha256', key).update(`${header}.${payload}`).digest('base64url');
+const token = `${header}.${payload}.${signature}`;
 
 writeFileSync('.env.local', `VITE_ACCESS_TOKEN=${token}\n`);
-console.log(`Token guardado en .env.local (válido ${HORAS_VALIDEZ} horas). Reinicia "npm run dev".`);
+console.log(`Token guardado en .env.local (válido ${VALID_HOURS} horas). Reinicia "npm run dev".`);

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import { MAX_TELEFONOS, validarTelefono } from '../config';
-import { registrarCredenciales, registrarUsuario } from '../services/profileService';
+import { registrarCuenta } from '../services/profileService';
 import styles from './Form.module.css';
 
 // Mismos límites que valida el back (UserRequestDTO)
@@ -102,13 +102,13 @@ function RegisterForm() {
     setError(null);
     setGuardando(true);
     try {
-      const usuario = await registrarUsuario({
+      await registrarCuenta({
         name: nombre.trim(),
         email: correo.trim(),
+        password: contrasena,
         phones: telefonos.map((number, i) => ({ number, principal: i === 0 })),
         roles: trabajador ? ['CONTRATANTE', 'TRABAJADOR'] : ['CONTRATANTE'],
       });
-      await registrarCredenciales(usuario.id, correo.trim(), contrasena);
       setRegistrado(true);
     } catch (e) {
       setError(e.message);
@@ -127,7 +127,7 @@ function RegisterForm() {
           <p className={styles.note}>
             Ya haces parte de OficioYa como {trabajador ? 'contratante y trabajador' : 'contratante'}.
           </p>
-          <Button type="button" onClick={() => navigate('/')}>Ir al inicio</Button>
+          <Button type="button" onClick={() => navigate('/auth')}>Iniciar sesión</Button>
         </div>
       </section>
     );

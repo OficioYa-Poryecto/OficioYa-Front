@@ -4,9 +4,21 @@
   margin: 0 auto;
 }
 
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.header h1 {
+  margin: 0;
+}
+
 .form {
   display: grid;
-  gap: 18px;
+  gap: 20px;
 }
 
 .field {
@@ -15,6 +27,7 @@
 }
 
 .label {
+  display: block;
   font-weight: 700;
 }
 
@@ -29,11 +42,17 @@
   margin: 0;
 }
 
+/* Etiqueta a la izquierda y contador de caracteres a la derecha, sobre el campo */
+.labelRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+}
+
 .counter {
   font-size: 0.8rem;
   color: var(--color-text-muted);
-  justify-self: end;
-  margin: 0;
 }
 
 .fieldError {
@@ -45,6 +64,12 @@
 .actions {
   display: flex;
   gap: 12px;
+}
+
+.footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
 }
 
 .invite {
@@ -59,4 +84,105 @@
 
 .invite h3 {
   margin: 0;
+}
+
+/* Misma altura en modo lectura y en modo edición: no hay salto al pulsar "Modificar" */
+.phoneRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  height: 60px;
+  padding: 0 7px 0 16px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+}
+
+.phoneRow input {
+  flex: 1;
+  margin-left: -9px;
+}
+
+/* Versión más baja para la edición de teléfonos */
+.compact input,
+.compact button {
+  height: 44px;
+  padding: 0 14px;
+}
+
+.fieldFooter {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.fieldFooter > button {
+  margin-top: 10px;
+}
+
+/* Opción de ser trabajador: tarjeta seleccionable */
+.check {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 18px 20px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+}
+
+.check:hover {
+  border-color: var(--color-primary);
+}
+
+.check input {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  accent-color: var(--color-primary);
+  cursor: pointer;
+}
+
+.check strong {
+  display: block;
+  font-size: 1.05rem;
+  margin-bottom: 2px;
+}
+
+.checkActivo {
+  border-color: var(--color-primary);
+  background: var(--color-primary-soft);
+}
+
+/* Pantalla de registro exitoso */
+.success {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 24px 0 8px;
+  text-align: center;
+}
+
+.success h1 {
+  margin: 0;
+}
+
+.success .note {
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.successIcon {
+  display: grid;
+  place-items: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-primary);
+  font-size: 2rem;
+  font-weight: 700;
 }

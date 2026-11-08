@@ -1,9 +1,4 @@
-.back {
-  display: block;
-  margin-bottom: 16px;
-  color: var(--color-primary);
-  font-weight: 700;
-}
+
 
 .data {
   display: grid;

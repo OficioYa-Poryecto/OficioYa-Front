@@ -2,40 +2,23 @@ import { useEffect, useState } from 'react';
 import { ACCESS_TOKEN } from '../config';
 import * as profileService from '../services/profileService';
 
-// Teléfonos propios sin enmascarar, para la pantalla de edición
+// Teléfonos propios sin enmascarar, para la pantalla de edición.
+// Cada cambio responde con la lista tal como quedó guardada en la BD.
 export function usePhones() {
-  const token = ACCESS_TOKEN;
   const [telefonos, setTelefonos] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    profileService.obtenerMisTelefonos(token)
+    profileService.obtenerMisTelefonos(ACCESS_TOKEN)
       .then(setTelefonos)
       .catch((e) => setError(e.message))
       .finally(() => setCargando(false));
-  }, [token]);
+  }, []);
 
-  // Después de cada cambio se vuelve a consultar la lista guardada en la BD,
-  // así la pantalla siempre muestra exactamente lo que quedó guardado
-  async function recargar() {
-    setTelefonos(await profileService.obtenerMisTelefonos(token));
-  }
-
-  async function agregar(numero) {
-    await profileService.agregarTelefono(numero, token);
-    await recargar();
-  }
-
-  async function cambiar(id, numero) {
-    await profileService.cambiarTelefono(id, numero, token);
-    await recargar();
-  }
-
-  async function eliminar(id) {
-    await profileService.eliminarTelefono(id, token);
-    await recargar();
-  }
+  const agregar = async (numero) => setTelefonos(await profileService.agregarTelefono(numero, ACCESS_TOKEN));
+  const cambiar = async (id, numero) => setTelefonos(await profileService.cambiarTelefono(id, numero, ACCESS_TOKEN));
+  const eliminar = async (id) => setTelefonos(await profileService.eliminarTelefono(id, ACCESS_TOKEN));
 
   return { telefonos, cargando, error, agregar, cambiar, eliminar };
 }

@@ -1,26 +1,10 @@
 import { useState } from 'react';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
+import { MAX_TELEFONOS, validarTelefono } from '../config';
 import styles from './Form.module.css';
 
-// Mismas reglas que valida el back (PhoneDTO y UserService): celular de 10 dígitos que empieza por 3
-const SOLO_NUMEROS = /^[0-9]*$/;
-const PATRON_TELEFONO = /^3[0-9]{9}$/;
-const MAX_TELEFONOS = 3;
 const NUEVO = 'nuevo';
-
-function validarTelefono(numero) {
-  if (numero.trim() === '') {
-    return 'Escribe el número';
-  }
-  if (!SOLO_NUMEROS.test(numero)) {
-    return 'Solo se permiten números';
-  }
-  if (!PATRON_TELEFONO.test(numero)) {
-    return 'Ingrese un teléfono válido';
-  }
-  return null;
-}
 
 // Teléfonos del perfil propio. Cada cambio se guarda al momento.
 function PhoneList({ phones, onAgregar, onCambiar, onEliminar }) {
@@ -136,7 +120,7 @@ function NumeroForm({ etiqueta, valorInicial, ocupado, onGuardar, onCancelar }) 
           aria-label={etiqueta}
           type="tel"
           inputMode="numeric"
-          placeholder="Ej: 3001234567"
+          placeholder="Número de teléfono"
           value={numero}
           onChange={(e) => {
             setNumero(e.target.value);

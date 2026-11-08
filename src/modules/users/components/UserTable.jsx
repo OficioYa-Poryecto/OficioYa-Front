@@ -29,7 +29,7 @@ function UserTable() {
             {users.map((user) => (
               <tr key={user.id}>
                 <td>{user.name}</td>
-                <td>{user.email}</td>
+                <td>{enmascararCorreo(user.email)}</td>
                 <td>{user.roles.join(', ')}</td>
                 <td className={user.accountStatus === 'ACTIVE' ? styles.active : styles.inactive}>
                   {user.accountStatus === 'ACTIVE' ? 'Activo' : 'Inactivo'}
@@ -44,6 +44,11 @@ function UserTable() {
       )}
     </section>
   );
+}
+
+// En el listado el correo se oculta; completo solo en el detalle
+function enmascararCorreo(correo) {
+  return '*****' + correo.slice(correo.indexOf('@'));
 }
 
 export default UserTable;

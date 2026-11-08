@@ -42,9 +42,12 @@ function StatusSelector({ isActive, onSubmit }) {
         <span className={styles.required}>*</span> Campos obligatorios
       </p>
       <div className={styles.field}>
-        <label htmlFor="reason" className={styles.label}>
-          Motivo del cambio de estado<span className={styles.required}>*</span>
-        </label>
+        <div className={styles.labelRow}>
+          <label htmlFor="reason" className={styles.label}>
+            Motivo del cambio de estado<span className={styles.required}>*</span>
+          </label>
+          <span className={styles.counter}>{trimmed.length}/{MAX_REASON} (mínimo {MIN_REASON})</span>
+        </div>
         <textarea
           id="reason"
           value={reason}
@@ -55,12 +58,9 @@ function StatusSelector({ isActive, onSubmit }) {
           rows={3}
           required
         />
-        {/* Contador y error a la izquierda, botón a la derecha justo debajo del motivo */}
+        {/* Error a la izquierda, justo debajo del motivo; botón a la derecha */}
         <div className={styles.fieldFooter}>
-          <div>
-            <p className={styles.counter}>{trimmed.length}/{MAX_REASON} (mínimo {MIN_REASON})</p>
-            {touched && reasonError && <p className={styles.fieldError}>{reasonError}</p>}
-          </div>
+          <div>{touched && reasonError && <p className={styles.fieldError}>{reasonError}</p>}</div>
           <Button type="submit" disabled={sending}>
             {sending ? 'Guardando...' : label}
           </Button>

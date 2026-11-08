@@ -73,9 +73,12 @@ function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
 
       <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
         <div className={styles.field}>
-          <label htmlFor="name" className={styles.label}>
-            Nombre<span className={styles.required}>*</span>
-          </label>
+          <div className={styles.labelRow}>
+            <label htmlFor="name" className={styles.label}>
+              Nombre<span className={styles.required}>*</span>
+            </label>
+            <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
+          </div>
           <input
             id="name"
             value={name}
@@ -84,7 +87,6 @@ function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
             maxLength={MAX_NOMBRE}
             required
           />
-          <p className={styles.counter}>{name.length}/{MAX_NOMBRE}</p>
           {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
         </div>
       </form>

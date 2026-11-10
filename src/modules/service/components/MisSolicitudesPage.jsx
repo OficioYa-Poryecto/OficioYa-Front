@@ -5,17 +5,8 @@ import { useRequests } from '../hooks/useRequests';
 import { authService } from '../services/authService';
 import { decodeRole } from '../services/jwt';
 import { tokenStorage } from '../services/tokenStorage';
+import RequestCard from './RequestCard';
 import styles from './MisSolicitudesPage.module.css';
-
-const STATE_LABELS = {
-  PENDING: 'Pendiente',
-  ACCEPTED: 'Aceptada',
-  CONFLICT: 'En conflicto',
-  CANCELED: 'Cancelada',
-  REJECTED: 'Rechazada',
-  COMPLETED: 'Cumplida',
-  EXPIRED: 'Expirada',
-};
 
 const FINAL_STATES = ['COMPLETED', 'CANCELED', 'REJECTED', 'EXPIRED'];
 
@@ -46,10 +37,6 @@ function actionsFor(role, state) {
   return actions;
 }
 
-function formatDate(value) {
-  return value ? new Date(value).toLocaleString('es-CO') : 'Sin fecha';
-}
-
 function LoginPanel({ onToken }) {
   const [pasted, setPasted] = useState('');
   const [error, setError] = useState('');
@@ -66,7 +53,8 @@ function LoginPanel({ onToken }) {
 
   return (
     <section className={styles.panel}>
-      <h2>Iniciar sesión de prueba</h2>
+      <p className={styles.eyebrow}>Mis solicitudes</p>
+      <h1>Inicia sesión de prueba</h1>
       <p>El login del back es provisional. Entra como contratante de prueba o pega un token.</p>
       <Button onClick={loginDemo}>Entrar como contratante de prueba</Button>
       <label>
@@ -87,37 +75,28 @@ function RequestsList({ token, onLogout }) {
 
   return (
     <section className={styles.list}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <div>
-          <p className="eyebrow">Mis solicitudes</p>
+          <p className={styles.eyebrow}>Mis solicitudes</p>
           <h1>Solicitudes de servicio</h1>
-          <p>Rol: {role || 'desconocido'}</p>
+          <span className={styles.role}>{role || 'Rol desconocido'}</span>
         </div>
         <Button variant="secondary" onClick={onLogout}>
           Cerrar sesión
         </Button>
-      </div>
+      </header>
       <ErrorMessage error={error} />
       {loading && <p>Cargando solicitudes…</p>}
-      {!loading && !error && requests.length === 0 && <p>No tienes solicitudes todavía.</p>}
-      {requests.map((r) => (
-        <article key={r.id} className={styles.card}>
-          <div className={styles.cardTop}>
-            <h3>{r.description || 'Sin descripción'}</h3>
-            <span className={styles.badge}>{STATE_LABELS[r.state] ?? r.state}</span>
-          </div>
-          <p>
-            {r.neighborhood} · {r.exactAddress}
-          </p>
-          <p>Fecha programada: {formatDate(r.scheduledDateTime)}</p>
-          <div className={styles.actions}>
-            {actionsFor(role, r.state).map((a) => (
-              <Button key={a.key} variant={a.variant} onClick={() => act(a.key, r.id)}>
-                {a.label}
-              </Button>
-            ))}
-          </div>
-        </article>
+      {!loading && !error && requests.length === 0 && (
+        <p className={styles.empty}>No tienes solicitudes todavía.</p>
+      )}
+      {requests.map((request) => (
+        <RequestCard
+          key={request.id}
+          request={request}
+          actions={actionsFor(role, request.state)}
+          onAction={act}
+        />
       ))}
     </section>
   );
@@ -137,13 +116,13 @@ function MisSolicitudesPage() {
   };
 
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
       {token ? (
         <RequestsList key={token} token={token} onLogout={handleLogout} />
       ) : (
         <LoginPanel onToken={handleToken} />
       )}
-    </main>
+    </div>
   );
 }
 

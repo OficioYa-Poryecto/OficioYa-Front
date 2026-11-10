@@ -1,7 +1,8 @@
 import { NavLink } from 'react-router-dom';
 import Icon from '../../core/design-system/Icon';
 import ui from '../../core/design-system/ui.module.css';
-import { useMiPerfil } from '../hooks/useMiPerfil';
+import { useMyWorker } from '../hooks/useMyWorker';
+import { getSession } from '../services/session';
 import styles from './TrabajadorLayout.module.css';
 
 const SECCIONES = [
@@ -14,7 +15,8 @@ const SECCIONES = [
 ];
 
 function TrabajadorLayout({ children }) {
-  const { cuenta, perfil } = useMiPerfil();
+  const { data: perfil } = useMyWorker();
+  const cuenta = getSession();
   const activo = perfil?.status === 'ACTIVE';
 
   return (

@@ -5,10 +5,11 @@ import EmptyState from '../../core/design-system/EmptyState';
 import Field from '../../core/design-system/Field';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import ui from '../../core/design-system/ui.module.css';
-import { useMiPerfil } from '../hooks/useMiPerfil';
+import { useMyWorker } from '../hooks/useMyWorker';
+import { addPhoto, deletePhoto } from '../services/trabajadoresService';
+import EstadoPerfil from './EstadoPerfil';
 import { formatoFecha } from './formatos';
 import PageHeading from './PageHeading';
-import PerfilRequerido from './PerfilRequerido';
 import styles from './trabajador.module.css';
 
 const MAX_DESCRIPCION = 200;
@@ -16,36 +17,44 @@ const MAX_DESCRIPCION = 200;
 const URL_VALIDA = /^https?:\/\/\S+$/;
 
 function GaleriaPage() {
-  const { perfil, guardarPerfil } = useMiPerfil();
+  const { data: perfil, loading, error: loadError, refresh } = useMyWorker();
   const [url, setUrl] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [deleting, setDeleting] = useState(null);
-  if (!perfil) return <PerfilRequerido />;
+  if (!perfil) return <EstadoPerfil error={loadError} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
 
-  const add = (event) => {
+  const add = async (event) => {
     event.preventDefault();
     setSuccess(false);
     if (!URL_VALIDA.test(url.trim())) {
       setError('La URL debe empezar por http o https y no tener espacios');
       return;
     }
-    guardarPerfil({
-      ...perfil,
-      photos: [...perfil.photos, { id: Date.now(), url: url.trim(), description, uploadedAt: new Date().toISOString() }],
-    });
-    setUrl('');
-    setDescription('');
-    setError('');
-    setSuccess(true);
+    try {
+      await addPhoto(perfil.id, { url: url.trim(), description });
+      await refresh();
+      setUrl('');
+      setDescription('');
+      setError('');
+      setSuccess(true);
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
-  const confirmDelete = () => {
-    guardarPerfil({ ...perfil, photos: perfil.photos.filter((photo) => photo.id !== deleting) });
-    setDeleting(null);
+  const confirmDelete = async () => {
+    try {
+      await deletePhoto(perfil.id, deleting);
+      await refresh();
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (

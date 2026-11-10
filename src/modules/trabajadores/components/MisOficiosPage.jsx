@@ -6,22 +6,20 @@ import Icon from '../../core/design-system/Icon';
 import SelectField from '../../core/design-system/SelectField';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import ui from '../../core/design-system/ui.module.css';
-import { useMiPerfil } from '../hooks/useMiPerfil';
-import { useTrabajadores } from '../hooks/useTrabajadores';
+import { useTrades } from '../hooks/useCatalogos';
+import { useMyWorker } from '../hooks/useMyWorker';
+import { addTrade, removeTrade, setPrimaryTrade, updateTrade } from '../services/trabajadoresService';
+import EstadoPerfil from './EstadoPerfil';
 import { UNIDADES } from './formatos';
 import PageHeading from './PageHeading';
-import PerfilRequerido from './PerfilRequerido';
 import styles from './trabajador.module.css';
 
-// La tarifa solo se guarda cuando es válida; mientras tanto se muestra el error en la fila.
-function TradeRow({ item, onChange, onPrimary, onRemove }) {
+// La tarifa y la unidad se editan en la fila y se envían con "Guardar".
+function TradeRow({ item, onSave, onPrimary, onRemove }) {
   const [rate, setRate] = useState(String(item.approxRate));
+  const [unit, setUnit] = useState(item.rateUnit);
   const invalid = !(Number(rate) > 0);
-
-  const changeRate = (value) => {
-    setRate(value);
-    if (Number(value) > 0) onChange(item.id, { approxRate: Number(value) });
-  };
+  const changed = Number(rate) !== Number(item.approxRate) || unit !== item.rateUnit;
 
   return (
     <div className={styles.tradeRow}>
@@ -33,17 +31,15 @@ function TradeRow({ item, onChange, onPrimary, onRemove }) {
         error={invalid ? 'Debe ser mayor que 0' : ''}
         label="Tarifa en COP"
         min={1}
-        onChange={changeRate}
+        onChange={setRate}
         type="number"
         value={rate}
       />
-      <SelectField
-        label="Unidad"
-        onChange={(value) => onChange(item.id, { rateUnit: value })}
-        options={UNIDADES}
-        value={item.rateUnit}
-      />
+      <SelectField label="Unidad" onChange={setUnit} options={UNIDADES} value={unit} />
       <div className={styles.rowActions}>
+        {changed && !invalid && (
+          <Boton onClick={() => onSave(item.id, { approxRate: Number(rate), rateUnit: unit })}>Guardar</Boton>
+        )}
         {onPrimary && <Boton onClick={onPrimary} variant="outline">Hacer principal</Boton>}
         {onRemove && <Boton icon="trash" onClick={onRemove} variant="ghost">Quitar</Boton>}
       </div>
@@ -52,54 +48,45 @@ function TradeRow({ item, onChange, onPrimary, onRemove }) {
 }
 
 function MisOficiosPage() {
-  const { perfil, guardarPerfil } = useMiPerfil();
-  const { oficiosActivos } = useTrabajadores();
-  const [tradeId, setTradeId] = useState(String(oficiosActivos[0]?.id ?? ''));
+  const { data: perfil, loading, error, refresh } = useMyWorker();
+  const { data: oficiosActivos } = useTrades();
+  const [tradeId, setTradeId] = useState('');
   const [rate, setRate] = useState('60000');
   const [unit, setUnit] = useState('PER_JOB');
   const [message, setMessage] = useState(null);
   const [rateError, setRateError] = useState('');
-  if (!perfil) return <PerfilRequerido />;
+  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
   const { primaryTrade, secondaryTrades } = perfil;
+  const selectedTradeId = tradeId || String(oficiosActivos?.[0]?.id ?? '');
+
+  // Ejecuta un cambio en el back y vuelve a consultar el perfil.
+  const ejecutar = async (accion) => {
+    setMessage(null);
+    try {
+      await accion();
+      await refresh();
+      setMessage({ type: 'success', text: 'Cambios guardados correctamente.' });
+    } catch (e) {
+      setMessage({ type: 'error', text: e.message });
+    }
+  };
 
   const add = (event) => {
     event.preventDefault();
-    const trade = oficiosActivos.find((oficio) => oficio.id === Number(tradeId));
-    if ([primaryTrade, ...secondaryTrades].some((item) => item.trade.id === trade.id)) {
-      setMessage('conflict');
+    if ([primaryTrade, ...secondaryTrades].some((item) => item.trade.id === Number(selectedTradeId))) {
+      setMessage({ type: 'error', text: 'Ya ofreces este oficio.' });
       return;
     }
     if (!(Number(rate) > 0)) {
       setRateError('La tarifa debe ser mayor que 0');
       return;
     }
-    guardarPerfil({
-      ...perfil,
-      secondaryTrades: [...secondaryTrades, { id: Date.now(), trade, approxRate: Number(rate), rateUnit: unit }],
-    });
-    setMessage('success');
+    ejecutar(() => addTrade(perfil.id, { tradeId: Number(selectedTradeId), approxRate: Number(rate), rateUnit: unit }));
   };
 
-  const updateTrade = (id, cambios) => {
-    guardarPerfil(primaryTrade.id === id
-      ? { ...perfil, primaryTrade: { ...primaryTrade, ...cambios } }
-      : { ...perfil, secondaryTrades: secondaryTrades.map((item) => (item.id === id ? { ...item, ...cambios } : item)) });
-  };
-
-  const makePrimary = (item) => {
-    guardarPerfil({
-      ...perfil,
-      primaryTrade: item,
-      secondaryTrades: [primaryTrade, ...secondaryTrades.filter((trade) => trade.id !== item.id)],
-    });
-    setMessage('success');
-  };
-
-  const remove = (item) => {
-    guardarPerfil({ ...perfil, secondaryTrades: secondaryTrades.filter((trade) => trade.id !== item.id) });
-  };
+  const saveTrade = (workerTradeId, cambios) => ejecutar(() => updateTrade(perfil.id, workerTradeId, cambios));
 
   return (
     <div>
@@ -122,7 +109,7 @@ function MisOficiosPage() {
             </div>
             <span className={styles.primaryTag}>Principal</span>
           </div>
-          <TradeRow item={primaryTrade} key={primaryTrade.id} onChange={updateTrade} />
+          <TradeRow item={primaryTrade} key={`${primaryTrade.id}-${primaryTrade.approxRate}-${primaryTrade.rateUnit}`} onSave={saveTrade} />
         </section>
         <section className={ui.infoCard}>
           <div className={styles.cardHeader}>
@@ -136,10 +123,10 @@ function MisOficiosPage() {
           ) : secondaryTrades.map((item) => (
             <TradeRow
               item={item}
-              key={item.id}
-              onChange={updateTrade}
-              onPrimary={() => makePrimary(item)}
-              onRemove={() => remove(item)}
+              key={`${item.id}-${item.approxRate}-${item.rateUnit}`}
+              onSave={saveTrade}
+              onPrimary={() => ejecutar(() => setPrimaryTrade(perfil.id, item.id))}
+              onRemove={() => ejecutar(() => removeTrade(perfil.id, item.id))}
             />
           ))}
         </section>
@@ -154,8 +141,8 @@ function MisOficiosPage() {
             <SelectField
               label="Oficio"
               onChange={(value) => { setTradeId(value); setMessage(null); }}
-              options={oficiosActivos.map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
-              value={tradeId}
+              options={(oficiosActivos ?? []).map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
+              value={selectedTradeId}
             />
             <Field
               error={rateError}
@@ -168,9 +155,8 @@ function MisOficiosPage() {
             <SelectField label="Unidad" onChange={setUnit} options={UNIDADES} value={unit} />
             <Boton icon="plus" type="submit">Agregar</Boton>
           </div>
-          {message === 'success' && <StatusMessage>Cambios guardados correctamente.</StatusMessage>}
-          {message === 'conflict' && (
-            <StatusMessage variant="error"><strong>Conflicto:</strong> Ya ofreces este oficio.</StatusMessage>
+          {message && (
+            <StatusMessage variant={message.type}>{message.text}</StatusMessage>
           )}
         </form>
       </div>

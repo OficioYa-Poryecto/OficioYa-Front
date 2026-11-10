@@ -6,10 +6,11 @@ import Field from '../../core/design-system/Field';
 import SelectField from '../../core/design-system/SelectField';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import ui from '../../core/design-system/ui.module.css';
-import { useMiPerfil } from '../hooks/useMiPerfil';
+import { useMyWorker } from '../hooks/useMyWorker';
+import { createSlot, deleteSlot, updateSlot } from '../services/trabajadoresService';
+import EstadoPerfil from './EstadoPerfil';
 import { DIAS, formatoFecha, nombreDia } from './formatos';
 import PageHeading from './PageHeading';
-import PerfilRequerido from './PerfilRequerido';
 import styles from './trabajador.module.css';
 
 const DIAS_SEMANA = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
@@ -44,7 +45,7 @@ function validar({ recurrenceType, startDate, endDate, startTime, endTime }) {
 }
 
 function DisponibilidadPage() {
-  const { perfil, guardarPerfil } = useMiPerfil();
+  const { data: perfil, loading, error: loadError, refresh } = useMyWorker();
   const [editing, setEditing] = useState(null);
   const [type, setType] = useState('FIXED');
   const [fixedDate, setFixedDate] = useState('2026-11-10');
@@ -56,16 +57,17 @@ function DisponibilidadPage() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const [deleting, setDeleting] = useState(null);
-  if (!perfil) return <PerfilRequerido />;
+  if (!perfil) return <EstadoPerfil error={loadError} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
 
-  const save = (event) => {
+  const save = async (event) => {
     event.preventDefault();
     setSuccess(false);
+    // Mismo cuerpo que AvailabilitySlotRequest en el back.
     const franja = type === 'FIXED'
-      ? { id: editing ?? Date.now(), recurrenceType: type, dayOfWeek: null, startDate: fixedDate, endDate: null, startTime, endTime }
-      : { id: editing ?? Date.now(), recurrenceType: type, dayOfWeek: day, startDate, endDate, startTime, endTime };
+      ? { recurrenceType: type, dayOfWeek: null, startDate: fixedDate, endDate: null, startTime, endTime }
+      : { recurrenceType: type, dayOfWeek: day, startDate, endDate, startTime, endTime };
     const invalido = validar(franja);
     if (invalido) {
       setError(invalido);
@@ -75,13 +77,19 @@ function DisponibilidadPage() {
       setError('Esta franja se cruza con otra existente');
       return;
     }
-    guardarPerfil({
-      ...perfil,
-      slots: editing ? perfil.slots.map((slot) => (slot.id === editing ? franja : slot)) : [...perfil.slots, franja],
-    });
-    setError('');
-    setSuccess(true);
-    setEditing(null);
+    try {
+      if (editing) {
+        await updateSlot(perfil.id, editing, franja);
+      } else {
+        await createSlot(perfil.id, franja);
+      }
+      await refresh();
+      setError('');
+      setSuccess(true);
+      setEditing(null);
+    } catch (e) {
+      setError(e.message);
+    }
   };
 
   const startEdit = (slot) => {
@@ -100,10 +108,16 @@ function DisponibilidadPage() {
     setSuccess(false);
   };
 
-  const confirmDelete = () => {
-    guardarPerfil({ ...perfil, slots: perfil.slots.filter((slot) => slot.id !== deleting) });
-    if (editing === deleting) setEditing(null);
-    setDeleting(null);
+  const confirmDelete = async () => {
+    try {
+      await deleteSlot(perfil.id, deleting);
+      await refresh();
+      if (editing === deleting) setEditing(null);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setDeleting(null);
+    }
   };
 
   return (

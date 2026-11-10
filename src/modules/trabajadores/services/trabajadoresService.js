@@ -1,88 +1,92 @@
-// Datos de ejemplo del mockup. Se reemplazan por llamadas con httpClient al conectar el microservicio Worker.
+// Acceso a datos del dominio Worker. Las pantallas importan SOLO de aquí.
+// Con VITE_USE_MOCKS=true responde mockWorkerApi; si no, llama al back por httpClient.
+// Rutas relativas a /api/v1 (las agrega httpClient).
+import { redirectToLogin } from '../../core/lib/authRedirect';
+import { request } from '../../core/lib/httpClient';
+import { USE_MOCKS } from '../config';
+import * as mockApi from './mockWorkerApi';
+import { getSession } from './session';
 
-// El nombre viene de Identity: el backend de Worker solo guarda el userId.
-const cuenta = { userId: 99, initials: 'AS', firstName: 'Andrea', name: 'Andrea Salazar' };
+async function call(path, options = {}) {
+  try {
+    return await request(path, { ...options, token: getSession().token });
+  } catch (error) {
+    if (error.status === 401) redirectToLogin();
+    throw error;
+  }
+}
 
-const categorias = {
-  tecnicos: { id: 1, name: 'Técnicos', detail: 'Oficios técnicos para el hogar y los negocios' },
-  profesores: { id: 2, name: 'Profesores', detail: 'Clases y acompañamiento educativo' },
-  mascotas: { id: 3, name: 'Cuidadores de mascotas', detail: 'Cuidado y bienestar de animales de compañía' },
-  hogar: { id: 4, name: 'Hogar', detail: 'Mantenimiento y mejora de espacios' },
+const json = (method, body) => ({ method, body });
+
+const realApi = {
+  // ---- Perfil ----
+  // null = el usuario todavía no tiene perfil de trabajador (404).
+  async getMyWorker() {
+    try {
+      return await call('/workers/me');
+    } catch (error) {
+      if (error.status === 404) return null;
+      throw error;
+    }
+  },
+  getWorker: (id) => call(`/workers/${id}`),
+  // datos = { availableNow, zoneIds, primaryTrade: { tradeId, approxRate, rateUnit } }
+  createWorker: (datos) => call('/workers', json('POST', { ...datos, userId: getSession().userId })),
+  updateAvailableNow: (workerId, availableNow) =>
+    call(`/workers/${workerId}/availability-now`, json('PUT', { availableNow })),
+  updateStatus: (workerId, status) => call(`/workers/${workerId}/status`, json('PUT', { status })),
+
+  // ---- Zonas ----
+  addZone: (workerId, zoneId) => call(`/workers/${workerId}/zones/${zoneId}`, { method: 'PUT' }),
+  removeZone: (workerId, zoneId) => call(`/workers/${workerId}/zones/${zoneId}`, { method: 'DELETE' }),
+
+  // ---- Oficios del trabajador ----
+  // datos = { tradeId, approxRate, rateUnit }
+  addTrade: (workerId, datos) => call(`/workers/${workerId}/trades`, json('POST', datos)),
+  updateTrade: (workerId, workerTradeId, { approxRate, rateUnit }) =>
+    call(`/workers/${workerId}/trades/${workerTradeId}`, json('PUT', { approxRate, rateUnit })),
+  removeTrade: (workerId, workerTradeId) =>
+    call(`/workers/${workerId}/trades/${workerTradeId}`, { method: 'DELETE' }),
+  setPrimaryTrade: (workerId, workerTradeId) =>
+    call(`/workers/${workerId}/primary-trade/${workerTradeId}`, { method: 'PUT' }),
+
+  // ---- Franjas de disponibilidad ----
+  // franja = { recurrenceType, dayOfWeek, startDate, endDate, startTime, endTime }
+  createSlot: (workerId, franja) => call(`/workers/${workerId}/availability-slots`, json('POST', franja)),
+  updateSlot: (workerId, slotId, franja) =>
+    call(`/workers/${workerId}/availability-slots/${slotId}`, json('PUT', franja)),
+  deleteSlot: (workerId, slotId) =>
+    call(`/workers/${workerId}/availability-slots/${slotId}`, { method: 'DELETE' }),
+
+  // ---- Fotos ----
+  addPhoto: (workerId, { url, description }) => call(`/workers/${workerId}/photos`, json('POST', { url, description })),
+  deletePhoto: (workerId, photoId) => call(`/workers/${workerId}/photos/${photoId}`, { method: 'DELETE' }),
+
+  // ---- Catálogos ----
+  listTrades: () => call('/trades?active=true'),
+  // Las zonas son del dominio User: hasta acordar su contrato se usan las de ejemplo.
+  listZones: () => mockApi.listZones(),
 };
 
-const catalogoOficios = [
-  { id: 1, name: 'Plomería', description: 'Instalaciones y reparaciones', active: true, category: categorias.tecnicos },
-  { id: 2, name: 'Electricidad', description: 'Instalaciones y mantenimiento eléctrico', active: true, category: categorias.tecnicos },
-  { id: 3, name: 'Carpintería', description: 'Muebles, puertas y reparaciones en madera', active: true, category: categorias.hogar },
-  { id: 4, name: 'Pintura', description: 'Pintura interior y exterior', active: true, category: categorias.hogar },
-  { id: 5, name: 'Clases de matemáticas', description: 'Clases particulares y refuerzos', active: true, category: categorias.profesores },
-  { id: 6, name: 'Cuidado de mascotas', description: 'Visitas y cuidado en casa', active: true, category: categorias.mascotas },
-  { id: 7, name: 'Reparación de electrodomésticos', description: 'Diagnóstico y reparación', active: false, category: categorias.tecnicos },
-];
+const api = USE_MOCKS ? mockApi : realApi;
 
-// El backend solo guarda los id de las zonas; los nombres dependen de otro dominio.
-const zonas = [
-  { id: 1, name: 'Chapinero' },
-  { id: 2, name: 'Teusaquillo' },
-  { id: 3, name: 'La Soledad' },
-  { id: 4, name: 'Galerías' },
-  { id: 5, name: 'La Candelaria' },
-  { id: 6, name: 'Modelia' },
-  { id: 7, name: 'Cedritos' },
-  { id: 8, name: 'Quinta Paredes' },
-  { id: 9, name: 'San Luis' },
-  { id: 10, name: 'Normandía' },
-];
-
-const fotosTrabajo = [
-  {
-    src: 'https://images.unsplash.com/photo-1676210134188-4c05dd172f89?auto=format&fit=crop&w=900&q=85',
-    alt: 'Instalación de tubería en una pared',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1676210133055-eab6ef033ce3?auto=format&fit=crop&w=900&q=85',
-    alt: 'Reparación de tubería bajo un lavaplatos',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1676210134190-3f2c0d5cf58d?auto=format&fit=crop&w=900&q=85',
-    alt: 'Mantenimiento de calentador de agua',
-  },
-  {
-    src: 'https://images.unsplash.com/photo-1454988501794-2992f706932e?auto=format&fit=crop&w=900&q=85',
-    alt: 'Herramientas de trabajo organizadas',
-  },
-];
-
-const horarioSemanal = [
-  ['Lun', '8:00 a. m. – 5:00 p. m.'],
-  ['Mar', '8:00 a. m. – 5:00 p. m.'],
-  ['Mié', '8:00 a. m. – 5:00 p. m.'],
-  ['Jue', '8:00 a. m. – 5:00 p. m.'],
-  ['Vie', '8:00 a. m. – 3:00 p. m.'],
-  ['Sáb', '9:00 a. m. – 1:00 p. m.'],
-  ['Dom', 'No disponible'],
-];
-
-export function obtenerCuenta() {
-  return cuenta;
-}
-
-export function listarOficiosActivos() {
-  return catalogoOficios.filter((oficio) => oficio.active);
-}
-
-export function listarZonas() {
-  return zonas;
-}
-
-export function listarFotosTrabajo() {
-  return fotosTrabajo;
-}
-
-export function obtenerHorarioSemanal() {
-  return horarioSemanal;
-}
-
-export function listarOficios() {
-  return listarOficiosActivos().map((oficio) => oficio.name);
-}
+export const {
+  getMyWorker,
+  getWorker,
+  createWorker,
+  updateAvailableNow,
+  updateStatus,
+  addZone,
+  removeZone,
+  addTrade,
+  updateTrade,
+  removeTrade,
+  setPrimaryTrade,
+  createSlot,
+  updateSlot,
+  deleteSlot,
+  addPhoto,
+  deletePhoto,
+  listTrades,
+  listZones,
+} = api;

@@ -1,8 +1,9 @@
 import ui from '../../core/design-system/ui.module.css';
-import { useTrabajadores } from '../hooks/useTrabajadores';
+// Maqueta: grilla fija lunes-domingo. Pendiente pasar a franjas (tarea de Mateo).
+import { HORARIO_EJEMPLO } from '../services/mockWorkerApi';
 
 function ScheduleEditor({ readOnly = false }) {
-  const { horario } = useTrabajadores();
+  const horario = HORARIO_EJEMPLO;
 
   return (
     <div className={`${ui.schedule} ${readOnly ? ui.scheduleRead : ''}`}>

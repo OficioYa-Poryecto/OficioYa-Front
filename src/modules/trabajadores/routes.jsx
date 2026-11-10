@@ -6,21 +6,29 @@ import MisOficiosPage from './components/MisOficiosPage';
 import PanelPage from './components/PanelPage';
 import TrabajadorInicio from './components/TrabajadorInicio';
 import TrabajadorLayout from './components/TrabajadorLayout';
-import { obtenerCuenta } from './services/trabajadoresService';
-
-const { initials, firstName } = obtenerCuenta();
-const account = { initials, name: firstName };
+import { getSession } from './services/session';
 
 const conLayout = (pagina) => <TrabajadorLayout>{pagina}</TrabajadorLayout>;
 
+// El Navbar lee route.account al pintar; con el getter la cuenta sale de la sesión
+// en ese momento y no al importar este archivo.
+const ruta = (path, element) => ({
+  path,
+  element,
+  get account() {
+    const { initials, name } = getSession();
+    return { initials, name };
+  },
+});
+
 export const routes = [
-  { path: '/trabajador', element: <TrabajadorInicio />, account },
-  { path: '/trabajador/crear', element: conLayout(<CrearPerfilPage />), account },
-  { path: '/trabajador/panel', element: conLayout(<PanelPage />), account },
-  { path: '/trabajador/oficios', element: conLayout(<MisOficiosPage />), account },
-  { path: '/trabajador/cobertura', element: conLayout(<CoberturaPage />), account },
-  { path: '/trabajador/disponibilidad', element: conLayout(<DisponibilidadPage />), account },
-  { path: '/trabajador/galeria', element: conLayout(<GaleriaPage />), account },
+  ruta('/trabajador', <TrabajadorInicio />),
+  ruta('/trabajador/crear', conLayout(<CrearPerfilPage />)),
+  ruta('/trabajador/panel', conLayout(<PanelPage />)),
+  ruta('/trabajador/oficios', conLayout(<MisOficiosPage />)),
+  ruta('/trabajador/cobertura', conLayout(<CoberturaPage />)),
+  ruta('/trabajador/disponibilidad', conLayout(<DisponibilidadPage />)),
+  ruta('/trabajador/galeria', conLayout(<GaleriaPage />)),
 ];
 
 export const navLinks = [{ label: 'Trabajador', to: '/trabajador' }];

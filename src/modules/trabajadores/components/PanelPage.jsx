@@ -1,16 +1,19 @@
+import { useState } from 'react';
 import Boton from '../../core/design-system/Boton';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import Toggle from '../../core/design-system/Toggle';
 import ui from '../../core/design-system/ui.module.css';
-import { useMiPerfil } from '../hooks/useMiPerfil';
+import { useMyWorker } from '../hooks/useMyWorker';
+import { updateAvailableNow, updateStatus } from '../services/trabajadoresService';
+import EstadoPerfil from './EstadoPerfil';
 import { formatoDinero, nombreUnidad } from './formatos';
 import PageHeading from './PageHeading';
-import PerfilRequerido from './PerfilRequerido';
 import styles from './trabajador.module.css';
 
 function PanelPage() {
-  const { perfil, guardarPerfil } = useMiPerfil();
-  if (!perfil) return <PerfilRequerido />;
+  const { data: perfil, loading, error, refresh } = useMyWorker();
+  const [actionError, setActionError] = useState('');
+  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
 
   const paused = perfil.status === 'PAUSED';
   const estado = paused ? 'Pausado' : 'Activo';
@@ -23,6 +26,16 @@ function PanelPage() {
     { label: 'Franjas', value: `${perfil.slots.length} configuradas` },
     { label: 'Fotos', value: `${perfil.photos.length} publicadas` },
   ];
+
+  const ejecutar = async (accion) => {
+    setActionError('');
+    try {
+      await accion();
+      await refresh();
+    } catch (e) {
+      setActionError(e.message);
+    }
+  };
 
   return (
     <div>
@@ -37,6 +50,7 @@ function PanelPage() {
           <strong>Tu perfil está pausado.</strong> No aparece en búsquedas y la edición está bloqueada. Reactívalo para continuar.
         </StatusMessage>
       )}
+      {actionError && <StatusMessage className={styles.notice} variant="error">{actionError}</StatusMessage>}
       <div className={styles.statsGrid}>
         {stats.map((stat) => (
           <div className={`${ui.infoCard} ${styles.stat}`} key={stat.label}>
@@ -55,16 +69,13 @@ function PanelPage() {
             checked={perfil.availableNow}
             disabled={paused}
             label="Disponible ahora"
-            onChange={() => guardarPerfil({ ...perfil, availableNow: !perfil.availableNow })}
+            onChange={() => ejecutar(() => updateAvailableNow(perfil.id, !perfil.availableNow))}
           />
+          {/* Ojo: según el plan, el estado lo decide Reputation/ADMIN (PUT /workers/{id}/status). */}
           {paused ? (
-            <Boton icon="play" onClick={() => guardarPerfil({ ...perfil, status: 'ACTIVE' })}>Reactivar perfil</Boton>
+            <Boton icon="play" onClick={() => ejecutar(() => updateStatus(perfil.id, 'ACTIVE'))}>Reactivar perfil</Boton>
           ) : (
-            <Boton
-              icon="pause"
-              onClick={() => guardarPerfil({ ...perfil, status: 'PAUSED', availableNow: false })}
-              variant="outline"
-            >
+            <Boton icon="pause" onClick={() => ejecutar(() => updateStatus(perfil.id, 'PAUSED'))} variant="outline">
               Pausar perfil
             </Boton>
           )}

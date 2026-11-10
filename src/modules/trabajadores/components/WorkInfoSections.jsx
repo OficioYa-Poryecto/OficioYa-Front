@@ -2,12 +2,12 @@ import Field from '../../core/design-system/Field';
 import FormSection from '../../core/design-system/FormSection';
 import SelectField from '../../core/design-system/SelectField';
 import ui from '../../core/design-system/ui.module.css';
-import { useTrabajadores } from '../hooks/useTrabajadores';
+import { useTrades } from '../hooks/useCatalogos';
 import Gallery from './Gallery';
 import ScheduleEditor from './ScheduleEditor';
 
 function WorkInfoSections({ zone, about }) {
-  const { oficios } = useTrabajadores();
+  const oficios = (useTrades().data ?? []).map((oficio) => oficio.name);
 
   return (
     <>

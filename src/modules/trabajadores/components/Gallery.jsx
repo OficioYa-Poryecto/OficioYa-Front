@@ -1,9 +1,10 @@
 import Icon from '../../core/design-system/Icon';
 import ui from '../../core/design-system/ui.module.css';
-import { useTrabajadores } from '../hooks/useTrabajadores';
+// Maqueta con fotos de ejemplo: solo la usa la pantalla de contratante (modules/auth).
+import { FOTOS_EJEMPLO } from '../services/mockWorkerApi';
 
 function Gallery({ editable = false }) {
-  const { fotos } = useTrabajadores();
+  const fotos = FOTOS_EJEMPLO;
 
   return (
     <div className={ui.gallery}>

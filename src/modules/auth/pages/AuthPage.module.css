@@ -76,6 +76,12 @@
   gap: 0;
 }
 
+/* Asterisco de campo obligatorio */
+.required {
+  color: var(--color-primary);
+  font-weight: 700;
+}
+
 /* Shared form */
 .form {
   display: flex;

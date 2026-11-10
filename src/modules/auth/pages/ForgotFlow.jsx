@@ -13,6 +13,14 @@ export default function ForgotFlow({ onBack }) {
 
   const handleForgot = async (e) => {
     e.preventDefault();
+    if (!email.trim()) {
+      setError('El correo electrónico es obligatorio.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Ingresa un correo electrónico válido (ej. tu@correo.com).');
+      return;
+    }
     setError('');
     setLoading(true);
     try {
@@ -86,7 +94,17 @@ export default function ForgotFlow({ onBack }) {
           </div>
         </label>
 
-        {error && <div className={styles.errorBox} role="alert">{error}</div>}
+        {error && (
+        <div className={styles.errorBox} role="alert">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
         <button type="submit" className={styles.btnPrimary} disabled={loading}>{loading ? 'Verificando…' : 'Restablecer contraseña'}</button>
         <button type="button" className={styles.linkBtn} onClick={() => setStep('email')}>← Volver</button>
       </form>
@@ -101,11 +119,21 @@ export default function ForgotFlow({ onBack }) {
       <p className={styles.cardDesc}>Ingresa tu correo y te enviaremos un código para restablecer tu contraseña.</p>
 
       <label>
-        Correo electrónico
+        Correo electrónico <span className={styles.required}>*</span>
         <input type="email" placeholder="tu@correo.com" value={email} onChange={(e) => setEmail(e.target.value)} required autoComplete="email" />
       </label>
 
-      {error && <div className={styles.errorBox} role="alert">{error}</div>}
+      {error && (
+        <div className={styles.errorBox} role="alert">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+               strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <circle cx="12" cy="12" r="10" />
+            <line x1="12" y1="8" x2="12" y2="12" />
+            <line x1="12" y1="16" x2="12.01" y2="16" />
+          </svg>
+          {error}
+        </div>
+      )}
       <button type="submit" className={styles.btnPrimary} disabled={loading}>{loading ? 'Enviando…' : 'Enviar código'}</button>
       <button type="button" className={styles.linkBtn} onClick={onBack}>← Volver al inicio de sesión</button>
     </form>

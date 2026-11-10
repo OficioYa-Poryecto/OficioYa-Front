@@ -61,7 +61,7 @@ export default function LoginForm({ onForgot }) {
       <p className={styles.cardDesc}>Ingresa tus datos para continuar a tu perfil.</p>
 
       <label>
-        Correo electrónico
+        Correo electrónico <span className={styles.required}>*</span>
         <input
           type="email"
           placeholder="tu@correo.com"
@@ -72,7 +72,7 @@ export default function LoginForm({ onForgot }) {
       </label>
 
       <label>
-        Contraseña
+        Contraseña <span className={styles.required}>*</span>
         <div className={styles.passWrap}>
           <input
             type={showPass ? 'text' : 'password'}

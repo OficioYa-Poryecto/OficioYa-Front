@@ -21,7 +21,7 @@ export default function RegisterPanel() {
       <span className="eyebrow">Soy nuevo en OficioYa</span>
       <h2 className={styles.cardTitle}>Crear una cuenta</h2>
       <p className={styles.cardDesc}>
-        Completa tus datos y configura tu perfil de contratante. Es gratis y solo toma unos minutos.
+        Completa tus datos y configura tu perfil. Es gratis y solo toma unos minutos.
       </p>
 
       <ul className={styles.benefits}>

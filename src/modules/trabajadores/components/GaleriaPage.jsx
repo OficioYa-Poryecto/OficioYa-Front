@@ -30,6 +30,10 @@ function GaleriaPage() {
   const add = async (event) => {
     event.preventDefault();
     setSuccess(false);
+    if (!url.trim()) {
+      setError('Ingresa la URL de la foto');
+      return;
+    }
     if (!URL_VALIDA.test(url.trim())) {
       setError('La URL debe empezar por http o https y no tener espacios');
       return;
@@ -66,7 +70,7 @@ function GaleriaPage() {
       />
       {locked && (
         <StatusMessage className={styles.notice} variant="warning">
-          Reactiva tu perfil desde el panel para editar tu galería.
+          Tu perfil está pausado por administración: no puedes editar tu galería.
         </StatusMessage>
       )}
       <div className={locked ? styles.locked : ''} inert={locked}>
@@ -86,7 +90,7 @@ function GaleriaPage() {
             </article>
           ))}
         </section>
-        <form className={`${ui.infoCard} ${styles.galleryForm}`} onSubmit={add}>
+        <form className={`${ui.infoCard} ${styles.galleryForm}`} noValidate onSubmit={add}>
           <div className={styles.galleryIntro}>
             <h2>Agregar foto</h2>
             <p>Usa una URL pública de la imagen.</p>
@@ -97,6 +101,7 @@ function GaleriaPage() {
               label="URL de la foto"
               onChange={(value) => { setUrl(value); setError(''); }}
               placeholder="https://..."
+              required
               value={url}
             />
             <label className={ui.field}>

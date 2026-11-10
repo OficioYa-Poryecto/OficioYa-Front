@@ -1,10 +1,9 @@
 import { useState } from 'react';
-import Boton from '../../core/design-system/Boton';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import Toggle from '../../core/design-system/Toggle';
 import ui from '../../core/design-system/ui.module.css';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { updateAvailableNow, updateStatus } from '../services/trabajadoresService';
+import { updateAvailableNow } from '../services/trabajadoresService';
 import EstadoPerfil from './EstadoPerfil';
 import { formatoDinero, nombreUnidad } from './formatos';
 import PageHeading from './PageHeading';
@@ -47,7 +46,7 @@ function PanelPage() {
       />
       {paused && (
         <StatusMessage className={styles.notice} variant="warning">
-          <strong>Tu perfil está pausado.</strong> No aparece en búsquedas y la edición está bloqueada. Reactívalo para continuar.
+          <strong>Tu perfil está pausado por administración.</strong> No aparece en búsquedas y la edición está bloqueada mientras se revisa.
         </StatusMessage>
       )}
       {actionError && <StatusMessage className={styles.notice} variant="error">{actionError}</StatusMessage>}
@@ -61,8 +60,8 @@ function PanelPage() {
       </div>
       <section className={`${ui.infoCard} ${styles.panelControl}`}>
         <div>
-          <h2>Visibilidad del perfil</h2>
-          <p>Controla si los contratantes pueden encontrarte y si estás disponible en este momento.</p>
+          <h2>Disponible ahora</h2>
+          <p>Indica a los contratantes que puedes atender un trabajo en este momento.</p>
         </div>
         <div className={styles.panelActions}>
           <Toggle
@@ -71,14 +70,6 @@ function PanelPage() {
             label="Disponible ahora"
             onChange={() => ejecutar(() => updateAvailableNow(perfil.id, !perfil.availableNow))}
           />
-          {/* Ojo: según el plan, el estado lo decide Reputation/ADMIN (PUT /workers/{id}/status). */}
-          {paused ? (
-            <Boton icon="play" onClick={() => ejecutar(() => updateStatus(perfil.id, 'ACTIVE'))}>Reactivar perfil</Boton>
-          ) : (
-            <Boton icon="pause" onClick={() => ejecutar(() => updateStatus(perfil.id, 'PAUSED'))} variant="outline">
-              Pausar perfil
-            </Boton>
-          )}
         </div>
       </section>
     </div>

@@ -1,16 +1,21 @@
 import ui from './ui.module.css';
 
 // options acepta textos u objetos { value, label }. Con onChange el campo es controlado.
-function SelectField({ label, value, options, onChange, hint, error }) {
+// placeholder agrega una primera opción vacía ("Selecciona...") para obligar a elegir.
+function SelectField({ label, value, options, onChange, hint, error, required = false, placeholder }) {
   const valueProps = onChange
     ? { value, onChange: (event) => onChange(event.target.value) }
     : { defaultValue: value };
 
   return (
     <label className={ui.field}>
-      <span className={ui.fieldLabel}>{label}</span>
+      <span className={ui.fieldLabel}>
+        {label}
+        {required && <span aria-hidden="true" className={ui.requiredMark}> *</span>}
+      </span>
       <span className={`${ui.inputShell} ${error ? ui.inputError : ''}`}>
-        <select {...valueProps}>
+        <select {...valueProps} aria-invalid={error ? true : undefined} aria-required={required || undefined}>
+          {placeholder && <option value="">{placeholder}</option>}
           {options.map((option) => {
             const { value: optionValue, label: optionLabel } =
               typeof option === 'string' ? { value: option, label: option } : option;

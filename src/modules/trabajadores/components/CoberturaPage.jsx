@@ -32,8 +32,15 @@ function CoberturaPage() {
     setSeleccion(zoneIds.includes(id) ? zoneIds.filter((zoneId) => zoneId !== id) : [...zoneIds, id]);
   };
 
+  const sinZonas = zoneIds.length === 0;
+
   // El back agrega y quita zonas una por una.
   const guardar = async () => {
+    // RF-06: el área de cobertura necesita al menos una zona.
+    if (sinZonas) {
+      setMessage({ type: 'error', text: 'Selecciona al menos un barrio antes de guardar.' });
+      return;
+    }
     const agregar = zoneIds.filter((id) => !perfil.zoneIds.includes(id));
     const quitar = perfil.zoneIds.filter((id) => !zoneIds.includes(id));
     setSaving(true);
@@ -56,13 +63,17 @@ function CoberturaPage() {
     <div>
       <PageHeading
         eyebrow="Dónde trabajas"
-        title="Área de cobertura"
-        description="Selecciona los barrios a los que puedes desplazarte."
-        action={<Boton disabled={locked || saving || !seleccion} onClick={guardar}>{saving ? 'Guardando…' : 'Guardar cambios'}</Boton>}
+        title="Mi área de cobertura"
+        description="Elige, entre los barrios habilitados en OficioYa, a cuáles puedes desplazarte. Los contratantes te encontrarán por estas zonas."
+        action={(
+          <Boton disabled={locked || saving || !seleccion || sinZonas} onClick={guardar}>
+            {saving ? 'Guardando…' : 'Guardar cambios'}
+          </Boton>
+        )}
       />
       {locked && (
         <StatusMessage className={styles.notice} variant="warning">
-          Reactiva tu perfil desde el panel para editar tu cobertura.
+          Tu perfil está pausado por administración: no puedes editar tu cobertura.
         </StatusMessage>
       )}
       {message && <StatusMessage className={styles.notice} variant={message.type}>{message.text}</StatusMessage>}
@@ -71,7 +82,9 @@ function CoberturaPage() {
         inert={locked}
       >
         <div>
-          <h2 className={styles.selectedTitle}>Barrios seleccionados</h2>
+          <h2 className={styles.selectedTitle}>
+            Barrios seleccionados <span aria-hidden="true" className={ui.requiredMark}>*</span>
+          </h2>
           {zoneIds.length ? (
             <div className={styles.tags}>
               {zoneIds.map((id) => (
@@ -81,8 +94,14 @@ function CoberturaPage() {
               ))}
             </div>
           ) : (
-            <EmptyState title="Sin barrios" text="Agrega al menos un barrio para indicar tu cobertura." />
+            <EmptyState title="Sin barrios" text="Debes tener al menos un barrio para aparecer en las búsquedas." />
           )}
+          <p className={styles.adminNote}>
+            <Icon name="shield" size={15} />
+            <span>
+              La lista de barrios la administra el equipo de OficioYa. Si tu barrio no aparece, solicita que lo agreguen.
+            </span>
+          </p>
         </div>
         <div className={styles.zoneList}>
           <label className={styles.searchBox}>

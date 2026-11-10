@@ -124,6 +124,16 @@
   font-weight: 700;
 }
 
+.requiredMark {
+  color: var(--color-danger);
+}
+
+.inputPrefix {
+  color: var(--color-text-muted);
+  flex: 0 0 auto;
+  font-weight: 700;
+}
+
 .fullField {
   margin-top: 22px;
 }
@@ -556,6 +566,18 @@
 .badges {
   display: flex;
   gap: 8px;
+}
+
+.badgesWrap {
+  flex-wrap: wrap;
+}
+
+.onlineLineMuted {
+  color: var(--color-text-muted);
+}
+
+.onlineLineMuted > span {
+  background: #a3aaa7;
 }
 
 .badges > span {

@@ -1,7 +1,14 @@
 import { ACCESS_TOKEN, USE_MOCKS } from '../config';
 
 // Cuenta de ejemplo para el modo con datos de ejemplo.
-const CUENTA_EJEMPLO = { token: '', userId: 99, initials: 'AS', name: 'Andrea' };
+const CUENTA_EJEMPLO = {
+  token: '',
+  userId: 99,
+  initials: 'AS',
+  name: 'Andrea Salazar',
+  email: 'andrea.salazar@gmail.com',
+  phone: '3001234567',
+};
 
 function leerToken(token) {
   try {
@@ -14,10 +21,18 @@ function leerToken(token) {
 
 // Único punto que conoce de dónde sale la sesión. Cuando Identity entregue useAuth(),
 // solo cambia esta función.
+// email y phone son de Identity: Worker no los guarda ni los expone en WorkerResponse.
 export function getSession() {
   if (USE_MOCKS) return CUENTA_EJEMPLO;
 
-  const { sub } = leerToken(ACCESS_TOKEN);
+  const { sub, email } = leerToken(ACCESS_TOKEN);
   // El nombre lo entrega el dominio User (getUsersByIds); mientras tanto se muestra genérico.
-  return { token: ACCESS_TOKEN, userId: Number(sub) || null, initials: 'T', name: 'Trabajador' };
+  return {
+    token: ACCESS_TOKEN,
+    userId: Number(sub) || null,
+    initials: 'T',
+    name: 'Trabajador',
+    email: email ?? null,
+    phone: null,
+  };
 }

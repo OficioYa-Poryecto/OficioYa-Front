@@ -33,22 +33,12 @@ const zonas = [
   { id: 10, name: 'Normandía' },
 ];
 
-// Usados solo por las maquetas antiguas (Gallery y ScheduleEditor).
+// Usadas solo por la maqueta antigua Gallery (pantalla de contratante en modules/auth).
 export const FOTOS_EJEMPLO = [
   { src: 'https://images.unsplash.com/photo-1676210134188-4c05dd172f89?auto=format&fit=crop&w=900&q=85', alt: 'Instalación de tubería en una pared' },
   { src: 'https://images.unsplash.com/photo-1676210133055-eab6ef033ce3?auto=format&fit=crop&w=900&q=85', alt: 'Reparación de tubería bajo un lavaplatos' },
   { src: 'https://images.unsplash.com/photo-1676210134190-3f2c0d5cf58d?auto=format&fit=crop&w=900&q=85', alt: 'Mantenimiento de calentador de agua' },
   { src: 'https://images.unsplash.com/photo-1454988501794-2992f706932e?auto=format&fit=crop&w=900&q=85', alt: 'Herramientas de trabajo organizadas' },
-];
-
-export const HORARIO_EJEMPLO = [
-  ['Lun', '8:00 a. m. – 5:00 p. m.'],
-  ['Mar', '8:00 a. m. – 5:00 p. m.'],
-  ['Mié', '8:00 a. m. – 5:00 p. m.'],
-  ['Jue', '8:00 a. m. – 5:00 p. m.'],
-  ['Vie', '8:00 a. m. – 3:00 p. m.'],
-  ['Sáb', '9:00 a. m. – 1:00 p. m.'],
-  ['Dom', 'No disponible'],
 ];
 
 let perfil = null;

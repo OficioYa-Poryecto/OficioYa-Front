@@ -3,7 +3,8 @@ import ui from '../design-system/ui.module.css';
 
 const ROLE_ICONS = { Trabajador: 'wrench', Administrador: 'shield' };
 
-function ProfileHero({ editing = false, initials, name, roles }) {
+// statusLabel/statusMuted permiten mostrar otro estado (por ejemplo "Perfil pausado").
+function ProfileHero({ editing = false, initials, name, roles, statusLabel = 'Perfil activo', statusMuted = false }) {
   return (
     <div className={ui.profileHero}>
       <div className={ui.profileAvatarWrap}>
@@ -15,9 +16,9 @@ function ProfileHero({ editing = false, initials, name, roles }) {
         )}
       </div>
       <div className={ui.profileTitle}>
-        <div className={ui.onlineLine}><span /> Perfil activo</div>
+        <div className={`${ui.onlineLine} ${statusMuted ? ui.onlineLineMuted : ''}`}><span /> {statusLabel}</div>
         <h1>{name}</h1>
-        <div className={ui.badges}>
+        <div className={`${ui.badges} ${ui.badgesWrap}`}>
           {roles.map((role, index) => (
             <span className={index > 0 ? ui.badgeNeutral : ''} key={role}>
               <Icon name={ROLE_ICONS[role] ?? 'user'} size={14} />

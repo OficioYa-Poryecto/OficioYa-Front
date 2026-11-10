@@ -44,6 +44,95 @@
   gap: 10px;
   margin-left: 12px;
   padding-left: 20px;
+  position: relative;
+}
+
+.userButton {
+  align-items: center;
+  background: transparent;
+  border: 0;
+  border-radius: 12px;
+  color: inherit;
+  cursor: pointer;
+  display: flex;
+  font: inherit;
+  gap: 10px;
+  margin: -6px -8px;
+  padding: 6px 8px;
+  text-align: left;
+}
+
+.userButton:hover,
+.userButton[aria-expanded='true'] {
+  background: var(--color-surface-alt);
+}
+
+.userButton:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+/* Desplegable de "Mi cuenta" */
+.dropdown {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 16px;
+  box-shadow: var(--shadow-card);
+  min-width: 230px;
+  padding: 8px;
+  position: absolute;
+  right: 0;
+  top: calc(100% + 12px);
+  z-index: 60;
+}
+
+.menuList {
+  display: grid;
+  gap: 2px;
+}
+
+.menuLink {
+  border-radius: 10px;
+  color: var(--color-text-muted);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 12px;
+  text-decoration: none;
+}
+
+.menuLink:hover {
+  background: var(--color-surface-alt);
+  color: var(--color-text);
+}
+
+.menuLinkActive,
+.menuLinkActive:hover {
+  background: var(--color-primary-soft);
+  color: var(--color-accent);
+  font-weight: 700;
+}
+
+.menuStatus {
+  align-items: center;
+  border-top: 1px solid var(--color-border);
+  color: var(--color-text-muted);
+  display: flex;
+  font-size: 12px;
+  gap: 7px;
+  margin-top: 6px;
+  padding: 10px 12px 4px;
+}
+
+.menuStatus span {
+  background: #a3aaa7;
+  border-radius: 50%;
+  height: 7px;
+  width: 7px;
+}
+
+.menuStatusActive span {
+  background: var(--color-success);
+  box-shadow: 0 0 0 4px rgba(46, 125, 91, 0.1);
 }
 
 .userText {
@@ -65,6 +154,11 @@
 
 .chevron {
   margin-left: 4px;
+  transition: transform 0.15s ease;
+}
+
+.chevronOpen {
+  transform: rotate(180deg);
 }
 
 .mobileMenu {
@@ -109,9 +203,29 @@
   }
 
   .userMenu {
+    align-items: stretch;
     border-left: 0;
     border-top: 1px solid var(--color-border);
+    flex-direction: column;
     margin: 6px 0 0;
     padding: 12px 8px 4px;
+  }
+
+  .userButton {
+    margin: 0;
+    width: 100%;
+  }
+
+  .userText {
+    flex: 1 1 auto;
+  }
+
+  /* En el menú móvil las secciones se despliegan dentro del panel, no flotando. */
+  .dropdown {
+    border: 0;
+    box-shadow: none;
+    min-width: 0;
+    padding: 6px 0 0;
+    position: static;
   }
 }

@@ -1,8 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import Boton from '../../core/design-system/Boton';
-import Field from '../../core/design-system/Field';
-import Icon from '../../core/design-system/Icon';
 import SelectField from '../../core/design-system/SelectField';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import Toggle from '../../core/design-system/Toggle';
@@ -10,47 +8,54 @@ import ui from '../../core/design-system/ui.module.css';
 import { useTrades, useZones } from '../hooks/useCatalogos';
 import { useMyWorker } from '../hooks/useMyWorker';
 import { createWorker } from '../services/trabajadoresService';
-import { UNIDADES } from './formatos';
+import { validarTarifa } from './formatos';
 import PageHeading from './PageHeading';
+import TarifaFields from './TarifaFields';
+import ZonePicker from './ZonePicker';
 import styles from './trabajador.module.css';
+
+function validar({ tradeId, rate, unit, zoneIds }) {
+  const errores = {};
+  if (!tradeId) errores.tradeId = 'Selecciona tu oficio principal';
+  const tarifa = validarTarifa(rate);
+  if (tarifa) errores.rate = tarifa;
+  if (!unit) errores.unit = 'Selecciona la unidad';
+  // RF-06: el área de cobertura necesita al menos una zona.
+  if (zoneIds.length === 0) errores.zoneIds = 'Selecciona al menos un barrio';
+  return errores;
+}
 
 function CrearPerfilPage() {
   const navigate = useNavigate();
-  const { data: perfil, refresh } = useMyWorker();
+  const { data: perfil, loading, refresh } = useMyWorker();
   const { data: oficiosActivos } = useTrades();
   const { data: zonas } = useZones();
   const [tradeId, setTradeId] = useState('');
-  const [rate, setRate] = useState('80000');
+  const [rate, setRate] = useState('');
   const [unit, setUnit] = useState('PER_JOB');
   const [zoneIds, setZoneIds] = useState([]);
   const [availableNow, setAvailableNow] = useState(true);
+  const [errores, setErrores] = useState({});
   const [submitError, setSubmitError] = useState('');
-  const [rateError, setRateError] = useState('');
   const [saving, setSaving] = useState(false);
 
-  // Mientras no se elija otro, el oficio es el primero del catálogo.
-  const selectedTradeId = tradeId || String(oficiosActivos?.[0]?.id ?? '');
+  // Quien ya tiene perfil no vuelve a crearlo.
+  if (!loading && perfil) return <Navigate replace to="/trabajador/perfil" />;
 
-  const toggleZone = (id) => {
-    setZoneIds(zoneIds.includes(id) ? zoneIds.filter((zoneId) => zoneId !== id) : [...zoneIds, id]);
-  };
+  const limpiar = (campo) => setErrores((actual) => ({ ...actual, [campo]: '' }));
 
   const submit = async (event) => {
     event.preventDefault();
-    if (perfil) {
-      setSubmitError('Ya tienes un perfil de trabajador.');
-      return;
-    }
-    if (!(Number(rate) > 0)) {
-      setRateError('La tarifa debe ser mayor que 0');
-      return;
-    }
+    const encontrados = validar({ tradeId, rate, unit, zoneIds });
+    setErrores(encontrados);
+    if (Object.keys(encontrados).length) return;
     setSaving(true);
+    setSubmitError('');
     try {
       await createWorker({
         availableNow,
         zoneIds,
-        primaryTrade: { tradeId: Number(selectedTradeId), approxRate: Number(rate), rateUnit: unit },
+        primaryTrade: { tradeId: Number(tradeId), approxRate: Number(rate), rateUnit: unit },
       });
       await refresh();
       navigate('/trabajador/panel');
@@ -60,6 +65,8 @@ function CrearPerfilPage() {
       setSaving(false);
     }
   };
+
+  const hayErrores = Object.values(errores).some(Boolean);
 
   return (
     <div>
@@ -76,49 +83,43 @@ function CrearPerfilPage() {
             <p>Estos datos serán visibles para los contratantes.</p>
           </div>
         </div>
+        <p className={styles.requiredNote}><span aria-hidden="true">*</span> Campos obligatorios</p>
         <div className={ui.formGrid}>
-          <SelectField
-            label="Oficio principal"
-            onChange={setTradeId}
-            options={(oficiosActivos ?? []).map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
-            value={selectedTradeId}
+          <div className={styles.span2}>
+            <SelectField
+              error={errores.tradeId}
+              label="Oficio principal"
+              onChange={(value) => { setTradeId(value); limpiar('tradeId'); }}
+              options={(oficiosActivos ?? []).map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
+              placeholder="Selecciona un oficio"
+              required
+              value={tradeId}
+            />
+          </div>
+          <TarifaFields
+            onRateChange={(value) => { setRate(value); limpiar('rate'); }}
+            onUnitChange={(value) => { setUnit(value); limpiar('unit'); }}
+            rate={rate}
+            rateError={errores.rate}
+            unit={unit}
+            unitError={errores.unit}
           />
-          <Field
-            error={rateError}
-            label="Tarifa aproximada en COP"
-            min={1}
-            onChange={(value) => { setRate(value); setRateError(''); }}
-            type="number"
-            value={rate}
-          />
-          <SelectField label="Unidad" onChange={setUnit} options={UNIDADES} value={unit} />
-          {zonas && (
-            <div className={`${ui.field} ${styles.span2}`}>
-              <span className={ui.fieldLabel}>Zonas de cobertura <i className={styles.optional}>Opcional</i></span>
-              <div className={styles.zonePicker}>
-                {zonas.map((zona) => {
-                  const selected = zoneIds.includes(zona.id);
-                  return (
-                    <button
-                      aria-pressed={selected}
-                      className={selected ? styles.zoneSelected : ''}
-                      key={zona.id}
-                      onClick={() => toggleZone(zona.id)}
-                      type="button"
-                    >
-                      {selected && <Icon name="check" size={13} />}
-                      {zona.name}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-          )}
+          <div className={styles.span2}>
+            <ZonePicker
+              error={errores.zoneIds}
+              onChange={(ids) => { setZoneIds(ids); limpiar('zoneIds'); }}
+              selected={zoneIds}
+              zonas={zonas ?? []}
+            />
+          </div>
         </div>
         <div className={styles.formFooter}>
           <Toggle checked={availableNow} label="Disponible ahora" onChange={() => setAvailableNow(!availableNow)} />
-          <Boton disabled={saving || !selectedTradeId} type="submit">{saving ? 'Creando…' : 'Crear perfil'}</Boton>
+          <Boton disabled={saving} type="submit">{saving ? 'Creando…' : 'Crear perfil'}</Boton>
         </div>
+        {hayErrores && (
+          <StatusMessage variant="error">Revisa los campos marcados antes de continuar.</StatusMessage>
+        )}
         {submitError && (
           <StatusMessage variant="error">
             <strong>No se pudo crear el perfil:</strong> {submitError}

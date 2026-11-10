@@ -16,15 +16,16 @@ function WorkInfoSections({ zone, about }) {
           <SelectField label="Oficio principal" options={oficios} value="Plomería" />
           <Field label="Oficios secundarios" value="Instalaciones, mantenimiento" />
           <Field icon="map" label="Barrio o zona de cobertura" value={zone} />
-          <Field icon="coin" label="Tarifa aproximada (COP)" value="$ 80.000 por visita" />
+          <Field icon="coin" label="Establecer tarifa" prefix="$" value="80.000 por visita" />
         </div>
         <label className={`${ui.field} ${ui.fullField}`}>
           <span className={ui.fieldLabel}>Sobre mi trabajo</span>
           <textarea className={ui.textarea} defaultValue={about} />
         </label>
       </FormSection>
-      <FormSection title="Disponibilidad semanal">
-        <ScheduleEditor />
+      <FormSection title="Disponibilidad">
+        {/* Sin perfil de Worker conectado aquí: muestra las franjas vacías en modo lectura. */}
+        <ScheduleEditor readOnly />
       </FormSection>
       <FormSection title="Galería de trabajos">
         <Gallery editable />

@@ -29,6 +29,11 @@ function subscribe(listener) {
   return () => listeners.delete(listener);
 }
 
+// Lectura sin suscribirse (la usa el menú de cuenta del Navbar).
+export function getMyWorkerState() {
+  return state;
+}
+
 // data = WorkerResponse, o null si el usuario aún no tiene perfil.
 export function useMyWorker() {
   const snapshot = useSyncExternalStore(subscribe, () => state);

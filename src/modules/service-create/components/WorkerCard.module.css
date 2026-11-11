@@ -1,0 +1,108 @@
+.card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-surface);
+  font-size: 0.9rem;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.selected {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 1px var(--color-primary);
+}
+
+.card:focus-within {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.checkbox {
+  appearance: none;
+  flex-shrink: 0;
+  display: grid;
+  place-content: center;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  padding: 0;
+  border: 1.5px solid #b8c0c6;
+  border-radius: 6px;
+  background: var(--color-surface);
+  cursor: pointer;
+}
+
+.checkbox:checked {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+}
+
+.checkbox:checked::after {
+  content: '';
+  width: 6px;
+  height: 11px;
+  margin-top: -2px;
+  border: solid #ffffff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: var(--color-primary);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.info {
+  display: grid;
+  flex: 1;
+  gap: 2px;
+  min-width: 0;
+}
+
+.name {
+  color: var(--color-text);
+  font-size: 0.95rem;
+}
+
+.trade {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.rating {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--color-primary);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.side {
+  display: grid;
+  gap: 18px;
+  justify-items: end;
+  align-self: stretch;
+  font-size: 0.75rem;
+  text-align: right;
+}
+
+.distance {
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.availability {
+  color: var(--color-primary);
+}

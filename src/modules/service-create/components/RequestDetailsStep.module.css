@@ -1,0 +1,76 @@
+.form {
+  display: grid;
+}
+
+.layout {
+  display: grid;
+  gap: 20px;
+}
+
+.column {
+  display: grid;
+  gap: 20px;
+  align-content: start;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.form textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+
+.form [aria-invalid='true'] {
+  border-color: var(--color-danger);
+}
+
+.withIcon {
+  position: relative;
+}
+
+.withIcon > svg {
+  position: absolute;
+  top: 50%;
+  left: 14px;
+  transform: translateY(-50%);
+  color: var(--color-text-muted);
+  pointer-events: none;
+}
+
+.withIcon input {
+  padding-left: 42px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 12px;
+}
+
+.rowEven {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.error {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--color-danger);
+}
+
+@media (min-width: 900px) {
+  .layout {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px;
+    align-items: start;
+  }
+}
+
+@media (max-width: 400px) {
+  .row,
+  .rowEven {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

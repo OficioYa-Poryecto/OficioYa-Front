@@ -1,0 +1,14 @@
+:root[data-theme='azul'] {
+  --color-primary: #0877bd;
+  --color-primary-hover: #066299;
+  --color-primary-soft: #e7f4fc;
+  --color-accent: #0877bd;
+  --color-bg: #fbfcfd;
+  --color-surface: #ffffff;
+  --color-border: #dfe4e8;
+  --color-text: #07090a;
+  --color-text-muted: #5f6b73;
+  --radius-sm: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 2px 10px rgba(7, 9, 10, 0.06);
+}

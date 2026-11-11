@@ -1,7 +1,4 @@
 /* global process, Buffer */
-// Genera un JWT igual al que emite Identity (HS256, sub = id del usuario, claim "roles")
-// y lo guarda en .env.local como VITE_ACCESS_TOKEN para que el front lo use.
-// Uso (GitBash): JWT_SECRET="<mismo secreto del back>" node scripts/generar-token.js <idUsuario> <ROL[,ROL]>
 import { createHmac } from 'node:crypto';
 import { writeFileSync } from 'node:fs';
 
@@ -22,7 +19,7 @@ if (key.length < 32) {
 }
 
 if (!userId || !role) {
-  console.error('Uso: node scripts/generar-token.js <idUsuario> <ROL>');
+  console.error('Uso: node scripts/generar-token.js <idUsuario> <ROL[,ROL]>');
   process.exit(1);
 }
 
@@ -32,7 +29,7 @@ const now = Math.floor(Date.now() / 1000);
 const header = base64url(JSON.stringify({ alg: 'HS256', typ: 'JWT' }));
 const payload = base64url(JSON.stringify({
   sub: userId,
-  roles: role.trim().toUpperCase(),
+  roles: role.split(',').map((r) => r.trim().toUpperCase()),
   iat: now,
   exp: now + VALID_HOURS * 3600,
 }));

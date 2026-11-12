@@ -5,7 +5,10 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Everything starting with /api is forwarded to the Spring Boot backend
+      '/api/v1/auth': 'http://localhost:8081',
+      '/api/v1/workers': 'http://localhost:8082',
+      '/api/v1/trades': 'http://localhost:8082',
+      '/api/v1/trade-categories': 'http://localhost:8082',
       '/api': 'http://localhost:8080',
     },
   },

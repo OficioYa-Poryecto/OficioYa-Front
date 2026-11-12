@@ -9,10 +9,10 @@ export function login({ email, password }) {
 }
 
 /** POST /api/v1/auth/register → UserDto */
-export function register({ name, email, password, roles }) {
+export function register({ name, email, password, roles, phones }) {
   return request('/auth/register', {
     method: 'POST',
-    body: { name, email, password, roles },
+    body: { name, email, password, roles, phones },
   });
 }
 

@@ -19,9 +19,13 @@ export default function LoginForm({ onForgot }) {
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
   const [error, setError] = useState(() => {
-    return searchParams.get('expired') === '1'
-      ? 'Tu sesión expiró. Inicia sesión de nuevo.'
-      : '';
+    if (searchParams.get('registered') === '1') {
+      return 'Cuenta creada. Ya puedes iniciar sesión.';
+    }
+    if (searchParams.get('expired') === '1') {
+      return 'Tu sesión expiró. Inicia sesión de nuevo.';
+    }
+    return '';
   });
   const [loading, setLoading] = useState(false);
 
@@ -48,6 +52,10 @@ export default function LoginForm({ onForgot }) {
         setError('Cuenta bloqueada temporalmente por múltiples intentos fallidos. Intenta más tarde.');
       else if (err.status === 401)
         setError('El correo o la contraseña son incorrectos.');
+      else if (err.status === 403)
+        setError('Tu cuenta está inactiva. Contacta a soporte.');
+      else if (err.status === 503)
+        setError('El servicio no está disponible en este momento. Inténtalo de nuevo en unos minutos.');
       else
         setError('No se pudo iniciar sesión. Verifica tu conexión e inténtalo de nuevo.');
     } finally {

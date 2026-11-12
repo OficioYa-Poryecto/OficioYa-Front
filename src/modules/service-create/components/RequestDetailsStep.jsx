@@ -75,12 +75,12 @@ function RequestDetailsStep({ values, onChange, onSubmit }) {
               error={visible.neighborhood}
               icon={<MapPinIcon size={18} />}
             >
-              <input
-                type="text"
-                placeholder="Ej: Laureles"
-                {...fieldProps('field-neighborhood', visible.neighborhood)}
-                {...bind('neighborhood')}
-              />
+              <select {...fieldProps('field-neighborhood', visible.neighborhood)} {...bind('neighborhood')}>
+                <option value="">Selecciona un barrio</option>
+                {['Laureles','El Poblado','Envigado','Sabaneta','Bello','Itagüí','Robledo','Belén','Manrique','Aranjuez'].map((b) => (
+                  <option key={b} value={b}>{b}</option>
+                ))}
+              </select>
             </Field>
             <Field id="field-exactAddress" label="Dirección exacta" error={visible.exactAddress}>
               <input

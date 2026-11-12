@@ -1,5 +1,5 @@
 import { useLayoutEffect, useState, useEffect } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
 import { decodeRole } from '../../service/services/jwt';
 import { tokenStorage } from '../../service/services/tokenStorage';
@@ -28,8 +28,7 @@ function sendLabel(count) {
 
 function CreateRequestPage() {
   const [token] = useState(() => tokenStorage.get() || 'dummy-token-local');
-  const [searchParams] = useSearchParams();
-  const preselectedWorkerId = searchParams.get('workerId');
+  const { workerId: preselectedWorkerId } = useParams();
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(EMPTY_FORM);
   const [preselectedWorker, setPreselectedWorker] = useState(null);

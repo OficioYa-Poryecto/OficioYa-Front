@@ -1,11 +1,11 @@
 /* Colores del mockup (azul) aplicados solo dentro de este módulo.
    Los botones del core usan --color-primary: se redefine aquí, sin tocar core. */
 .page {
-  --color-primary: #0877bd;
-  --color-primary-hover: #066299;
-  --color-primary-soft: #e7f4fc;
-  --color-accent: #0877bd;
-  --color-border: #dfe4e8;
+  --color-primary: #dc623f;
+  --color-primary-hover: #b7462b;
+  --color-primary-soft: #fff0e9;
+  --color-accent: #dc623f;
+  --color-border: #e4ded4;
 
   max-width: 720px;
   margin: 0 auto;
@@ -49,15 +49,15 @@
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: #0877bd;
+  color: #dc623f;
 }
 
 .role {
   display: inline-block;
   padding: 4px 12px;
   border-radius: 999px;
-  background: #e7f4fc;
-  color: #066299;
+  background: #fff0e9;
+  color: #24312d;
   font-size: 0.78rem;
   font-weight: 700;
 }

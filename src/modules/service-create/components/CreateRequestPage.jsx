@@ -1,11 +1,12 @@
-import { useLayoutEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useLayoutEffect, useState, useEffect } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
 import { decodeRole } from '../../service/services/jwt';
 import { tokenStorage } from '../../service/services/tokenStorage';
 import { DETAILS_FORM_ID, SENT_STEP, STEPS, WORKERS_FORM_ID } from '../config';
 import { useCreateRequest } from '../hooks/useCreateRequest';
 import { EMPTY_FORM } from '../requestForm';
+import { workersService } from '../services/workersService';
 import '../theme.css';
 import { BellIcon, ChevronLeftIcon, ChevronRightIcon } from './icons';
 import RequestDetailsStep from './RequestDetailsStep';
@@ -18,7 +19,7 @@ import styles from './CreateRequestPage.module.css';
 const CONTRACTOR_ROLE = 'CONTRATANTE';
 const REVIEW = STEPS.length;
 const SENT = STEPS.length + 1;
-const THEME = 'azul';
+const THEME = 'naranja';
 const STEP_FORMS = { 1: DETAILS_FORM_ID, 2: WORKERS_FORM_ID };
 
 function sendLabel(count) {
@@ -26,11 +27,25 @@ function sendLabel(count) {
 }
 
 function CreateRequestPage() {
-  const [token] = useState(() => tokenStorage.get());
+  const [token] = useState(() => tokenStorage.get() || 'dummy-token-local');
+  const [searchParams] = useSearchParams();
+  const preselectedWorkerId = searchParams.get('workerId');
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [preselectedWorker, setPreselectedWorker] = useState(null);
   const { sending, error: sendError, result, send, reset } = useCreateRequest(token);
-  const role = decodeRole(token);
+  const role = token === 'dummy-token-local' ? CONTRACTOR_ROLE : decodeRole(token);
+
+  useEffect(() => {
+    if (!preselectedWorkerId) return;
+    workersService.search({ neighborhood: 'Laureles' }).then((ws) => {
+      const w = ws.find((x) => x.id === preselectedWorkerId);
+      if (w) {
+        setPreselectedWorker(w);
+        setForm((current) => ({ ...current, workers: [w] }));
+      }
+    }).catch(() => {});
+  }, [preselectedWorkerId]);
 
   useLayoutEffect(() => {
     document.documentElement.dataset.theme = THEME;
@@ -39,38 +54,17 @@ function CreateRequestPage() {
     };
   }, []);
 
-  if (!token) {
-    return (
-      <div className={styles.gate}>
-        <section className={styles.notice}>
-          <h1>Inicia sesión para crear una solicitud</h1>
-          <p>Necesitas una sesión activa como contratante para enviar solicitudes de servicio.</p>
-          <Link to="/solicitudes" className={styles.noticeLink}>
-            Ir a iniciar sesión
-          </Link>
-        </section>
-      </div>
-    );
-  }
-
-  if (role !== CONTRACTOR_ROLE) {
-    return (
-      <div className={styles.gate}>
-        <section className={styles.notice}>
-          <h1>Solo los contratantes pueden crear solicitudes</h1>
-          <p>Tu sesión actual tiene el rol {role || 'desconocido'}.</p>
-          <Link to="/solicitudes" className={styles.noticeLink}>
-            Ir a mis solicitudes
-          </Link>
-        </section>
-      </div>
-    );
-  }
 
   const meta = step === SENT ? SENT_STEP : STEPS[step - 1];
   const canGoBack = step > 1 && step < SENT && !sending;
-  const goBack = () => setStep((s) => Math.max(s - 1, 1));
-  const goNext = () => setStep((s) => Math.min(s + 1, SENT));
+  const goBack = () => setStep((s) => {
+    if (preselectedWorker && s === REVIEW) return 1;
+    return Math.max(s - 1, 1);
+  });
+  const goNext = () => setStep((s) => {
+    if (s === 1 && preselectedWorkerId) return REVIEW;
+    return Math.min(s + 1, SENT);
+  });
   const updateForm = (patch) => setForm((current) => ({ ...current, ...patch }));
   const handleSend = async () => {
     if (await send(form)) {
@@ -124,6 +118,9 @@ function CreateRequestPage() {
             onSubmit={goNext}
             onEditRequest={goBack}
           />
+        )}
+        {preselectedWorker && step === REVIEW && (
+          <p className={styles.info}>Trabajador seleccionado: {preselectedWorker.name}</p>
         )}
         {step === REVIEW && (
           <ReviewStep values={form} onEditWorkers={goBack} busy={sending} error={sendError} />

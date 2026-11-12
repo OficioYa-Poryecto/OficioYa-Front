@@ -1,8 +1,5 @@
-// El backend aún no expone un endpoint de búsqueda de trabajadores por zona.
-// Mientras tanto devuelve datos de prueba (isMock = true muestra un aviso en pantalla).
-// Los ids son las identidades de trabajador del seed de Postman del servicio.
-// Para probar estados: barrio "error" simula un fallo y "sin trabajadores" una zona vacía.
-// Al integrar el endpoint real, se reemplaza `search` y se elimina isMock.
+import { request } from '../../core/lib/httpClient';
+
 const MOCK_WORKERS = [
   {
     id: '11111111-1111-1111-1111-111111111111',
@@ -26,18 +23,38 @@ const MOCK_WORKERS = [
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-export const workersService = {
-  isMock: true,
+// Cambia a false cuando el backend de Worker esté disponible
+const USE_MOCK = true;
 
-  search: async ({ neighborhood }) => {
-    await wait(700);
-    const key = neighborhood.trim().toLowerCase();
-    if (key === 'error') {
-      throw new Error('No pudimos consultar los trabajadores. Intenta de nuevo.');
+export const workersService = {
+  isMock: USE_MOCK,
+
+  // Búsqueda de trabajadores por zona/fecha/hora
+  search: async ({ neighborhood, date, time }) => {
+    if (USE_MOCK) {
+      await wait(700);
+      const key = neighborhood.trim().toLowerCase();
+      if (key === 'error') {
+        throw new Error('No pudimos consultar los trabajadores. Intenta de nuevo.');
+      }
+      if (key === 'sin trabajadores') {
+        return [];
+      }
+      return MOCK_WORKERS;
     }
-    if (key === 'sin trabajadores') {
-      return [];
+
+    // Integración real (Worker backend)
+    const params = new URLSearchParams({ neighborhood, date, time });
+    return request(`/workers/search?${params.toString()}`);
+  },
+
+  // Disponibilidad de un trabajador para una fecha/hora específica
+  getAvailability: async (workerId, { date, time, token }) => {
+    if (USE_MOCK) {
+      await wait(300);
+      return { workerId, available: true, nextSlot: time };
     }
-    return MOCK_WORKERS;
+    const params = new URLSearchParams({ date, time });
+    return request(`/workers/${workerId}/availability?${params.toString()}`, { token });
   },
 };

@@ -1,8 +1,8 @@
 .card {
-  --blue: #0877bd;
-  --ink: #07090a;
-  --muted: #5f6b73;
-  --line: #dfe4e8;
+  --blue: #dc623f;
+  --ink: #24312d;
+  --muted: #68736f;
+  --line: #e4ded4;
 
   display: grid;
   gap: 14px;
@@ -36,8 +36,8 @@
 }
 
 .info {
-  background: #e7f4fc;
-  color: #066299;
+  background: #fff0e9;
+  color: #dc623f;
 }
 
 .ok {

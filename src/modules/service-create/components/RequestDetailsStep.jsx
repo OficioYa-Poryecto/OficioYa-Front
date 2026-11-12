@@ -81,6 +81,7 @@ function RequestDetailsStep({ values, onChange, onSubmit }) {
                   <option key={b} value={b}>{b}</option>
                 ))}
               </select>
+              <small>Lista provisional; la definitiva viene del dominio Worker.</small>
             </Field>
             <Field id="field-exactAddress" label="Dirección exacta" error={visible.exactAddress}>
               <input

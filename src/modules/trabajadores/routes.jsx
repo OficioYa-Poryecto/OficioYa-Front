@@ -1,4 +1,3 @@
-import { Navigate } from 'react-router-dom';
 import CoberturaPage from './components/CoberturaPage';
 import CrearPerfilPage from './components/CrearPerfilPage';
 import DisponibilidadPage from './components/DisponibilidadPage';
@@ -13,16 +12,17 @@ import { getSession } from './services/session';
 
 const conLayout = (pagina) => <TrabajadorLayout>{pagina}</TrabajadorLayout>;
 
+// Rutas en inglés, igual que los recursos del back (/api/v1/workers).
 // Secciones del trabajador: van en el desplegable de "Mi cuenta" del Navbar.
 // Los oficios se manejan dentro de "Mi perfil".
 const SECCIONES = [
-  { to: '/trabajador/panel', label: 'Mi panel' },
-  { to: '/trabajador/perfil', label: 'Mi perfil' },
-  { to: '/trabajador/cobertura', label: 'Cobertura' },
-  { to: '/trabajador/disponibilidad', label: 'Disponibilidad' },
-  { to: '/trabajador/galeria', label: 'Galería' },
+  { to: '/worker/dashboard', label: 'Mi panel' },
+  { to: '/worker/profile', label: 'Mi perfil' },
+  { to: '/worker/coverage', label: 'Cobertura' },
+  { to: '/worker/availability', label: 'Disponibilidad' },
+  { to: '/worker/gallery', label: 'Galería' },
 ];
-const SIN_PERFIL = [{ to: '/trabajador/crear', label: 'Crear perfil' }];
+const SIN_PERFIL = [{ to: '/worker/create', label: 'Crear perfil' }];
 
 // El Navbar lee route.account al pintar; con el getter la cuenta y el menú salen de la
 // sesión y del perfil en ese momento, no al importar este archivo.
@@ -44,17 +44,15 @@ const ruta = (path, element) => ({
 });
 
 export const routes = [
-  ruta('/trabajador', <TrabajadorInicio />),
-  ruta('/trabajador/crear', conLayout(<CrearPerfilPage />)),
-  ruta('/trabajador/panel', conLayout(<PanelPage />)),
-  ruta('/trabajador/perfil', conLayout(<MiPerfilPage />)),
-  // Los oficios ahora viven dentro de "Mi perfil"; se conserva la ruta vieja por si hay enlaces.
-  ruta('/trabajador/oficios', <Navigate replace to="/trabajador/perfil" />),
-  ruta('/trabajador/cobertura', conLayout(<CoberturaPage />)),
-  ruta('/trabajador/disponibilidad', conLayout(<DisponibilidadPage />)),
-  ruta('/trabajador/galeria', conLayout(<GaleriaPage />)),
+  ruta('/worker', <TrabajadorInicio />),
+  ruta('/worker/create', conLayout(<CrearPerfilPage />)),
+  ruta('/worker/dashboard', conLayout(<PanelPage />)),
+  ruta('/worker/profile', conLayout(<MiPerfilPage />)),
+  ruta('/worker/coverage', conLayout(<CoberturaPage />)),
+  ruta('/worker/availability', conLayout(<DisponibilidadPage />)),
+  ruta('/worker/gallery', conLayout(<GaleriaPage />)),
   // Perfil público (lo ve un contratante): sin layout del trabajador ni datos de contacto.
-  { path: '/trabajadores/:id', element: <PerfilPublicoPage /> },
+  { path: '/workers/:id', element: <PerfilPublicoPage /> },
 ];
 
-export const navLinks = [{ label: 'Trabajador', to: '/trabajador' }];
+export const navLinks = [{ label: 'Trabajador', to: '/worker' }];

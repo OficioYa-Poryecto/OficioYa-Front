@@ -202,10 +202,12 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
   };
 
   const confirmDelete = async () => {
+    setMessage(null);
     try {
       await deleteSlot(workerId, deleting);
       await onChange();
       if (editing === deleting) cancelar();
+      setMessage({ type: 'success', text: 'Franja eliminada.' });
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
     } finally {

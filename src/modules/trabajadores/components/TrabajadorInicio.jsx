@@ -6,7 +6,7 @@ import EstadoPerfil from './EstadoPerfil';
 function TrabajadorInicio() {
   const { data: perfil, loading, error } = useMyWorker();
   if (loading || error) return <EstadoPerfil error={error} loading={loading} />;
-  return <Navigate to={perfil ? '/trabajador/panel' : '/trabajador/crear'} replace />;
+  return <Navigate to={perfil ? '/worker/dashboard' : '/worker/create'} replace />;
 }
 
 export default TrabajadorInicio;

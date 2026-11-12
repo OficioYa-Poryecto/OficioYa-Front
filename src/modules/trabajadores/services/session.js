@@ -3,9 +3,10 @@ import { ACCESS_TOKEN, USE_MOCKS } from '../config';
 // Cuenta de ejemplo para el modo con datos de ejemplo.
 const CUENTA_EJEMPLO = {
   token: '',
-  userId: 99,
+  userId: '6f1c2b0e-9a4d-4c1e-8f3a-2d5b7e9c1a40',
   initials: 'AS',
   name: 'Andrea Salazar',
+  hasRealName: true,
   email: 'andrea.salazar@gmail.com',
   phone: '3001234567',
 };
@@ -29,9 +30,10 @@ export function getSession() {
   // El nombre lo entrega el dominio User (getUsersByIds); mientras tanto se muestra genérico.
   return {
     token: ACCESS_TOKEN,
-    userId: Number(sub) || null,
+    userId: sub ?? null, // UUID de Identity
     initials: 'T',
     name: 'Trabajador',
+    hasRealName: false, // pasa a true cuando User entregue el nombre
     email: email ?? null,
     phone: null,
   };

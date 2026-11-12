@@ -28,7 +28,8 @@ function MiPerfilPage() {
         <ProfileHero
           initials={cuenta.initials}
           name={cuenta.name}
-          roles={['Trabajador', primaryTrade.trade.name]}
+          // Con el nombre genérico ("Trabajador") no se repite la etiqueta del rol.
+          roles={cuenta.hasRealName ? ['Trabajador', primaryTrade.trade.name] : [primaryTrade.trade.name]}
           statusLabel={paused ? 'Perfil pausado' : 'Perfil activo'}
           statusMuted={paused}
         />
@@ -54,7 +55,7 @@ function MiPerfilPage() {
             <p className={styles.mutedText}>
               Así te ven los contratantes: oficios, tarifas, cobertura y disponibilidad, sin tus datos de contacto.
             </p>
-            <Boton icon="eye" onClick={() => navigate(`/trabajadores/${perfil.id}`)} variant="outline">
+            <Boton icon="eye" onClick={() => navigate(`/workers/${perfil.id}`)} variant="outline">
               Ver perfil público
             </Boton>
           </section>

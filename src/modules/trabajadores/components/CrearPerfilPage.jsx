@@ -40,7 +40,7 @@ function CrearPerfilPage() {
   const [saving, setSaving] = useState(false);
 
   // Quien ya tiene perfil no vuelve a crearlo.
-  if (!loading && perfil) return <Navigate replace to="/trabajador/perfil" />;
+  if (!loading && perfil) return <Navigate replace to="/worker/profile" />;
 
   const limpiar = (campo) => setErrores((actual) => ({ ...actual, [campo]: '' }));
 
@@ -55,10 +55,10 @@ function CrearPerfilPage() {
       await createWorker({
         availableNow,
         zoneIds,
-        primaryTrade: { tradeId: Number(tradeId), approxRate: Number(rate), rateUnit: unit },
+        primaryTrade: { tradeId, approxRate: Number(rate), rateUnit: unit },
       });
       await refresh();
-      navigate('/trabajador/panel');
+      navigate('/worker/dashboard');
     } catch (error) {
       setSubmitError(error.message);
     } finally {

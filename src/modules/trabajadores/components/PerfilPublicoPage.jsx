@@ -39,7 +39,7 @@ function PerfilPublicoPage() {
       {esPropio && (
         <div className={styles.previewBar}>
           <span><Icon name="eye" size={16} /> Así ven tu perfil los contratantes.</span>
-          <Link to="/trabajador/perfil">Volver a mi perfil</Link>
+          <Link to="/worker/profile">Volver a mi perfil</Link>
         </div>
       )}
       <section className={`${ui.infoCard} ${styles.publicHero}`}>

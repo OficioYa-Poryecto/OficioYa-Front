@@ -1,22 +1,23 @@
 // Datos de ejemplo en memoria con la MISMA forma que las respuestas del back de Worker
 // (WorkerResponse, TradeResponse, ...). Solo se usan con VITE_USE_MOCKS=true.
 // Se pierden al recargar la página.
+import { getSession } from './session';
 
 const categorias = {
-  tecnicos: { id: 1, name: 'Técnicos', detail: 'Oficios técnicos para el hogar y los negocios' },
-  profesores: { id: 2, name: 'Profesores', detail: 'Clases y acompañamiento educativo' },
-  mascotas: { id: 3, name: 'Cuidadores de mascotas', detail: 'Cuidado y bienestar de animales de compañía' },
-  hogar: { id: 4, name: 'Hogar', detail: 'Mantenimiento y mejora de espacios' },
+  tecnicos: { id: '0b6e3c1a-0000-4000-8000-000000000c01', name: 'Técnicos', detail: 'Oficios técnicos para el hogar y los negocios' },
+  profesores: { id: '0b6e3c1a-0000-4000-8000-000000000c02', name: 'Profesores', detail: 'Clases y acompañamiento educativo' },
+  mascotas: { id: '0b6e3c1a-0000-4000-8000-000000000c03', name: 'Cuidadores de mascotas', detail: 'Cuidado y bienestar de animales de compañía' },
+  hogar: { id: '0b6e3c1a-0000-4000-8000-000000000c04', name: 'Hogar', detail: 'Mantenimiento y mejora de espacios' },
 };
 
 const oficios = [
-  { id: 1, name: 'Plomería', description: 'Instalaciones y reparaciones', active: true, category: categorias.tecnicos },
-  { id: 2, name: 'Electricidad', description: 'Instalaciones y mantenimiento eléctrico', active: true, category: categorias.tecnicos },
-  { id: 3, name: 'Carpintería', description: 'Muebles, puertas y reparaciones en madera', active: true, category: categorias.hogar },
-  { id: 4, name: 'Pintura', description: 'Pintura interior y exterior', active: true, category: categorias.hogar },
-  { id: 5, name: 'Clases de matemáticas', description: 'Clases particulares y refuerzos', active: true, category: categorias.profesores },
-  { id: 6, name: 'Cuidado de mascotas', description: 'Visitas y cuidado en casa', active: true, category: categorias.mascotas },
-  { id: 7, name: 'Reparación de electrodomésticos', description: 'Diagnóstico y reparación', active: false, category: categorias.tecnicos },
+  { id: '7a1d5e20-0000-4000-8000-000000000001', name: 'Plomería', description: 'Instalaciones y reparaciones', active: true, category: categorias.tecnicos },
+  { id: '7a1d5e20-0000-4000-8000-000000000002', name: 'Electricidad', description: 'Instalaciones y mantenimiento eléctrico', active: true, category: categorias.tecnicos },
+  { id: '7a1d5e20-0000-4000-8000-000000000003', name: 'Carpintería', description: 'Muebles, puertas y reparaciones en madera', active: true, category: categorias.hogar },
+  { id: '7a1d5e20-0000-4000-8000-000000000004', name: 'Pintura', description: 'Pintura interior y exterior', active: true, category: categorias.hogar },
+  { id: '7a1d5e20-0000-4000-8000-000000000005', name: 'Clases de matemáticas', description: 'Clases particulares y refuerzos', active: true, category: categorias.profesores },
+  { id: '7a1d5e20-0000-4000-8000-000000000006', name: 'Cuidado de mascotas', description: 'Visitas y cuidado en casa', active: true, category: categorias.mascotas },
+  { id: '7a1d5e20-0000-4000-8000-000000000007', name: 'Reparación de electrodomésticos', description: 'Diagnóstico y reparación', active: false, category: categorias.tecnicos },
 ];
 
 // Las zonas son del dominio User; aquí solo para poder usar las pantallas.
@@ -42,7 +43,9 @@ export const FOTOS_EJEMPLO = [
 ];
 
 let perfil = null;
-let siguienteId = 100;
+
+// El back genera UUID para trabajador, oficios del trabajador, franjas y fotos.
+const nuevoId = () => crypto.randomUUID();
 
 // Simula la red: respuesta asíncrona y copia de los datos, como haría el back.
 function responder(valor) {
@@ -56,7 +59,7 @@ function fallar(status, message) {
 }
 
 function buscarOficio(tradeId) {
-  return oficios.find((oficio) => oficio.id === Number(tradeId));
+  return oficios.find((oficio) => oficio.id === tradeId);
 }
 
 function todosLosOficios() {
@@ -64,7 +67,7 @@ function todosLosOficios() {
 }
 
 function nuevoOficioDelTrabajador({ tradeId, approxRate, rateUnit }) {
-  return { id: siguienteId++, approxRate, rateUnit, trade: buscarOficio(tradeId) };
+  return { id: nuevoId(), approxRate, rateUnit, trade: buscarOficio(tradeId) };
 }
 
 // ---- Perfil ----
@@ -74,14 +77,14 @@ export function getMyWorker() {
 }
 
 export function getWorker(id) {
-  return perfil && perfil.id === Number(id) ? responder(perfil) : fallar(404, 'Trabajador no encontrado');
+  return perfil && perfil.id === id ? responder(perfil) : fallar(404, 'Trabajador no encontrado');
 }
 
 export function createWorker({ availableNow, zoneIds, primaryTrade }) {
   if (perfil) return fallar(409, 'Ya tienes un perfil de trabajador');
   perfil = {
-    id: siguienteId++,
-    userId: 99,
+    id: nuevoId(),
+    userId: getSession().userId,
     status: 'ACTIVE',
     availableNow,
     zoneIds: [...zoneIds],
@@ -119,7 +122,7 @@ export function removeZone(workerId, zoneId) {
 // ---- Oficios del trabajador ----
 
 export function addTrade(workerId, datos) {
-  if (todosLosOficios().some((item) => item.trade.id === Number(datos.tradeId))) {
+  if (todosLosOficios().some((item) => item.trade.id === datos.tradeId)) {
     return fallar(409, 'Ya ofreces este oficio');
   }
   const nuevo = nuevoOficioDelTrabajador(datos);
@@ -148,7 +151,7 @@ export function setPrimaryTrade(workerId, workerTradeId) {
 // ---- Franjas de disponibilidad ----
 
 export function createSlot(workerId, franja) {
-  const nueva = { ...franja, id: siguienteId++ };
+  const nueva = { ...franja, id: nuevoId() };
   perfil.slots.push(nueva);
   return responder(nueva);
 }
@@ -166,7 +169,7 @@ export function deleteSlot(workerId, slotId) {
 // ---- Fotos ----
 
 export function addPhoto(workerId, { url, description }) {
-  const foto = { id: siguienteId++, url, description, uploadedAt: new Date().toISOString() };
+  const foto = { id: nuevoId(), url, description, uploadedAt: new Date().toISOString() };
   perfil.photos.push(foto);
   return responder(foto);
 }

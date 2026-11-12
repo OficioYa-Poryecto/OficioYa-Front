@@ -19,6 +19,7 @@ async function call(path, options = {}) {
 const json = (method, body) => ({ method, body });
 
 const realApi = {
+  // Ids de Worker (trabajador, oficio, franja, foto) = UUID en texto; las zonas siguen siendo números.
   // ---- Perfil ----
   // null = el usuario todavía no tiene perfil de trabajador (404).
   async getMyWorker() {
@@ -31,7 +32,8 @@ const realApi = {
   },
   getWorker: (id) => call(`/workers/${id}`),
   // datos = { availableNow, zoneIds, primaryTrade: { tradeId, approxRate, rateUnit } }
-  createWorker: (datos) => call('/workers', json('POST', { ...datos, userId: getSession().userId })),
+  // El userId no viaja: el back lo toma del token.
+  createWorker: (datos) => call('/workers', json('POST', datos)),
   updateAvailableNow: (workerId, availableNow) =>
     call(`/workers/${workerId}/availability-now`, json('PUT', { availableNow })),
   updateStatus: (workerId, status) => call(`/workers/${workerId}/status`, json('PUT', { status })),

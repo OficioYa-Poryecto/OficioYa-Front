@@ -75,7 +75,7 @@ function OficiosSection({ perfil, refresh, locked }) {
     setErrores(encontrados);
     if (Object.keys(encontrados).length) return;
     const ok = await ejecutar(
-      () => addTrade(perfil.id, { tradeId: Number(tradeId), approxRate: Number(rate), rateUnit: unit }),
+      () => addTrade(perfil.id, { tradeId, approxRate: Number(rate), rateUnit: unit }),
       'Oficio agregado correctamente.',
     );
     if (ok) {

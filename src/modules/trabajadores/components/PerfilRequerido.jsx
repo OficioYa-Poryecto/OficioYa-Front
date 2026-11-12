@@ -21,7 +21,7 @@ function PerfilRequerido() {
           text="Crea tu perfil para configurar tus oficios y disponibilidad."
         />
         <div className={styles.center}>
-          <Boton onClick={() => navigate('/trabajador/crear')}>Crear perfil</Boton>
+          <Boton onClick={() => navigate('/worker/create')}>Crear perfil</Boton>
         </div>
       </div>
     </div>

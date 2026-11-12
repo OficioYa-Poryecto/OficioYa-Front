@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { login } from '../services/authService';
+import { saveSession } from '../../core/lib/session';
 import styles from './AuthPage.module.css';
 
 // Validación manual en español (no dependemos del idioma del navegador)
@@ -14,9 +15,14 @@ function validar({ email, password }) {
 
 export default function LoginForm({ onForgot }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [form, setForm] = useState({ email: '', password: '' });
   const [showPass, setShowPass] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState(() => {
+    return searchParams.get('expired') === '1'
+      ? 'Tu sesión expiró. Inicia sesión de nuevo.'
+      : '';
+  });
   const [loading, setLoading] = useState(false);
 
   const set = (field) => (e) => setForm((f) => ({ ...f, [field]: e.target.value }));
@@ -30,9 +36,12 @@ export default function LoginForm({ onForgot }) {
     setLoading(true);
     try {
       const data = await login(form);
-      localStorage.setItem('oy_token', data.token);
-      localStorage.setItem('oy_userId', String(data.userId));
-      localStorage.setItem('oy_roles', JSON.stringify([...data.roles]));
+      saveSession({
+        token: data.token,
+        userId: data.userId,
+        roles: data.roles,
+        expiresInSeconds: data.expiresInSeconds,
+      });
       navigate('/home');
     } catch (err) {
       if (err.status === 423)
@@ -61,7 +70,9 @@ export default function LoginForm({ onForgot }) {
       <p className={styles.cardDesc}>Ingresa tus datos para continuar a tu perfil.</p>
 
       <label>
-        Correo electrónico <span className={styles.required}>*</span>
+        <span>
+          Correo electrónico <span className={styles.required}>*</span>
+        </span>
         <input
           type="email"
           placeholder="tu@correo.com"
@@ -72,7 +83,9 @@ export default function LoginForm({ onForgot }) {
       </label>
 
       <label>
-        Contraseña <span className={styles.required}>*</span>
+        <span>
+          Contraseña <span className={styles.required}>*</span>
+        </span>
         <div className={styles.passWrap}>
           <input
             type={showPass ? 'text' : 'password'}

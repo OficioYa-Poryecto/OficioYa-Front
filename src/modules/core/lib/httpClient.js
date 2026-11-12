@@ -1,4 +1,6 @@
 
+import { clearSession } from './session';
+
 const BASE_URL = '/api/v1';
 
 export async function request(path, { method = 'GET', body, token } = {}) {
@@ -19,6 +21,11 @@ export async function request(path, { method = 'GET', body, token } = {}) {
   }
 
   if (!response.ok) {
+    if (response.status === 401 && token) {
+      clearSession();
+      window.location.assign('/auth?expired=1');
+    }
+
     const apiError = await response.json().catch(() => ({}));
     const error = new Error(
       apiError.message ?? apiError.mensaje ?? apiError.error ?? `Error ${response.status}`,

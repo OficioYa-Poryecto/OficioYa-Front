@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { ACCESS_TOKEN } from '../config';
+import { getToken } from '../../core/lib/session';
 import { listUsers, getUser, changeStatus } from '../services/adminUserService';
 
 // Listado de usuarios para /admin/users
@@ -9,7 +9,7 @@ export function useAdminUsers() {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    listUsers(ACCESS_TOKEN)
+    listUsers(getToken())
       .then((data) => setUsers(data))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -26,7 +26,7 @@ export function useAdminUser(id) {
   const [actionError, setActionError] = useState(null);
 
   useEffect(() => {
-    getUser(id, ACCESS_TOKEN)
+    getUser(id, getToken())
       .then((data) => setUser(data))
       .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
@@ -36,7 +36,7 @@ export function useAdminUser(id) {
   async function updateStatus(action, reason) {
     setActionError(null);
     try {
-      const updated = await changeStatus(id, action, reason, ACCESS_TOKEN);
+      const updated = await changeStatus(id, action, reason, getToken());
       setUser(updated);
       return true;
     } catch (e) {

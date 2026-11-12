@@ -1,8 +1,12 @@
+import { clearSession, getSession } from '../../core/lib/session';
 import styles from './MaintenancePage.module.css';
 
 export default function MaintenancePage() {
-  const roles = JSON.parse(localStorage.getItem('oy_roles') ?? '[]');
-  const isAdmin = roles.includes('ADMINISTRATOR');
+  const session = getSession();
+  const roles = session?.roles ?? [];
+  const isAdmin = Array.isArray(roles)
+    ? roles.includes('ADMIN')
+    : roles === 'ADMIN';
 
   return (
     <div className={styles.page}>
@@ -45,9 +49,7 @@ export default function MaintenancePage() {
         <button
           className={styles.logoutBtn}
           onClick={() => {
-            localStorage.removeItem('oy_token');
-            localStorage.removeItem('oy_userId');
-            localStorage.removeItem('oy_roles');
+            clearSession();
             window.location.href = '/auth';
           }}
         >
@@ -57,4 +59,3 @@ export default function MaintenancePage() {
     </div>
   );
 }
-

@@ -11,13 +11,13 @@ import detail from './UserDetail.module.css';
 const INVITACIONES = {
   TRABAJADOR: {
     pregunta: '¿Ofreces algún oficio?',
-    texto: 'Activa tu perfil de trabajador para recibir solicitudes de servicio.',
-    boton: 'Quiero ser trabajador',
+    texto: 'Agrega el rol de trabajador para recibir solicitudes de servicio.',
+    boton: 'Agregar rol de trabajador',
   },
   CONTRATANTE: {
     pregunta: '¿Necesitas contratar un servicio?',
-    texto: 'Activa tu perfil de contratante para buscar y contratar trabajadores.',
-    boton: 'Quiero contratar servicios',
+    texto: 'Agrega el rol de contratante para buscar y contratar trabajadores.',
+    boton: 'Agregar rol de contratante',
   },
 };
 

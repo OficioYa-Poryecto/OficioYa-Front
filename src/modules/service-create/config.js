@@ -10,7 +10,7 @@ export const STEPS = [
   {
     id: 2,
     label: 'Trabajadores',
-    eyebrow: 'Enviar solicitud',
+    eyebrow: 'Escoger trabajadores',
     title: '¿A quién se la enviamos?',
     progressLabel: 'Selección de trabajadores',
     cta: 'Continuar para enviar',

@@ -70,7 +70,7 @@ export function validateDetails(values, now = new Date()) {
   return errors;
 }
 
-export function deriveTitle(description, maxLength = 40) {
+export function deriveTitle(description, maxLength = 60) {
   const text = description.trim().replace(/\s+/g, ' ');
   const [firstSentence] = text.split(/[.!?]/);
   const base = firstSentence.trim() || text;

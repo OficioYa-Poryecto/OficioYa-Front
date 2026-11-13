@@ -1,5 +1,6 @@
 .form {
   display: grid;
+  gap: 16px;
 }
 
 .layout {
@@ -16,6 +17,32 @@
 .field {
   display: grid;
   gap: 6px;
+  align-content: start;
+}
+
+.form .field > label {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 3px;
+}
+
+.required {
+  color: var(--color-danger);
+  font-weight: 700;
+}
+
+.hint {
+  margin: 0;
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+}
+
+.legend {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
 }
 
 .form textarea {
@@ -40,8 +67,20 @@
   pointer-events: none;
 }
 
-.withIcon input {
+.withIcon input,
+.withIcon select {
   padding-left: 42px;
+}
+
+.withIcon select {
+  width: 100%;
+  padding-right: 40px;
+  appearance: none;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2368736f' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
 }
 
 .row {

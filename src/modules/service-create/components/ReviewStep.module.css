@@ -25,7 +25,7 @@
   display: grid;
   place-items: center;
   background: #1a2229;
-  color: #8fd0f5;
+  color: var(--color-primary);
 }
 
 .heroText {
@@ -36,7 +36,7 @@
 
 .heroEyebrow {
   margin: 0;
-  color: #8fd0f5;
+  color: var(--color-primary);
   font-size: 0.7rem;
   font-weight: 700;
   letter-spacing: 0.14em;

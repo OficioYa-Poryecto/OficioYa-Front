@@ -1,7 +1,6 @@
 import { useLayoutEffect, useState, useEffect } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
-import { decodeRole } from '../../service/services/jwt';
 import { tokenStorage } from '../../service/services/tokenStorage';
 import { DETAILS_FORM_ID, SENT_STEP, STEPS, WORKERS_FORM_ID } from '../config';
 import { useCreateRequest } from '../hooks/useCreateRequest';
@@ -16,7 +15,6 @@ import SentStep from './SentStep';
 import WorkersStep from './WorkersStep';
 import styles from './CreateRequestPage.module.css';
 
-const CONTRACTOR_ROLE = 'CONTRATANTE';
 const REVIEW = STEPS.length;
 const SENT = STEPS.length + 1;
 const THEME = 'naranja';
@@ -33,7 +31,6 @@ function CreateRequestPage() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [preselectedWorker, setPreselectedWorker] = useState(null);
   const { sending, error: sendError, result, send, reset } = useCreateRequest(token);
-  const role = token === 'dummy-token-local' ? CONTRACTOR_ROLE : decodeRole(token);
 
   useEffect(() => {
     if (!preselectedWorkerId) return;

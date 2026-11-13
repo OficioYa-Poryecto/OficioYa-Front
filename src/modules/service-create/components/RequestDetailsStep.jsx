@@ -5,22 +5,51 @@ import { CalendarIcon, ClockIcon, MapPinIcon } from './icons';
 import PhotoPicker from './PhotoPicker';
 import styles from './RequestDetailsStep.module.css';
 
-function fieldProps(id, error) {
+const NEIGHBORHOODS = [
+  'Laureles',
+  'El Poblado',
+  'Envigado',
+  'Sabaneta',
+  'Bello',
+  'Itagüí',
+  'Robledo',
+  'Belén',
+  'Manrique',
+  'Aranjuez',
+];
+
+function fieldProps(id, error, { required = false, hint = false } = {}) {
+  const describedBy = [hint ? `${id}-hint` : null, error ? `${id}-error` : null]
+    .filter(Boolean)
+    .join(' ');
   return {
     id,
+    'aria-required': required || undefined,
     'aria-invalid': Boolean(error),
-    'aria-describedby': error ? `${id}-error` : undefined,
+    'aria-describedby': describedBy || undefined,
   };
 }
 
-function Field({ id, label, error, icon, children }) {
+function Field({ id, label, required, hint, error, icon, children }) {
   return (
     <div className={styles.field}>
-      <label htmlFor={id}>{label}</label>
+      <label htmlFor={id}>
+        {label}
+        {required && (
+          <span className={styles.required} aria-hidden="true">
+            *
+          </span>
+        )}
+      </label>
       <div className={icon ? styles.withIcon : undefined}>
         {icon}
         {children}
       </div>
+      {hint && (
+        <p id={`${id}-hint`} className={styles.hint}>
+          {hint}
+        </p>
+      )}
       {error && (
         <p id={`${id}-error`} role="alert" className={styles.error}>
           {error}
@@ -55,11 +84,16 @@ function RequestDetailsStep({ values, onChange, onSubmit }) {
     <form id={DETAILS_FORM_ID} className={styles.form} onSubmit={handleSubmit} noValidate>
       <div className={styles.layout}>
         <div className={styles.column}>
-          <Field id="field-description" label="¿Qué necesitas resolver?" error={visible.description}>
+          <Field
+            id="field-description"
+            label="¿Qué necesitas resolver?"
+            required
+            error={visible.description}
+          >
             <textarea
               rows={4}
               placeholder="Ej: Necesito reparar una fuga debajo del lavaplatos."
-              {...fieldProps('field-description', visible.description)}
+              {...fieldProps('field-description', visible.description, { required: true })}
               {...bind('description')}
             />
           </Field>
@@ -72,22 +106,36 @@ function RequestDetailsStep({ values, onChange, onSubmit }) {
             <Field
               id="field-neighborhood"
               label="Barrio"
+              required
+              hint="Lista provisional; la definitiva viene del dominio Worker."
               error={visible.neighborhood}
               icon={<MapPinIcon size={18} />}
             >
-              <select {...fieldProps('field-neighborhood', visible.neighborhood)} {...bind('neighborhood')}>
-                <option value="">Selecciona un barrio</option>
-                {['Laureles','El Poblado','Envigado','Sabaneta','Bello','Itagüí','Robledo','Belén','Manrique','Aranjuez'].map((b) => (
-                  <option key={b} value={b}>{b}</option>
+              <select
+                {...fieldProps('field-neighborhood', visible.neighborhood, {
+                  required: true,
+                  hint: true,
+                })}
+                {...bind('neighborhood')}
+              >
+                <option value="">Selecciona</option>
+                {NEIGHBORHOODS.map((name) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
                 ))}
               </select>
-              <small>Lista provisional; la definitiva viene del dominio Worker.</small>
             </Field>
-            <Field id="field-exactAddress" label="Dirección exacta" error={visible.exactAddress}>
+            <Field
+              id="field-exactAddress"
+              label="Dirección exacta"
+              required
+              error={visible.exactAddress}
+            >
               <input
                 type="text"
                 placeholder="Ej: Cra. 74 # 39-25"
-                {...fieldProps('field-exactAddress', visible.exactAddress)}
+                {...fieldProps('field-exactAddress', visible.exactAddress, { required: true })}
                 {...bind('exactAddress')}
               />
             </Field>
@@ -97,22 +145,40 @@ function RequestDetailsStep({ values, onChange, onSubmit }) {
             <Field
               id="field-date"
               label="Fecha"
+              required
               error={visible.date}
               icon={<CalendarIcon size={18} />}
             >
               <input
                 type="date"
                 min={todayISO()}
-                {...fieldProps('field-date', visible.date)}
+                {...fieldProps('field-date', visible.date, { required: true })}
                 {...bind('date')}
               />
             </Field>
-            <Field id="field-time" label="Hora" error={visible.time} icon={<ClockIcon size={18} />}>
-              <input type="time" {...fieldProps('field-time', visible.time)} {...bind('time')} />
+            <Field
+              id="field-time"
+              label="Hora"
+              required
+              error={visible.time}
+              icon={<ClockIcon size={18} />}
+            >
+              <input
+                type="time"
+                {...fieldProps('field-time', visible.time, { required: true })}
+                {...bind('time')}
+              />
             </Field>
           </div>
         </div>
       </div>
+
+      <p className={styles.legend}>
+        <span className={styles.required} aria-hidden="true">
+          *
+        </span>{' '}
+        Campo obligatorio
+      </p>
     </form>
   );
 }

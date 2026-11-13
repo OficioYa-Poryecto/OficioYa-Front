@@ -1,6 +1,7 @@
 import { Navigate } from 'react-router-dom';
+import { getSession } from '../lib/session';
 
-// La home por defecto redirige a /auth
 export default function HomePage() {
-  return <Navigate to="/auth" replace />;
+  const session = getSession();
+  return <Navigate to={session ? '/home' : '/auth'} replace />;
 }

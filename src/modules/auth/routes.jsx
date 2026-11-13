@@ -6,6 +6,4 @@ export const routes = [
   { path: '/auth/register', element: <RegisterPage /> },
 ];
 
-export const navLinks = [
-  { to: '/auth', label: 'Inicio' },
-];
+export const navLinks = [];

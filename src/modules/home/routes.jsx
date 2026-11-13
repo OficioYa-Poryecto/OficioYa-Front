@@ -1,9 +1,11 @@
+import HomePage from './pages/HomePage';
 import MaintenancePage from './pages/MaintenancePage';
 
 export const routes = [
-  { path: '/home', element: <MaintenancePage /> },
+  { path: '/home', element: <HomePage /> },
+  { path: '/maintenance', element: <MaintenancePage /> },
 ];
 
-// Sin navLinks: el home no aparece en el menú hasta que esté listo
-export const navLinks = [];
-
+export const navLinks = [
+  { label: 'Inicio', to: '/home' },
+];

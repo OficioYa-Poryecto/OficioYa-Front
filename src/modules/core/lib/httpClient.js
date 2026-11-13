@@ -1,12 +1,14 @@
-
 import { clearSession } from './session';
 
 const BASE_URL = '/api/v1';
+const TOKEN_KEY = 'oy_token';
+const LOGIN_PATH = '/auth';
 
 export async function request(path, { method = 'GET', body, token } = {}) {
   const headers = { 'Content-Type': 'application/json' };
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
+  const jwt = localStorage.getItem(TOKEN_KEY) || token;
+  if (jwt) {
+    headers.Authorization = `Bearer ${jwt}`;
   }
 
   let response;
@@ -20,12 +22,14 @@ export async function request(path, { method = 'GET', body, token } = {}) {
     throw new Error('No se pudo conectar con el servidor');
   }
 
-  if (!response.ok) {
-    if (response.status === 401 && token) {
-      clearSession();
+  if (response.status === 401 && jwt) {
+    clearSession();
+    if (window.location.pathname !== LOGIN_PATH) {
       window.location.assign('/auth?expired=1');
     }
+  }
 
+  if (!response.ok) {
     const apiError = await response.json().catch(() => ({}));
     const error = new Error(
       apiError.message ?? apiError.mensaje ?? apiError.error ?? `Error ${response.status}`,

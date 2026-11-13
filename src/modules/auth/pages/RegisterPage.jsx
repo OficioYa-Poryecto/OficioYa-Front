@@ -11,11 +11,80 @@ function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
 }
 
+const ROLE_OPTIONS = [
+  {
+    id: 'CONTRATANTE',
+    title: 'Quiero contratar',
+    desc: 'Busco personas de confianza para resolver trabajos.',
+    roles: ['CONTRATANTE'],
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <circle cx="11" cy="11" r="8" />
+        <line x1="21" y1="21" x2="16.65" y2="16.65" />
+      </svg>
+    ),
+  },
+  {
+    id: 'TRABAJADOR',
+    title: 'Quiero ofrecer mi oficio',
+    desc: 'Quiero mostrar mi trabajo y recibir solicitudes.',
+    roles: ['TRABAJADOR'],
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+        <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+      </svg>
+    ),
+  },
+  {
+    id: 'AMBOS',
+    title: 'Quiero hacer ambas cosas',
+    desc: 'Contratar servicios y ofrecer mi oficio con una cuenta.',
+    roles: ['CONTRATANTE', 'TRABAJADOR'],
+    icon: (
+      <svg
+        width="22"
+        height="22"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        aria-hidden="true"
+      >
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+        <circle cx="12" cy="7" r="4" />
+      </svg>
+    ),
+  },
+];
+
 export default function RegisterPage() {
   const navigate = useNavigate();
 
-  // Campos principales
-  const [role, setRole] = useState('CONTRATANTE'); // 'CONTRATANTE' | 'TRABAJADOR'
+  // Rol seleccionado ('CONTRATANTE' | 'TRABAJADOR' | 'AMBOS')
+  const [selectedRoleId, setSelectedRoleId] = useState('CONTRATANTE');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -116,6 +185,9 @@ export default function RegisterPage() {
     setError('');
     setLoading(true);
 
+    const chosenRole =
+      ROLE_OPTIONS.find((r) => r.id === selectedRoleId) || ROLE_OPTIONS[0];
+
     const payload = {
       name: name.trim(),
       email: email.trim(),
@@ -124,7 +196,7 @@ export default function RegisterPage() {
         number: p.number.trim(),
         principal: Boolean(p.principal),
       })),
-      roles: [role],
+      roles: chosenRole.roles,
     };
 
     try {
@@ -148,8 +220,6 @@ export default function RegisterPage() {
     }
   };
 
-  const isContratante = role === 'CONTRATANTE';
-
   // Iniciales para el avatar mock
   const initials = name.trim()
     ? name
@@ -167,7 +237,8 @@ export default function RegisterPage() {
         <div className={styles.hero}>
           <span className={styles.eyebrow}>CREA TU CUENTA</span>
           <h1 className={styles.heroTitle}>
-            Regístrate como {isContratante ? 'contratante' : 'trabajador'}
+            Elige cómo<br />
+            usar <span className={styles.brandHighlight}>OficioYa</span>
           </h1>
           <p className={styles.heroSub}>
             Completa tus datos en pocos minutos. Sin vueltas, como debe ser.
@@ -179,40 +250,40 @@ export default function RegisterPage() {
           <div className={styles.cardHeader}>
             <div className={styles.stepBadge}>1</div>
             <div className={styles.cardHeaderInfo}>
-              <h2 className={styles.cardTitle}>
-                Arma tu perfil de {isContratante ? 'contratante' : 'trabajador'}
-              </h2>
+              <h2 className={styles.cardTitle}>Selecciona tus roles</h2>
               <p className={styles.cardSubtitle}>
-                {isContratante
-                  ? 'Completa tus datos para solicitar servicios con confianza.'
-                  : 'Completa tus datos para ofrecer servicios con confianza.'}
+                Podrás agregar el otro rol más adelante desde tu cuenta.
               </p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
-            {/* Selector de Rol */}
-            <div className={styles.roleSelector} role="radiogroup" aria-label="Selecciona tu rol">
-              <button
-                type="button"
-                className={`${styles.roleOption} ${isContratante ? styles.roleOptionActive : ''}`}
-                onClick={() => setRole('CONTRATANTE')}
-                role="radio"
-                aria-checked={isContratante}
-              >
-                <span className={styles.roleLabel}>Contratante</span>
-                <span className={styles.roleDesc}>Busco contratar servicios o profesionales</span>
-              </button>
-              <button
-                type="button"
-                className={`${styles.roleOption} ${!isContratante ? styles.roleOptionActive : ''}`}
-                onClick={() => setRole('TRABAJADOR')}
-                role="radio"
-                aria-checked={!isContratante}
-              >
-                <span className={styles.roleLabel}>Trabajador</span>
-                <span className={styles.roleDesc}>Ofrezco mis servicios y oficios</span>
-              </button>
+            {/* Selector de Rol (3 tarjetas) */}
+            <div className={styles.roleGrid} role="radiogroup" aria-label="Selecciona tus roles">
+              {ROLE_OPTIONS.map((opt) => {
+                const isActive = selectedRoleId === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    className={`${styles.roleCard} ${isActive ? styles.roleCardActive : ''}`}
+                    onClick={() => setSelectedRoleId(opt.id)}
+                    role="radio"
+                    aria-checked={isActive}
+                  >
+                    <div className={styles.roleCardTop}>
+                      <div className={styles.roleIconWrap}>{opt.icon}</div>
+                      <div
+                        className={`${styles.radioIndicator} ${isActive ? styles.radioIndicatorActive : ''}`}
+                      >
+                        {isActive && <div className={styles.radioDot} />}
+                      </div>
+                    </div>
+                    <div className={styles.roleCardTitle}>{opt.title}</div>
+                    <div className={styles.roleCardDesc}>{opt.desc}</div>
+                  </button>
+                );
+              })}
             </div>
 
             {/* Sección: Tus datos */}
@@ -220,7 +291,9 @@ export default function RegisterPage() {
             <div className={styles.gridTwo}>
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="name">
-                  Nombre completo <span className={styles.required}>*</span>
+                  <span>
+                    Nombre completo <span className={styles.required}>*</span>
+                  </span>
                 </label>
                 <input
                   id="name"
@@ -235,7 +308,9 @@ export default function RegisterPage() {
 
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="email">
-                  Correo electrónico <span className={styles.required}>*</span>
+                  <span>
+                    Correo electrónico <span className={styles.required}>*</span>
+                  </span>
                 </label>
                 <input
                   id="email"
@@ -253,7 +328,9 @@ export default function RegisterPage() {
             <div className={styles.phoneSection}>
               <div className={styles.phoneHeader}>
                 <span className={styles.label}>
-                  Teléfonos de contacto <span className={styles.required}>*</span>
+                  <span>
+                    Teléfonos de contacto <span className={styles.required}>*</span>
+                  </span>
                 </span>
                 <div className={styles.phoneMeta}>
                   <span>{phones.length} de 3 teléfonos agregados.</span>
@@ -317,7 +394,9 @@ export default function RegisterPage() {
             <div className={styles.gridTwo}>
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="password">
-                  Crea una contraseña <span className={styles.required}>*</span>
+                  <span>
+                    Crea una contraseña <span className={styles.required}>*</span>
+                  </span>
                 </label>
                 <div className={styles.passWrap}>
                   <input

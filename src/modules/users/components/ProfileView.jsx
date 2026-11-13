@@ -1,66 +1,123 @@
 import { useState } from 'react';
-import { Link, useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
+import Skeleton from './Skeleton';
+import styles from './Form.module.css';
+import detail from './UserDetail.module.css';
 
-const ROLES = ['CONTRATANTE', 'TRABAJADOR'];
+// Invitación para cada rol que el usuario todavía no tiene
+const INVITACIONES = {
+  TRABAJADOR: {
+    pregunta: '¿Ofreces algún oficio?',
+    texto: 'Activa tu perfil de trabajador para recibir solicitudes de servicio.',
+    boton: 'Quiero ser trabajador',
+  },
+  CONTRATANTE: {
+    pregunta: '¿Necesitas contratar un servicio?',
+    texto: 'Activa tu perfil de contratante para buscar y contratar trabajadores.',
+    boton: 'Quiero contratar servicios',
+  },
+};
 
 function ProfileView() {
   const { id } = useParams();
   const esPropio = !id;
   const { perfil, cargando, error, agregarRol } = useProfile(id);
-  const [rol, setRol] = useState('');
+  const [rolGuardando, setRolGuardando] = useState(null);
   const [errorRol, setErrorRol] = useState(null);
+  const [debeReingresar, setDebeReingresar] = useState(false);
+  const navigate = useNavigate();
 
-  async function manejarAgregarRol(evento) {
-    evento.preventDefault();
+  async function activarRol(rol) {
     setErrorRol(null);
+    setRolGuardando(rol);
     try {
       await agregarRol(rol);
-      setRol('');
+      if (rol === 'TRABAJADOR') {
+        setDebeReingresar(true);
+      }
     } catch (e) {
       setErrorRol(e.message);
+    } finally {
+      setRolGuardando(null);
     }
   }
 
-  if (cargando) {
-    return <p>Cargando...</p>;
-  }
-  if (error) {
-    return <ErrorMessage error={error} />;
+  function irAlLogin() {
+    localStorage.removeItem('oy_token');
+    navigate('/auth');
   }
 
-  const rolesDisponibles = ROLES.filter((r) => !perfil.roles?.includes(r));
+  if (cargando || error) {
+    return (
+      <section className={`card ${styles.page}`}>
+        <span className="eyebrow">{esPropio ? 'Mi perfil' : 'Perfil público'}</span>
+        <Skeleton lines={3} error={error} />
+      </section>
+    );
+  }
+
+  const roles = perfil.roles ?? [];
+  const esAdmin = roles.includes('ADMIN');
+  const rolesFaltantes = Object.keys(INVITACIONES).filter((r) => !roles.includes(r));
 
   return (
-    <section className="card" style={{ maxWidth: 480, display: 'grid', gap: 8 }}>
-      <h1>{perfil.name}</h1>
-      <p>Roles: {perfil.roles?.join(', ')}</p>
+    <section className={`card ${styles.page}`}>
+      <div className={styles.header}>
+        <div>
+          <span className="eyebrow">{esPropio ? 'Mi perfil' : 'Perfil público'}</span>
+          <h1>{perfil.name}</h1>
+        </div>
+        {esPropio && (
+          <Button type="button" variant="secondary" onClick={() => navigate('/users/me/edit')}>
+            Editar perfil
+          </Button>
+        )}
+      </div>
 
-      {esPropio && (
-        <>
-          <p>Correo: {perfil.email}</p>
-          <p>Teléfonos: {perfil.phones?.map((p) => p.number).join(', ') || 'Sin teléfono'}</p>
-          <Link to="/users/me/edit">Editar perfil</Link>
+      <dl className={detail.data}>
+        <dt>Roles</dt>
+        <dd>{roles.join(', ')}</dd>
+        {esPropio && (
+          <>
+            <dt>Correo</dt>
+            <dd>{perfil.email}</dd>
+            <dt>Teléfono principal</dt>
+            <dd>{perfil.phones?.find((p) => p.principal)?.number ?? 'Sin teléfono'}</dd>
+            <dt>Teléfonos adicionales</dt>
+            <dd>
+              {perfil.phones?.some((p) => !p.principal)
+                ? perfil.phones.filter((p) => !p.principal).map((p) => <div key={p.id}>{p.number}</div>)
+                : 'Sin teléfonos adicionales'}
+            </dd>
+          </>
+        )}
+      </dl>
 
-          {rolesDisponibles.length > 0 && (
-            <form onSubmit={manejarAgregarRol} style={{ display: 'grid', gap: 8 }}>
-              <label>
-                Agregar rol
-                <select value={rol} onChange={(e) => setRol(e.target.value)} required>
-                  <option value="">Seleccione...</option>
-                  {rolesDisponibles.map((r) => (
-                    <option key={r} value={r}>{r}</option>
-                  ))}
-                </select>
-              </label>
-              <ErrorMessage error={errorRol} />
-              <Button type="submit">Agregar</Button>
-            </form>
-          )}
-        </>
+      {esPropio && debeReingresar && (
+        <div className={styles.invite}>
+          <h3>Ya tienes el rol de trabajador</h3>
+          <p className={styles.note}>Inicia sesión de nuevo para completar tu perfil de trabajador.</p>
+          <div className={styles.actions}>
+            <Button type="button" onClick={irAlLogin}>Iniciar sesión</Button>
+          </div>
+        </div>
       )}
+
+      {esPropio && !esAdmin && rolesFaltantes.map((rol) => (
+        <div key={rol} className={styles.invite}>
+          <h3>{INVITACIONES[rol].pregunta}</h3>
+          <p className={styles.note}>{INVITACIONES[rol].texto}</p>
+          <div className={styles.actions}>
+            <Button type="button" onClick={() => activarRol(rol)} disabled={rolGuardando !== null}>
+              {rolGuardando === rol ? 'Guardando...' : INVITACIONES[rol].boton}
+            </Button>
+          </div>
+        </div>
+      ))}
+      <ErrorMessage error={errorRol} />
     </section>
   );
 }

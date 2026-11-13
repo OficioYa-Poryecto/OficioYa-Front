@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import ErrorMessage from '../../core/components/ErrorMessage';
+import Skeleton from './Skeleton';
 import { useAdminUsers } from '../hooks/useAdminUsers';
 import styles from './UserTable.module.css';
 
@@ -11,8 +11,7 @@ function UserTable() {
       <span className="eyebrow">Administración</span>
       <h1>Usuarios</h1>
 
-      {loading && <p>Cargando usuarios...</p>}
-      <ErrorMessage error={error} />
+      {(loading || error) && <Skeleton lines={5} error={error} />}
       {!loading && !error && users.length === 0 && <p>No hay usuarios registrados.</p>}
 
       {users.length > 0 && (
@@ -30,7 +29,7 @@ function UserTable() {
             {users.map((user) => (
               <tr key={user.id}>
                 <td>{user.name}</td>
-                <td>{user.email}</td>
+                <td>{enmascararCorreo(user.email)}</td>
                 <td>{user.roles.join(', ')}</td>
                 <td className={user.accountStatus === 'ACTIVE' ? styles.active : styles.inactive}>
                   {user.accountStatus === 'ACTIVE' ? 'Activo' : 'Inactivo'}
@@ -45,6 +44,11 @@ function UserTable() {
       )}
     </section>
   );
+}
+
+// En el listado el correo se oculta; completo solo en el detalle
+function enmascararCorreo(correo) {
+  return '*****' + correo.slice(correo.indexOf('@'));
 }
 
 export default UserTable;

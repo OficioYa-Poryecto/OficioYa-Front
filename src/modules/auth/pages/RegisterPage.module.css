@@ -5,7 +5,7 @@
 }
 
 .container {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0 auto;
 }
 
@@ -15,21 +15,29 @@
 }
 
 .eyebrow {
-  display: block;
+  display: inline-block;
   text-transform: uppercase;
-  letter-spacing: 0.14em;
-  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  font-size: 0.72rem;
   font-weight: 700;
   color: var(--color-accent);
-  margin-bottom: 8px;
+  background: #fdeee8;
+  padding: 4px 12px;
+  border-radius: 999px;
+  margin-bottom: 12px;
 }
 
 .heroTitle {
-  font-size: clamp(2rem, 4vw, 2.6rem);
-  font-weight: 700;
+  font-size: clamp(2.1rem, 4.5vw, 2.9rem);
+  font-weight: 800;
   letter-spacing: -0.04em;
+  line-height: 1.15;
   color: var(--color-text);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
+}
+
+.brandHighlight {
+  color: var(--color-primary);
 }
 
 .heroSub {
@@ -58,9 +66,7 @@
   display: flex;
   align-items: flex-start;
   gap: 16px;
-  margin-bottom: 28px;
-  padding-bottom: 20px;
-  border-bottom: 1px solid var(--color-border);
+  margin-bottom: 24px;
 }
 
 .stepBadge {
@@ -82,7 +88,7 @@
 }
 
 .cardTitle {
-  font-size: 1.4rem;
+  font-size: 1.35rem;
   font-weight: 700;
   margin: 0 0 4px;
   color: var(--color-text);
@@ -95,45 +101,98 @@
   margin: 0;
 }
 
-/* Role Selector */
-.roleSelector {
-  display: flex;
-  gap: 12px;
-  margin-bottom: 28px;
+/* Role Cards Grid (3 options) */
+.roleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+  margin-bottom: 32px;
 }
 
-.roleOption {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  padding: 14px 18px;
-  border: 2px solid var(--color-border);
+@media (max-width: 768px) {
+  .roleGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.roleCard {
+  border: 1.5px solid var(--color-border);
   border-radius: var(--radius-sm);
-  background: var(--color-bg);
+  background: var(--color-surface);
+  padding: 18px 20px;
   cursor: pointer;
   transition: all 0.15s ease;
+  display: flex;
+  flex-direction: column;
   text-align: left;
 }
 
-.roleOptionActive {
-  border-color: var(--color-primary);
+.roleCard:hover {
+  border-color: #d4c8bb;
+}
+
+.roleCardActive {
   background: var(--color-primary-soft);
+  border-color: var(--color-primary);
 }
 
-.roleLabel {
-  font-weight: 700;
-  font-size: 0.95rem;
-  color: var(--color-text);
+.roleCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
 }
 
-.roleOptionActive .roleLabel {
+.roleIconWrap {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: #ffffff;
+  border: 1px solid var(--color-border);
   color: var(--color-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.roleDesc {
-  font-size: 0.8rem;
+.roleCardActive .roleIconWrap {
+  background: #ffffff;
+  border-color: #f7cfc0;
+}
+
+.radioIndicator {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 1.5px solid #c2b8ac;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.radioIndicatorActive {
+  border-color: var(--color-primary);
+}
+
+.radioDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--color-primary);
+}
+
+.roleCardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin-bottom: 6px;
+  letter-spacing: -0.01em;
+}
+
+.roleCardDesc {
+  font-size: 0.85rem;
   color: var(--color-text-muted);
+  line-height: 1.4;
 }
 
 /* Section dividers & subtitles */
@@ -141,7 +200,7 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--color-text);
-  margin: 24px 0 16px;
+  margin: 28px 0 16px;
 }
 
 /* Form grid */
@@ -509,4 +568,3 @@
   opacity: 0.6;
   cursor: not-allowed;
 }
-

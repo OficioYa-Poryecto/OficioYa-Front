@@ -1,0 +1,33 @@
+.wrapper {
+  display: grid;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.bar {
+  height: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-border);
+  animation: pulso 1.4s ease-in-out infinite;
+}
+
+.bar:nth-child(even) {
+  width: 70%;
+}
+
+.title {
+  width: 45%;
+  height: 32px;
+  margin-bottom: 8px;
+}
+
+.note {
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  margin: 4px 0 0;
+}
+
+@keyframes pulso {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.45; }
+}

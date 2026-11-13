@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getToken } from '../../core/lib/session';
+import { ACCESS_TOKEN } from '../config';
 import * as profileService from '../services/profileService';
 
 export function useProfile(id) {
@@ -8,10 +8,9 @@ export function useProfile(id) {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const token = getToken();
     const peticion = id
-      ? profileService.obtenerPerfilPublico(id, token)
-      : profileService.obtenerMiPerfil(token);
+      ? profileService.obtenerPerfilPublico(id, ACCESS_TOKEN)
+      : profileService.obtenerMiPerfil(ACCESS_TOKEN);
 
     peticion
       .then(setPerfil)
@@ -20,11 +19,11 @@ export function useProfile(id) {
   }, [id]);
 
   async function actualizar(datos) {
-    setPerfil(await profileService.actualizarMiPerfil(datos, getToken()));
+    setPerfil(await profileService.actualizarMiPerfil(datos, ACCESS_TOKEN));
   }
 
   async function agregarRol(rol) {
-    setPerfil(await profileService.agregarRol(rol, getToken()));
+    setPerfil(await profileService.agregarRol(rol, ACCESS_TOKEN));
   }
 
   return { perfil, cargando, error, actualizar, agregarRol };

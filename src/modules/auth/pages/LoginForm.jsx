@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { login } from '../services/authService';
+import { hasWorkerProfile, login } from '../services/authService';
 import { saveSession } from '../../core/lib/session';
 import styles from './AuthPage.module.css';
 
@@ -40,12 +40,24 @@ export default function LoginForm({ onForgot }) {
     setLoading(true);
     try {
       const data = await login(form);
+      const rolesArray = Array.isArray(data.roles)
+        ? data.roles
+        : Array.from(data.roles ?? []);
       saveSession({
         token: data.token,
         userId: data.userId,
-        roles: data.roles,
+        roles: rolesArray,
         expiresInSeconds: data.expiresInSeconds,
       });
+
+      if (rolesArray.includes('TRABAJADOR')) {
+        const workerExists = await hasWorkerProfile();
+        if (!workerExists) {
+          navigate('/worker/create');
+          return;
+        }
+      }
+
       navigate('/home');
     } catch (err) {
       if (err.status === 423)

@@ -1,63 +1,111 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
+import { usePhones } from '../hooks/usePhones';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
+import Skeleton from './Skeleton';
+import PhoneList from './PhoneList';
+import styles from './Form.module.css';
+
+// Mismo límite que valida el back (UserUpdateDTO)
+const MAX_NOMBRE = 100;
+const FORM_ID = 'perfil-form';
 
 function ProfileForm() {
   const { perfil, cargando, error, actualizar } = useProfile();
+  const telefonos = usePhones();
+  const navigate = useNavigate();
+  const cancelar = () => navigate('/users/me');
 
-  if (cargando) {
-    return <p>Cargando...</p>;
-  }
-  if (error) {
-    return <ErrorMessage error={error} />;
-  }
+  const cargandoTodo = cargando || telefonos.cargando;
+  const errorCarga = error ?? telefonos.error;
 
-  return <Formulario perfil={perfil} onGuardar={actualizar} />;
+  return (
+    <section className={`card ${styles.page}`}>
+      <div className={styles.header}>
+        <div>
+          <span className="eyebrow">Mi perfil</span>
+          <h1>Editar perfil</h1>
+        </div>
+        <Button type="button" variant="secondary" onClick={cancelar}>Cancelar</Button>
+      </div>
+
+      {cargandoTodo || errorCarga ? (
+        <Skeleton lines={3} error={errorCarga} />
+      ) : (
+        <Contenido perfil={perfil} telefonos={telefonos} onGuardar={actualizar} onGuardado={cancelar} />
+      )}
+    </section>
+  );
 }
 
-function Formulario({ perfil, onGuardar }) {
+function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
   const [name, setName] = useState(perfil.name ?? '');
-  const [phone, setPhone] = useState('');
+  const [tocado, setTocado] = useState(false);
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
-  const navigate = useNavigate();
+
+  const errorNombre = name.trim() === '' ? 'El nombre es obligatorio' : null;
 
   async function manejarEnvio(evento) {
     evento.preventDefault();
+    setTocado(true);
+    if (errorNombre) {
+      return;
+    }
     setError(null);
     setGuardando(true);
     try {
-      const phones = phone ? [{ number: phone, principal: true }] : undefined;
-      await onGuardar({ name, phones });
-      navigate('/users/me');
+      await onGuardar({ name: name.trim() });
+      onGuardado();
     } catch (e) {
       setError(e.message);
-    } finally {
       setGuardando(false);
     }
   }
 
   return (
-    <form onSubmit={manejarEnvio} style={{ maxWidth: 480, display: 'grid', gap: 12 }}>
-      <h1>Editar perfil</h1>
-      <label>
-        Nombre
-        <input value={name} onChange={(e) => setName(e.target.value)} required />
-      </label>
-      <label>
-        Nuevo teléfono (opcional)
-        <input value={phone} onChange={(e) => setPhone(e.target.value)} />
-      </label>
+    <div className={styles.form}>
+      <p className={styles.note}>
+        <span className={styles.required}>*</span> Campos obligatorios
+      </p>
+
+      <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
+        <div className={styles.field}>
+          <div className={styles.labelRow}>
+            <label htmlFor="name" className={styles.label}>
+              Nombre<span className={styles.required}>*</span>
+            </label>
+            <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
+          </div>
+          <input
+            id="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            onBlur={() => setTocado(true)}
+            maxLength={MAX_NOMBRE}
+            required
+          />
+          {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
+        </div>
+      </form>
+
+      <PhoneList
+        phones={telefonos.telefonos}
+        onAgregar={telefonos.agregar}
+        onCambiar={telefonos.cambiar}
+        onEliminar={telefonos.eliminar}
+      />
+
       <ErrorMessage error={error} />
-      <Button type="submit" disabled={guardando}>
-        {guardando ? 'Guardando...' : 'Guardar'}
-      </Button>
-      <Button type="button" variant="secondary" onClick={() => navigate('/users/me')}>
-        Cancelar
-      </Button>
-    </form>
+      {/* Guardar va al final y envía el formulario del nombre por su id (los teléfonos se guardan al momento) */}
+      <div className={styles.footer}>
+        <Button type="submit" form={FORM_ID} disabled={guardando}>
+          {guardando ? 'Guardando...' : 'Guardar'}
+        </Button>
+      </div>
+    </div>
   );
 }
 

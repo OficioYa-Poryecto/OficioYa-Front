@@ -1,31 +1,42 @@
 
 const BASE_URL = '/api/v1';
+const TOKEN_KEY = 'oy_token';
+const LOGIN_PATH = '/auth';
 
 export async function request(path, { method = 'GET', body, token } = {}) {
-    const headers = { 'Content-Type': 'application/json' };
-    if (token) {
-    headers.Authorization = `Bearer ${token}`;
-    }
+  const headers = { 'Content-Type': 'application/json' };
+  const jwt = localStorage.getItem(TOKEN_KEY) || token;
+  if (jwt) {
+    headers.Authorization = `Bearer ${jwt}`;
+  }
 
-    let response;
-    try {
+  let response;
+  try {
     response = await fetch(BASE_URL + path, {
-        method,
-        headers,
-        body: body ? JSON.stringify(body) : undefined,
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
     });
-    } catch {
+  } catch {
     throw new Error('No se pudo conectar con el servidor');
-    }
+  }
 
-    if (!response.ok) {
+  if (response.status === 401) {
+    localStorage.removeItem(TOKEN_KEY);
+    if (window.location.pathname !== LOGIN_PATH) {
+      window.location.assign(LOGIN_PATH);
+    }
+  }
+
+  if (!response.ok) {
     const apiError = await response.json().catch(() => ({}));
     const error = new Error(
-        apiError.message ?? apiError.mensaje ?? apiError.error ?? `Error ${response.status}`,
+      apiError.message ?? apiError.mensaje ?? apiError.error ?? `Error ${response.status}`,
     );
     error.status = response.status;
     throw error;
-    }
+  }
 
-    return response.status === 204 ? null : response.json();
+  const text = await response.text();
+  return text ? JSON.parse(text) : null;
 }

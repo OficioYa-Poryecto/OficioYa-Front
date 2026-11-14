@@ -1,12 +1,7 @@
+import { Navigate } from 'react-router-dom';
+import { getSession } from '../lib/session';
 
-function HomePage() {
-    return (
-    <section className="card">
-        <span className="eyebrow">Bienvenido a OficioYa</span>
-        <h1>Tu espacio en OficioYa</h1>
-        <p>Selecciona una opción del menú para comenzar.</p>
-    </section>
-    );
+export default function HomePage() {
+  const session = getSession();
+  return <Navigate to={session ? '/home' : '/auth'} replace />;
 }
-
-export default HomePage;

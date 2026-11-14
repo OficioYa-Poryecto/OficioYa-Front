@@ -11,13 +11,13 @@ import detail from './UserDetail.module.css';
 const INVITACIONES = {
   TRABAJADOR: {
     pregunta: '¿Ofreces algún oficio?',
-    texto: 'Activa tu perfil de trabajador para recibir solicitudes de servicio.',
-    boton: 'Quiero ser trabajador',
+    texto: 'Agrega el rol de trabajador para recibir solicitudes de servicio.',
+    boton: 'Agregar rol de trabajador',
   },
   CONTRATANTE: {
     pregunta: '¿Necesitas contratar un servicio?',
-    texto: 'Activa tu perfil de contratante para buscar y contratar trabajadores.',
-    boton: 'Quiero contratar servicios',
+    texto: 'Agrega el rol de contratante para buscar y contratar trabajadores.',
+    boton: 'Agregar rol de contratante',
   },
 };
 
@@ -27,6 +27,7 @@ function ProfileView() {
   const { perfil, cargando, error, agregarRol } = useProfile(id);
   const [rolGuardando, setRolGuardando] = useState(null);
   const [errorRol, setErrorRol] = useState(null);
+  const [debeReingresar, setDebeReingresar] = useState(false);
   const navigate = useNavigate();
 
   async function activarRol(rol) {
@@ -34,11 +35,19 @@ function ProfileView() {
     setRolGuardando(rol);
     try {
       await agregarRol(rol);
+      if (rol === 'TRABAJADOR') {
+        setDebeReingresar(true);
+      }
     } catch (e) {
       setErrorRol(e.message);
     } finally {
       setRolGuardando(null);
     }
+  }
+
+  function irAlLogin() {
+    localStorage.removeItem('oy_token');
+    navigate('/auth');
   }
 
   if (cargando || error) {
@@ -86,6 +95,16 @@ function ProfileView() {
           </>
         )}
       </dl>
+
+      {esPropio && debeReingresar && (
+        <div className={styles.invite}>
+          <h3>Ya tienes el rol de trabajador</h3>
+          <p className={styles.note}>Inicia sesión de nuevo para completar tu perfil de trabajador.</p>
+          <div className={styles.actions}>
+            <Button type="button" onClick={irAlLogin}>Iniciar sesión</Button>
+          </div>
+        </div>
+      )}
 
       {esPropio && !esAdmin && rolesFaltantes.map((rol) => (
         <div key={rol} className={styles.invite}>

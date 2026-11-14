@@ -1,15 +1,20 @@
-    import { Outlet } from 'react-router-dom';
-    import Navbar from './Navbar';
+import { Outlet, useLocation } from 'react-router-dom';
+import Navbar from './Navbar';
+import Footer from './Footer';
 
-    function Layout() {
-      return (
-        <>
-          <Navbar />
-          <main style={{ maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
-            <Outlet />
-          </main>
-        </>
-      );
-    }
+function Layout() {
+  const { pathname } = useLocation();
+  const isAuth = pathname.startsWith('/auth');
 
-    export default Layout;
+  return (
+    <>
+      <Navbar />
+      <main style={isAuth ? {} : { maxWidth: 1100, margin: '0 auto', padding: '32px 24px' }}>
+        <Outlet />
+      </main>
+      <Footer />
+    </>
+  );
+}
+
+export default Layout;

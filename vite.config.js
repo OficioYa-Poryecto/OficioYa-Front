@@ -5,8 +5,19 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      // Everything starting with /api is forwarded to the Spring Boot backend
-      '/api': 'http://localhost:8080',
+      '/api/v1/auth': {
+        target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/v1/workers': 'http://localhost:8082',
+      '/api/v1/trades': 'http://localhost:8082',
+      '/api/v1/trade-categories': 'http://localhost:8082',
+      '/api': {
+        target: 'https://oficioya-users-api-cmaxb7fphegvdwb3.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
     },
   },
 })

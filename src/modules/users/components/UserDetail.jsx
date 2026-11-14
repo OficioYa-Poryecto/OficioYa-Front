@@ -5,8 +5,10 @@ import { useAdminUser } from '../hooks/useAdminUsers';
 import { useProfile } from '../hooks/useProfile';
 import StatusSelector from './StatusSelector';
 import Skeleton from './Skeleton';
+import ProfileHeader from './ProfileHeader';
+import ContactCard from './ContactCard';
 import styles from './UserDetail.module.css';
-import form from './Form.module.css';
+import vista from './ProfileView.module.css';
 
 function UserDetail() {
   const { id } = useParams();
@@ -14,22 +16,23 @@ function UserDetail() {
   const { perfil: me } = useProfile(); // usuario logueado (GET /users/me)
   const navigate = useNavigate();
 
-  const header = (title) => (
-    <div className={form.header}>
-      <div>
-        <span className="eyebrow">Detalle de usuario</span>
-        {title && <h1>{title}</h1>}
-      </div>
-      <Button type="button" variant="secondary" onClick={() => navigate('/admin/users')}>Volver</Button>
-    </div>
+  const volver = (
+      <Button type="button" variant="secondary" onClick={() => navigate('/admin/users')}>
+        Volver al listado
+      </Button>
   );
 
   if (loading || error) {
     return (
-      <section className={`card ${form.page}`}>
-        {header(null)}
-        <Skeleton lines={6} error={error} />
-      </section>
+        <section className={vista.page}>
+          <div className={vista.top}>
+            <span className="eyebrow">Detalle de usuario</span>
+            {volver}
+          </div>
+          <div className="card">
+            <Skeleton lines={6} error={error} />
+          </div>
+        </section>
     );
   }
 
@@ -37,34 +40,51 @@ function UserDetail() {
   const isSelf = me?.id === user.id;
 
   return (
-    <section className={`card ${form.page}`}>
-      {header(user.name)}
+      <section className={vista.page}>
+        <div className={vista.top}>
+          <ProfileHeader nombre={user.name} roles={user.roles} activo={isActive} etiqueta="Detalle de usuario" />
+          <div className={vista.actions}>
+            <span className={styles.internal}>🛡 Acceso interno</span>
+            {volver}
+          </div>
+        </div>
 
-      <dl className={styles.data}>
-        <dt>Correo</dt>
-        <dd>{user.email}</dd>
-        <dt>Teléfonos</dt>
-        <dd>
-          {[...user.phones].sort((a, b) => Number(b.principal) - Number(a.principal))
-            .map((p) => `${p.number} (${p.principal ? 'principal' : 'adicional'})`).join(', ')}
-        </dd>
-        <dt>Roles</dt>
-        <dd>{user.roles.join(', ')}</dd>
-        <dt>Estado</dt>
-        <dd className={isActive ? styles.active : styles.inactive}>{isActive ? 'Activo' : 'Inactivo'}</dd>
-        <dt>Creado</dt>
-        <dd>{new Date(user.createdAt).toLocaleString()}</dd>
-        <dt>Actualizado</dt>
-        <dd>{new Date(user.updatedAt).toLocaleString()}</dd>
-      </dl>
+        <div className={vista.layout}>
+          <aside>
+            <ContactCard
+                email={user.email}
+                phones={user.phones ?? []}
+                nota="Datos completos visibles solo para administración."
+            />
+          </aside>
 
-      {me && (isSelf ? (
-        <p>No puedes cambiar el estado de tu propia cuenta.</p>
-      ) : (
-        <StatusSelector isActive={isActive} onSubmit={updateStatus} />
-      ))}
-      <ErrorMessage error={actionError} />
-    </section>
+          <div className={`card ${styles.statusCard}`}>
+            <div className={styles.statusHeader}>
+              <div>
+                <span className="eyebrow">Moderación</span>
+                <h2>Estado de la cuenta</h2>
+              </div>
+              <span className={isActive ? styles.pillActive : styles.pillInactive}>
+              {isActive ? 'Activa' : 'Inactiva'}
+            </span>
+            </div>
+
+            <dl className={styles.data}>
+              <dt>Creada</dt>
+              <dd>{new Date(user.createdAt).toLocaleString()}</dd>
+              <dt>Última actualización</dt>
+              <dd>{new Date(user.updatedAt).toLocaleString()}</dd>
+            </dl>
+
+            {me && (isSelf ? (
+                <p>No puedes cambiar el estado de tu propia cuenta.</p>
+            ) : (
+                <StatusSelector isActive={isActive} onSubmit={updateStatus} />
+            ))}
+            <ErrorMessage error={actionError} />
+          </div>
+        </div>
+      </section>
   );
 }
 

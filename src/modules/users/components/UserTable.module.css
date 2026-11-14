@@ -1,13 +1,88 @@
+/* Tarjetas de resumen: total, activas e inactivas */
+.summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.summaryCard {
+  display: grid;
+  gap: 4px;
+}
+
+.summaryCard small {
+  color: var(--color-text-muted);
+}
+
+.summaryCard strong {
+  font-size: 2rem;
+}
+
+.detail,
+.detailAlert {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.detail {
+  color: var(--color-success);
+}
+
+.detailAlert {
+  color: var(--color-danger);
+}
+
+/* Buscador a la izquierda y filtros de estado a la derecha */
+.toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.toolbar input {
+  max-width: 340px;
+}
+
+.filters {
+  display: flex;
+  gap: 8px;
+}
+
+.filter,
+.filterActive {
+  padding: 8px 14px;
+  border-radius: 999px;
+  font: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.filter {
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+}
+
+.filterActive {
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary-soft);
+  color: var(--color-accent);
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
 .table th,
 .table td {
   text-align: left;
-  padding: 12px;
+  padding: 14px 12px;
   border-bottom: 1px solid var(--color-border);
 }
 
@@ -16,17 +91,42 @@
   font-size: 0.85rem;
 }
 
-.active {
-  color: var(--color-success);
+.roles {
+  display: block;
+  color: var(--color-text-muted);
+}
+
+.pillActive,
+.pillInactive {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
   font-weight: 700;
 }
 
-.inactive {
+.pillActive {
+  background: #e7f4ee;
+  color: var(--color-success);
+}
+
+.pillInactive {
+  background: #fdecea;
   color: var(--color-danger);
-  font-weight: 700;
 }
 
 .link {
   color: var(--color-primary);
   font-weight: 700;
+}
+
+@media (max-width: 760px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+
+  /* En celular se oculta la columna del correo */
+  .table th:nth-child(2),
+  .table td:nth-child(2) {
+    display: none;
+  }
 }

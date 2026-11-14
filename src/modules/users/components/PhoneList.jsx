@@ -32,66 +32,66 @@ function PhoneList({ phones, onAgregar, onCambiar, onEliminar }) {
   function fila(phone) {
     if (editando === phone.id) {
       return (
-        <NumeroForm
-          key={phone.id}
-          etiqueta={phone.principal ? 'Número principal' : 'Número adicional'}
-          valorInicial={phone.number}
-          ocupado={ocupado}
-          onGuardar={(numero) => ejecutar(() => onCambiar(phone.id, numero))}
-          onCancelar={() => setEditando(null)}
-        />
+          <NumeroForm
+              key={phone.id}
+              etiqueta={phone.principal ? 'Teléfono principal' : 'Teléfono alterno'}
+              valorInicial={phone.number}
+              ocupado={ocupado}
+              onGuardar={(numero) => ejecutar(() => onCambiar(phone.id, numero))}
+              onCancelar={() => setEditando(null)}
+          />
       );
     }
     return (
-      <div key={phone.id} className={`${styles.phoneRow} ${styles.compact}`}>
-        <span>{enmascarar(phone.number)}</span>
-        <div className={styles.actions}>
-          <Button type="button" variant="secondary" onClick={() => setEditando(phone.id)} disabled={ocupado}>
-            Modificar
-          </Button>
-          {!phone.principal && (
-            <Button type="button" variant="secondary" onClick={() => ejecutar(() => onEliminar(phone.id))} disabled={ocupado}>
-              Eliminar
+        <div key={phone.id} className={`${styles.phoneRow} ${styles.compact}`}>
+          <span>{enmascarar(phone.number)}</span>
+          <div className={styles.actions}>
+            <Button type="button" variant="secondary" onClick={() => setEditando(phone.id)} disabled={ocupado}>
+              Modificar
             </Button>
-          )}
+            {!phone.principal && (
+                <Button type="button" variant="secondary" onClick={() => ejecutar(() => onEliminar(phone.id))} disabled={ocupado}>
+                  Eliminar
+                </Button>
+            )}
+          </div>
         </div>
-      </div>
     );
   }
 
   return (
-    <div className={styles.form}>
-      <div className={styles.field}>
+      <div className={styles.form}>
+        <div className={styles.field}>
         <span className={styles.label}>
-          Número principal<span className={styles.required}>*</span>
+          Teléfono principal<span className={styles.required}>*</span>
         </span>
-        {principal && fila(principal)}
-      </div>
+          {principal && fila(principal)}
+        </div>
 
-      <div className={styles.field}>
-        <span className={styles.label}>Números adicionales</span>
-        {adicionales.map(fila)}
-        {adicionales.length === 0 && editando !== NUEVO && <p className={styles.note}>Sin números adicionales</p>}
-        {editando === NUEVO && (
-          <NumeroForm
-            etiqueta="Número adicional"
-            valorInicial=""
-            ocupado={ocupado}
-            onGuardar={(numero) => ejecutar(() => onAgregar(numero))}
-            onCancelar={() => setEditando(null)}
-          />
-        )}
-        {phones.length >= MAX_TELEFONOS && <p className={styles.note}>Máximo {MAX_TELEFONOS} teléfonos</p>}
-        {editando !== NUEVO && phones.length < MAX_TELEFONOS && (
-          <div className={`${styles.actions} ${styles.compact}`}>
-            <Button type="button" variant="secondary" onClick={() => setEditando(NUEVO)} disabled={ocupado}>
-              + Agregar teléfono
-            </Button>
-          </div>
-        )}
+        <div className={styles.field}>
+          <span className={styles.label}>Teléfonos alternos</span>
+          {adicionales.map(fila)}
+          {adicionales.length === 0 && editando !== NUEVO && <p className={styles.note}>Sin teléfonos alternos</p>}
+          {editando === NUEVO && (
+              <NumeroForm
+                  etiqueta="Teléfono alterno"
+                  valorInicial=""
+                  ocupado={ocupado}
+                  onGuardar={(numero) => ejecutar(() => onAgregar(numero))}
+                  onCancelar={() => setEditando(null)}
+              />
+          )}
+          {phones.length >= MAX_TELEFONOS && <p className={styles.note}>Máximo {MAX_TELEFONOS} teléfonos</p>}
+          {editando !== NUEVO && phones.length < MAX_TELEFONOS && (
+              <div className={`${styles.actions} ${styles.compact}`}>
+                <Button type="button" variant="secondary" onClick={() => setEditando(NUEVO)} disabled={ocupado}>
+                  + Agregar teléfono
+                </Button>
+              </div>
+          )}
+        </div>
+        <ErrorMessage error={error} />
       </div>
-      <ErrorMessage error={error} />
-    </div>
   );
 }
 
@@ -114,28 +114,28 @@ function NumeroForm({ etiqueta, valorInicial, ocupado, onGuardar, onCancelar }) 
   }
 
   return (
-    <form onSubmit={enviar} className={styles.field} noValidate>
-      <div className={`${styles.phoneRow} ${styles.compact}`}>
-        <input
-          aria-label={etiqueta}
-          type="tel"
-          inputMode="numeric"
-          placeholder="Número de teléfono"
-          value={numero}
-          onChange={(e) => {
-            setNumero(e.target.value);
-            setTocado(true);
-          }}
-          maxLength={10}
-          autoFocus
-        />
-        <div className={styles.actions}>
-          <Button type="submit" disabled={ocupado}>{ocupado ? 'Guardando...' : 'Guardar'}</Button>
-          <Button type="button" variant="secondary" onClick={onCancelar}>Cancelar</Button>
+      <form onSubmit={enviar} className={styles.field} noValidate>
+        <div className={`${styles.phoneRow} ${styles.compact}`}>
+          <input
+              aria-label={etiqueta}
+              type="tel"
+              inputMode="numeric"
+              placeholder="Número de teléfono"
+              value={numero}
+              onChange={(e) => {
+                setNumero(e.target.value);
+                setTocado(true);
+              }}
+              maxLength={10}
+              autoFocus
+          />
+          <div className={styles.actions}>
+            <Button type="submit" disabled={ocupado}>{ocupado ? 'Guardando...' : 'Guardar'}</Button>
+            <Button type="button" variant="secondary" onClick={onCancelar}>Cancelar</Button>
+          </div>
         </div>
-      </div>
-      {tocado && error && <p className={styles.fieldError}>{error}</p>}
-    </form>
+        {tocado && error && <p className={styles.fieldError}>{error}</p>}
+      </form>
   );
 }
 

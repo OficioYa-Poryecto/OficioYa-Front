@@ -186,3 +186,15 @@
   font-size: 2rem;
   font-weight: 700;
 }
+
+/* Botones a ambos extremos (Cancelar a la izquierda, Guardar a la derecha) */
+.between {
+  justify-content: space-between;
+}
+
+/* Campo de solo lectura, como el correo en la edición del perfil */
+.form input:disabled {
+  color: var(--color-text-muted);
+  background: var(--color-surface-alt);
+  cursor: not-allowed;
+}

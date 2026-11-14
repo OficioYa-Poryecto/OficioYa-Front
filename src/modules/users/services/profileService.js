@@ -1,17 +1,5 @@
 import { request } from '../../core/lib/httpClient';
 
-// RF-01: no lleva token, el visitante todavía no tiene cuenta
-export function registrarUsuario(datos) {
-  return request('/users', { method: 'POST', body: datos });
-}
-
-// RF-01: el correo y la contraseña los guarda Identity, no este microservicio.
-// Pendiente: cuando exista la conexión con Identity, aquí se le envían (con el id del usuario creado)
-// para que cree las credenciales. Por ahora no hace nada.
-export async function registrarCredenciales(/* idUsuario, correo, contrasena */) {
-  return null;
-}
-
 export function obtenerMiPerfil(token) {
   return request('/users/me', { token });
 }

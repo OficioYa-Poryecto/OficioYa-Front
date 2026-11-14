@@ -417,7 +417,7 @@ export default function HomePage() {
               <UserIcon size={17} />
               Ver mi perfil
             </Link>
-            <Link to="/users/me/edit" className={styles.textActionLink}>
+            <Link to="/users/me/edit" className={styles.outlinePillBtn}>
               <EditIcon />
               Editar perfil
             </Link>

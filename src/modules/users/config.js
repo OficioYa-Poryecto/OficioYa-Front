@@ -17,3 +17,24 @@ export function validarTelefono(numero) {
   }
   return null;
 }
+
+// Botón y mensaje para cada rol que el usuario todavía no tiene
+export const ROLES_AGREGABLES = {
+  TRABAJADOR: {
+    boton: 'Agregar rol de trabajador',
+    agregado: 'Rol de trabajador agregado.',
+    detalle: 'Inicia sesión de nuevo para completar tu perfil de trabajador.',
+  },
+  CONTRATANTE: {
+    boton: 'Agregar rol de contratante',
+    agregado: 'Rol de contratante agregado.',
+    detalle: 'Ya puedes solicitar servicios con esta misma cuenta.',
+  },
+};
+
+// Nombre legible de cada rol (perfil, edición y listado del admin)
+export const NOMBRES_ROL = {
+  CONTRATANTE: 'Contratante',
+  TRABAJADOR: 'Trabajador',
+  ADMIN: 'Administrador',
+};

@@ -1,5 +1,3 @@
-
-
 .data {
   display: grid;
   grid-template-columns: 140px 1fr;
@@ -23,4 +21,49 @@
 .inactive {
   color: var(--color-danger);
   font-weight: 700;
+}
+
+/* Etiqueta "Acceso interno" junto al botón de volver, como en el mockup */
+.internal {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--color-surface-alt);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.statusCard {
+  display: grid;
+  gap: 8px;
+}
+
+.statusHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.statusHeader h2 {
+  margin: 0;
+}
+
+.pillActive,
+.pillInactive {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.pillActive {
+  background: #e7f4ee;
+  color: var(--color-success);
+}
+
+.pillInactive {
+  background: #fdecea;
+  color: var(--color-danger);
 }

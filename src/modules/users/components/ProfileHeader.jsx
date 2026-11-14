@@ -3,6 +3,8 @@ import { getProfilePhotoUrl } from '../../core/lib/imageService';
 import { getSession } from '../../core/lib/session';
 import { NOMBRES_ROL } from '../config';
 import styles from './ProfileView.module.css';
+import Icon from './Icon';
+const ICONO_ROL = { CONTRATANTE: 'user', TRABAJADOR: 'wrench', ADMIN: 'shield' };
 
 // Avatar con iniciales (o foto de perfil), estado, nombre con el apellido resaltado e insignias de rol.
 // Lo usan el perfil (ProfileView), la edición (ProfileForm) y el detalle del admin (UserDetail).
@@ -44,7 +46,7 @@ function ProfileHeader({ nombre, roles, activo, esPropio, etiqueta, userId, avat
         <div className={styles.badges}>
           {roles.map((rol, i) => (
             <span key={rol} className={i > 0 ? styles.badgeNeutral : styles.badge}>
-              {NOMBRES_ROL[rol] ?? rol}
+              <Icon name={ICONO_ROL[rol] ?? 'user'} size={14} /> {NOMBRES_ROL[rol] ?? rol}
             </span>
           ))}
         </div>

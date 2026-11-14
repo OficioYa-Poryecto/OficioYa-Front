@@ -159,3 +159,37 @@
   padding-top: 10px;
   border-radius: 0 0 10px 10px;
 }
+
+@media (max-width: 680px) {
+  .navbar {
+    padding: 10px 16px;
+    gap: 12px;
+  }
+
+  .logo {
+    height: 32px;
+  }
+
+  .rightArea {
+    gap: 12px;
+  }
+
+  .links {
+    gap: 14px;
+  }
+
+  .divider,
+  .accountText {
+    display: none;
+  }
+}
+
+@media (max-width: 400px) {
+  .link {
+    font-size: 0.85rem;
+  }
+
+  .links {
+    gap: 10px;
+  }
+}

@@ -129,4 +129,11 @@
   .table td:nth-child(2) {
     display: none;
   }
+
+  /* Si aun así no cabe, la tabla se desplaza de lado en vez de desbordar la página */
+  .table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
 }

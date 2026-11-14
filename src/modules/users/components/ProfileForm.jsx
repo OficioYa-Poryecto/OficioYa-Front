@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { usePhones } from '../hooks/usePhones';
+import { uploadImage } from '../../core/lib/imageService';
+import { getSession } from '../../core/lib/session';
 import { ROLES_AGREGABLES } from '../config';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
@@ -24,31 +26,31 @@ function ProfileForm() {
   const errorCarga = error ?? telefonos.error;
 
   return (
-      <section className={vista.page}>
-        <div className={vista.top}>
-          <div>
-            <span className="eyebrow">Mi cuenta</span>
-            <h1 className={vista.name}>
-              Editar <span className={vista.accent}>perfil</span>
-            </h1>
-            <p className={styles.note}>Mantén tus datos al día para que puedan encontrarte y contactarte.</p>
-          </div>
+    <section className={vista.page}>
+      <div className={vista.top}>
+        <div>
+          <span className="eyebrow">Mi cuenta</span>
+          <h1 className={vista.name}>
+            Editar <span className={vista.accent}>perfil</span>
+          </h1>
+          <p className={styles.note}>Mantén tus datos al día para que puedan encontrarte y contactarte.</p>
         </div>
+      </div>
 
-        {cargandoTodo || errorCarga ? (
-            <div className="card">
-              <Skeleton lines={3} error={errorCarga} />
-            </div>
-        ) : (
-            <Contenido
-                perfil={perfil}
-                telefonos={telefonos}
-                onGuardar={actualizar}
-                onAgregarRol={agregarRol}
-                onSalir={() => navigate('/users/me')}
-            />
-        )}
-      </section>
+      {cargandoTodo || errorCarga ? (
+        <div className="card">
+          <Skeleton lines={3} error={errorCarga} />
+        </div>
+      ) : (
+        <Contenido
+          perfil={perfil}
+          telefonos={telefonos}
+          onGuardar={actualizar}
+          onAgregarRol={agregarRol}
+          onSalir={() => navigate('/users/me')}
+        />
+      )}
+    </section>
   );
 }
 
@@ -60,12 +62,28 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
   const [guardado, setGuardado] = useState(false);
   const [rolGuardando, setRolGuardando] = useState(null);
   const [rolAgregado, setRolAgregado] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
+  const fileInputRef = useRef(null);
 
   const roles = perfil.roles ?? [];
   const rolesFaltantes = roles.includes('ADMIN')
-      ? []
-      : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
+    ? []
+    : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
   const errorNombre = name.trim() === '' ? 'El nombre es obligatorio' : null;
+
+  function handleSelectPhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('La imagen supera el tamaño máximo de 5 MB.');
+      return;
+    }
+    setError(null);
+    setGuardado(false);
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
 
   async function manejarEnvio(evento) {
     evento.preventDefault();
@@ -78,7 +96,16 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
     setGuardando(true);
     try {
       await onGuardar({ name: name.trim() });
-      // El Navbar muestra el nombre guardado en localStorage
+      if (photoFile && perfil?.id) {
+        const session = getSession();
+        await uploadImage({
+          file: photoFile,
+          tipo: 'PROFILE',
+          rootId: perfil.id,
+          token: session?.token,
+        });
+      }
+      // El Navbar muestra el nombre y foto guardados
       localStorage.setItem('oy_userName', name.trim());
       window.dispatchEvent(new Event('oy-profile-updated'));
       setGuardado(true);
@@ -103,97 +130,122 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
   }
 
   return (
-      <>
-        {rolesFaltantes.length > 0 && (
-            <div className={vista.actions}>
-              {rolesFaltantes.map((rol) => (
-                  <Button
-                      key={rol}
-                      type="button"
-                      variant="secondary"
-                      onClick={() => activarRol(rol)}
-                      disabled={rolGuardando !== null}
-                  >
-                    {rolGuardando === rol ? 'Guardando...' : `+ ${ROLES_AGREGABLES[rol].boton}`}
-                  </Button>
-              ))}
-            </div>
-        )}
-        {rolAgregado && (
-            <div className={vista.success}>
-              <span className={vista.successIcon}>✓</span>
-              <p>
-                <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
-              </p>
-            </div>
-        )}
-
-        <div className={`card ${styles.form}`}>
-          <ProfileHeader nombre={perfil.name} roles={roles} activo={perfil.accountStatus === 'ACTIVE'} esPropio />
-
-          <h2>Datos personales</h2>
-          <p className={styles.note}>
-            <span className={styles.required}>*</span> Campos obligatorios
-          </p>
-
-          <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
-            <div className={styles.field}>
-              <div className={styles.labelRow}>
-                <label htmlFor="name" className={styles.label}>
-                  Nombre completo<span className={styles.required}>*</span>
-                </label>
-                <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
-              </div>
-              <input
-                  id="name"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value);
-                    setGuardado(false);
-                  }}
-                  onBlur={() => setTocado(true)}
-                  maxLength={MAX_NOMBRE}
-                  required
-              />
-              {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
-            </div>
-
-            {/* El correo no se edita (lo administra Identity); el back lo devuelve enmascarado */}
-            <div className={styles.field}>
-              <label htmlFor="email" className={styles.label}>Correo electrónico</label>
-              <input id="email" value={perfil.email ?? ''} disabled />
-              <p className={styles.note}>🔒 Por seguridad, el correo no se puede editar.</p>
-            </div>
-          </form>
-
-          {/* Los teléfonos se guardan al momento, cada uno por separado */}
-          <PhoneList
-              phones={telefonos.telefonos}
-              onAgregar={telefonos.agregar}
-              onCambiar={telefonos.cambiar}
-              onEliminar={telefonos.eliminar}
-          />
-
-          {guardado && (
-              <div className={vista.success}>
-                <span className={vista.successIcon}>✓</span>
-                <p>
-                  <strong>Cambios guardados.</strong> Tu perfil ya está actualizado.
-                </p>
-              </div>
-          )}
-          <ErrorMessage error={error} />
-
-          <div className={`${styles.footer} ${styles.between}`}>
-            <Button type="button" variant="secondary" onClick={onSalir}>
-              {guardado ? 'Volver al perfil' : 'Cancelar'}
+    <>
+      {rolesFaltantes.length > 0 && (
+        <div className={vista.actions}>
+          {rolesFaltantes.map((rol) => (
+            <Button
+              key={rol}
+              type="button"
+              variant="secondary"
+              onClick={() => activarRol(rol)}
+              disabled={rolGuardando !== null}
+            >
+              {rolGuardando === rol ? 'Guardando...' : `+ ${ROLES_AGREGABLES[rol].boton}`}
             </Button>
-            <Button type="submit" form={FORM_ID} disabled={guardando}>
-              {guardando ? 'Guardando...' : 'Guardar cambios'}
+          ))}
+        </div>
+      )}
+      {rolAgregado && (
+        <div className={vista.success}>
+          <span className={vista.successIcon}>✓</span>
+          <p>
+            <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
+          </p>
+        </div>
+      )}
+
+      <div className={`card ${styles.form}`}>
+        <div className={vista.top}>
+          <ProfileHeader
+            nombre={name || perfil.name}
+            roles={roles}
+            activo={perfil.accountStatus === 'ACTIVE'}
+            esPropio
+            userId={perfil.id}
+            avatarUrl={photoPreview}
+          />
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/jpeg,image/png,image/webp"
+              onChange={handleSelectPhoto}
+              style={{ display: 'none' }}
+            />
+            <Button
+              type="button"
+              variant="secondary"
+              onClick={() => fileInputRef.current?.click()}
+            >
+              Subir foto
             </Button>
           </div>
         </div>
-      </>
+
+        <h2>Datos personales</h2>
+        <p className={styles.note}>
+          <span className={styles.required}>*</span> Campos obligatorios
+        </p>
+
+        <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
+          <div className={styles.field}>
+            <div className={styles.labelRow}>
+              <label htmlFor="name" className={styles.label}>
+                Nombre completo<span className={styles.required}>*</span>
+              </label>
+              <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
+            </div>
+            <input
+              id="name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setGuardado(false);
+              }}
+              onBlur={() => setTocado(true)}
+              maxLength={MAX_NOMBRE}
+              required
+            />
+            {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
+          </div>
+
+          {/* El correo no se edita (lo administra Identity); el back lo devuelve enmascarado */}
+          <div className={styles.field}>
+            <label htmlFor="email" className={styles.label}>Correo electrónico</label>
+            <input id="email" value={perfil.email ?? ''} disabled />
+            <p className={styles.note}>🔒 Por seguridad, el correo no se puede editar.</p>
+          </div>
+        </form>
+
+        {/* Los teléfonos se guardan al momento, cada uno por separado */}
+        <PhoneList
+          phones={telefonos.telefonos}
+          onAgregar={telefonos.agregar}
+          onCambiar={telefonos.cambiar}
+          onEliminar={telefonos.eliminar}
+        />
+
+        {guardado && (
+          <div className={vista.success}>
+            <span className={vista.successIcon}>✓</span>
+            <p>
+              <strong>Cambios guardados.</strong> Tu perfil ya está actualizado.
+            </p>
+          </div>
+        )}
+        <ErrorMessage error={error} />
+
+        <div className={`${styles.footer} ${styles.between}`}>
+          <Button type="button" variant="secondary" onClick={onSalir}>
+            {guardado ? 'Volver al perfil' : 'Cancelar'}
+          </Button>
+          <Button type="submit" form={FORM_ID} disabled={guardando}>
+            {guardando ? 'Guardando...' : 'Guardar cambios'}
+          </Button>
+        </div>
+      </div>
+    </>
   );
 }
 

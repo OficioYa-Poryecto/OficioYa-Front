@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
 import logo from '../../../assets/logo.jpg';
+import { getProfilePhotoUrl } from '../lib/imageService';
 import { clearSession, getSession } from '../lib/session';
 import { navLinks } from '../lib/moduleRegistry';
 import styles from './Navbar.module.css';
@@ -30,6 +31,7 @@ function Navbar() {
   const [userName, setUserName] = useState(
     () => localStorage.getItem('oy_userName') || (isAdmin ? 'Laura Pérez' : 'Ana Castro')
   );
+  const [avatarUrl, setAvatarUrl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef(null);
 
@@ -37,14 +39,21 @@ function Navbar() {
     function syncProfileName() {
       const stored = localStorage.getItem('oy_userName');
       if (stored) setUserName(stored);
+      const currentSession = getSession();
+      if (currentSession?.userId) {
+        getProfilePhotoUrl(currentSession.userId, currentSession.token).then((url) => {
+          setAvatarUrl(url);
+        });
+      }
     }
+    syncProfileName();
     window.addEventListener('oy-profile-updated', syncProfileName);
     window.addEventListener('storage', syncProfileName);
     return () => {
       window.removeEventListener('oy-profile-updated', syncProfileName);
       window.removeEventListener('storage', syncProfileName);
     };
-  }, []);
+  }, [session?.userId, session?.token]);
 
   useEffect(() => {
     function handleOutside(e) {
@@ -103,7 +112,13 @@ function Navbar() {
                   onClick={() => setMenuOpen((prev) => !prev)}
                   aria-expanded={menuOpen}
                 >
-                  <span className={styles.avatar}>{getInitials(userName)}</span>
+                  <span className={styles.avatar}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className={styles.avatarImg} />
+                    ) : (
+                      getInitials(userName)
+                    )}
+                  </span>
                   <span className={styles.accountText}>
                     <span className={styles.accountName}>{getFirstName(userName)}</span>
                     <span className={styles.accountSub}>

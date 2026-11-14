@@ -10,6 +10,11 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/api/v1/images': {
+        target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api/v1/workers': 'http://localhost:8082',
       '/api/v1/trades': 'http://localhost:8082',
       '/api/v1/trade-categories': 'http://localhost:8082',

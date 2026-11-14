@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { usePhones } from '../hooks/usePhones';
+import { getProfilePhotoUrl, uploadImage } from '../../core/lib/imageService';
+import { getSession } from '../../core/lib/session';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import Skeleton from './Skeleton';
@@ -45,6 +47,29 @@ function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
   const [tocado, setTocado] = useState(false);
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    if (!perfil?.id) return;
+    const session = getSession();
+    getProfilePhotoUrl(perfil.id, session?.token).then((url) => {
+      if (url) setPhotoPreview(url);
+    });
+  }, [perfil?.id]);
+
+  function handleSelectPhoto(e) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError('La imagen supera el tamaño máximo de 5 MB.');
+      return;
+    }
+    setError(null);
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
 
   const errorNombre = name.trim() === '' ? 'El nombre es obligatorio' : null;
 
@@ -58,6 +83,17 @@ function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
     setGuardando(true);
     try {
       await onGuardar({ name: name.trim() });
+      if (photoFile && perfil?.id) {
+        const session = getSession();
+        await uploadImage({
+          file: photoFile,
+          tipo: 'PROFILE',
+          rootId: perfil.id,
+          token: session?.token,
+        });
+      }
+      localStorage.setItem('oy_userName', name.trim());
+      window.dispatchEvent(new Event('oy-profile-updated'));
       onGuardado();
     } catch (e) {
       setError(e.message);
@@ -70,6 +106,34 @@ function Contenido({ perfil, telefonos, onGuardar, onGuardado }) {
       <p className={styles.note}>
         <span className={styles.required}>*</span> Campos obligatorios
       </p>
+
+      <div className={styles.photoUploadBox}>
+        <div className={styles.profileAvatar}>
+          {photoPreview ? (
+            <img src={photoPreview} alt="Vista previa" className={styles.profileAvatarImg} />
+          ) : (
+            <span>{(name || 'OY').slice(0, 2).toUpperCase()}</span>
+          )}
+        </div>
+        <div className={styles.photoUploadActions}>
+          <span className={styles.label}>Foto de perfil</span>
+          <p className={styles.note}>JPG, PNG o WEBP (máx. 5 MB)</p>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/jpeg,image/png,image/webp"
+            onChange={handleSelectPhoto}
+            style={{ display: 'none' }}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            onClick={() => fileInputRef.current?.click()}
+          >
+            Subir foto
+          </Button>
+        </div>
+      </div>
 
       <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
         <div className={styles.field}>

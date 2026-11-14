@@ -1,8 +1,12 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { register } from '../services/authService';
+import { uploadImage } from '../../core/lib/imageService';
+import { login, register } from '../services/authService';
 import { PASSWORD_RULES, validatePassword } from '../utils/passwordPolicy';
 import styles from './RegisterPage.module.css';
+
+const MAX_PHOTO_BYTES = 5 * 1024 * 1024;
+const ALLOWED_MIME = new Set(['image/jpeg', 'image/png', 'image/webp']);
 
 // Validación de teléfono colombiano: exactamente 10 dígitos, solo números, empieza por 3
 export const PHONE_REGEX = /^3\d{9}$/;
@@ -97,6 +101,49 @@ export default function RegisterPage() {
 
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [photoFile, setPhotoFile] = useState(null);
+  const [photoPreview, setPhotoPreview] = useState('');
+  const fileInputRef = useRef(null);
+
+  useEffect(() => {
+    return () => {
+      if (photoPreview) {
+        URL.revokeObjectURL(photoPreview);
+      }
+    };
+  }, [photoPreview]);
+
+  const handlePhotoChange = (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!ALLOWED_MIME.has(file.type)) {
+      setError('Formato de imagen no válido. Usa JPG, PNG o WebP.');
+      e.target.value = '';
+      return;
+    }
+    if (file.size > MAX_PHOTO_BYTES) {
+      setError('La imagen supera el tamaño máximo permitido de 5 MB.');
+      e.target.value = '';
+      return;
+    }
+    setError('');
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(file);
+    setPhotoPreview(URL.createObjectURL(file));
+  };
+
+  const handleUseAvatar = () => {
+    if (photoPreview) {
+      URL.revokeObjectURL(photoPreview);
+    }
+    setPhotoFile(null);
+    setPhotoPreview('');
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+  };
 
   // Manejo de teléfonos dinámicos
   const handlePhoneChange = (index, rawValue) => {
@@ -200,8 +247,27 @@ export default function RegisterPage() {
     };
 
     try {
-      await register(payload);
-      // Éxito: el backend responde 201 y no devuelve token -> redirigir a /auth?registered=1
+      const createdUser = await register(payload);
+      if (photoFile) {
+        try {
+          const authData = await login({
+            email: payload.email,
+            password: payload.password,
+          });
+          const targetUserId = createdUser?.id || authData?.userId;
+          if (authData?.token && targetUserId) {
+            await uploadImage({
+              file: photoFile,
+              rootId: targetUserId,
+              tipo: 'PROFILE',
+              token: authData.token,
+            });
+          }
+        } catch {
+          // Si falla la subida opcional de foto, no bloqueamos la cuenta recién creada
+        }
+      }
+      // Éxito: redirigir a /auth?registered=1
       navigate('/auth?registered=1');
     } catch (err) {
       if (err.status === 409) {
@@ -454,25 +520,52 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Sección: Foto de perfil (opcional, visual) */}
+            {/* Sección: Foto de perfil (opcional, conectada a image-service) */}
             <h3 className={styles.sectionTitle}>Foto de perfil</h3>
             <div className={styles.photoBox}>
-              <div className={styles.avatarMock}>{initials}</div>
+              <div className={styles.avatarMock}>
+                {photoPreview ? (
+                  <img
+                    src={photoPreview}
+                    alt="Vista previa de perfil"
+                    className={styles.avatarPreviewImg}
+                  />
+                ) : (
+                  initials
+                )}
+              </div>
               <div className={styles.photoInfo}>
                 <div className={styles.photoTitle}>Agrega una foto clara y reciente</div>
                 <div className={styles.photoDesc}>
-                  Para este perfil es opcional. JPG o PNG, máximo 5 MB.
+                  {photoFile
+                    ? `Archivo seleccionado: ${photoFile.name}`
+                    : 'Para este perfil es opcional. JPG, PNG o WebP, máximo 5 MB.'}
                 </div>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handlePhotoChange}
+                  style={{ display: 'none' }}
+                />
                 <div className={styles.photoActions}>
-                  <button type="button" className={styles.btnPhotoUpload}>
+                  <button
+                    type="button"
+                    className={styles.btnPhotoUpload}
+                    onClick={() => fileInputRef.current?.click()}
+                  >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                       <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                       <polyline points="17 8 12 3 7 8" />
                       <line x1="12" y1="3" x2="12" y2="15" />
                     </svg>
-                    Subir foto
+                    {photoFile ? 'Cambiar foto' : 'Subir foto'}
                   </button>
-                  <button type="button" className={styles.btnPhotoAvatar}>
+                  <button
+                    type="button"
+                    className={styles.btnPhotoAvatar}
+                    onClick={handleUseAvatar}
+                  >
                     Usar avatar
                   </button>
                 </div>

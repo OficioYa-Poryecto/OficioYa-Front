@@ -1,6 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
+import { getProfilePhotoUrl } from '../../core/lib/imageService';
+import { getSession } from '../../core/lib/session';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import Skeleton from './Skeleton';
@@ -28,7 +30,16 @@ function ProfileView() {
   const [rolGuardando, setRolGuardando] = useState(null);
   const [errorRol, setErrorRol] = useState(null);
   const [debeReingresar, setDebeReingresar] = useState(false);
+  const [photoUrl, setPhotoUrl] = useState(null);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!perfil?.id) return;
+    const session = getSession();
+    getProfilePhotoUrl(perfil.id, session?.token).then((url) => {
+      setPhotoUrl(url);
+    });
+  }, [perfil?.id]);
 
   async function activarRol(rol) {
     setErrorRol(null);
@@ -66,9 +77,18 @@ function ProfileView() {
   return (
     <section className={`card ${styles.page}`}>
       <div className={styles.header}>
-        <div>
-          <span className="eyebrow">{esPropio ? 'Mi perfil' : 'Perfil público'}</span>
-          <h1>{perfil.name}</h1>
+        <div className={styles.profileHeaderLeft}>
+          <div className={styles.profileAvatar}>
+            {photoUrl ? (
+              <img src={photoUrl} alt={perfil.name} className={styles.profileAvatarImg} />
+            ) : (
+              <span>{(perfil.name || 'OY').slice(0, 2).toUpperCase()}</span>
+            )}
+          </div>
+          <div>
+            <span className="eyebrow">{esPropio ? 'Mi perfil' : 'Perfil público'}</span>
+            <h1>{perfil.name}</h1>
+          </div>
         </div>
         {esPropio && (
           <Button type="button" variant="secondary" onClick={() => navigate('/users/me/edit')}>

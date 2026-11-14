@@ -1,28 +1,153 @@
 .navbar {
   display: flex;
   align-items: center;
-  padding: 12px 32px;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
+  justify-content: space-between;
+  padding: 12px 36px;
+  background: var(--color-bg);
+  border-bottom: 1px solid #ece4d8;
+}
+
+.brandLink {
+  display: inline-flex;
+  align-items: center;
+  text-decoration: none;
 }
 
 .logo {
-  height: 40px;
+  height: 38px;
   display: block;
+  object-fit: contain;
 }
 
-  .links {
+.rightArea {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.links {
   display: flex;
   gap: 24px;
-  margin-left: 32px;
+  align-items: center;
 }
 
 .link {
   text-decoration: none;
   font-weight: 600;
   color: var(--color-text-muted);
+  font-size: 0.92rem;
+  transition: color 0.15s;
+}
+
+.link:hover {
+  color: var(--color-text);
 }
 
 .active {
-  color: var(--color-accent);
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.divider {
+  width: 1px;
+  height: 26px;
+  background: #e4dcd0;
+}
+
+.accountWrap {
+  position: relative;
+}
+
+.accountBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  cursor: pointer;
+  text-align: left;
+}
+
+.accountBtn:hover {
+  background: rgba(36, 49, 45, 0.04);
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: #d3e4dc;
+  color: #214e3f;
+  font-size: 0.76rem;
+  font-weight: 800;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.accountText {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.accountName {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1f2d2a;
+}
+
+.accountSub {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.74rem;
+  color: #6c7773;
+}
+
+.dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 185px;
+  padding: 6px;
+  border-radius: 16px;
+  border: 1px solid #e6ddd1;
+  background: #ffffff;
+  box-shadow: 0 12px 30px rgba(36, 49, 45, 0.12);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+}
+
+.dropdownItem {
+  display: block;
+  width: 100%;
+  padding: 9px 12px;
+  border: none;
+  border-radius: 10px;
+  background: transparent;
+  color: #24312d;
+  font-family: inherit;
+  font-size: 0.86rem;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.dropdownItem:hover {
+  background: #faf5ee;
+}
+
+.logoutItem {
+  color: #b42318;
+  border-top: 1px solid #f1eae0;
+  margin-top: 4px;
+  padding-top: 10px;
+  border-radius: 0 0 10px 10px;
 }

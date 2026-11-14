@@ -1,0 +1,585 @@
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  max-width: 1020px;
+  margin: 0 auto;
+  padding: 12px 0 48px;
+}
+
+/* ─── Hero Banner ─── */
+.hero {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 40px 44px;
+  border-radius: 26px;
+  border: 1px solid #eadfd1;
+  background:
+    radial-gradient(circle at 78% 42%, rgba(235, 179, 148, 0.34) 0%, rgba(235, 179, 148, 0) 52%),
+    linear-gradient(135deg, #f5ece0 0%, #f3e5d5 58%, #f2dfd0 100%);
+  box-shadow: 0 12px 34px rgba(36, 49, 45, 0.05);
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 10px;
+  z-index: 1;
+}
+
+.eyebrowPill {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f9e2d6;
+  color: #b7462b;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.11em;
+  text-transform: uppercase;
+}
+
+.heroTitle {
+  margin: 2px 0 0;
+  font-size: clamp(2.25rem, 4vw, 3.1rem);
+  font-weight: 800;
+  line-height: 1.08;
+  letter-spacing: -0.035em;
+  color: #1f2d2a;
+}
+
+.heroNameHighlight {
+  position: relative;
+  display: inline-block;
+  color: #d65b38;
+  z-index: 1;
+}
+
+.heroNameHighlight::after {
+  content: '';
+  position: absolute;
+  left: -2px;
+  right: -2px;
+  bottom: 4px;
+  height: 10px;
+  border-radius: 6px;
+  background: rgba(234, 152, 124, 0.28);
+  z-index: -1;
+}
+
+.heroSubtitle {
+  margin: 2px 0 0;
+  font-size: 1.02rem;
+  color: #636e6a;
+  font-weight: 400;
+}
+
+.roleBadges {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  z-index: 1;
+}
+
+.roleBadgePrimary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: #fde9de;
+  border: 1px solid #f5cfc0;
+  color: #b7462b;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.roleBadgeSecondary {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 16px;
+  border-radius: 999px;
+  background: #fbf7f2;
+  border: 1px solid #e6ddd1;
+  color: #24312d;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.adminBadgeInline {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background: #f9e2d6;
+  color: #b7462b;
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+/* ─── Action Cards Grid ─── */
+.grid2 {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.grid3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.grid4 {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.actionCard {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background: #ffffff;
+  border: 1px solid #ece5dc;
+  border-radius: 24px;
+  padding: 28px 26px;
+  box-shadow: 0 10px 28px rgba(36, 49, 45, 0.05);
+  transition: transform 0.16s ease, box-shadow 0.16s ease, border-color 0.16s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.actionCard:hover {
+  transform: translateY(-2px);
+  border-color: #e2c8b8;
+  box-shadow: 0 14px 34px rgba(36, 49, 45, 0.08);
+}
+
+.iconBox {
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background: #fdebe1;
+  color: #c65331;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-bottom: 20px;
+}
+
+.cardTitle {
+  margin: 0 0 8px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #1f2d2a;
+  letter-spacing: -0.02em;
+}
+
+.cardDesc {
+  margin: 0 0 22px;
+  font-size: 0.93rem;
+  line-height: 1.5;
+  color: #6c7773;
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: auto;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #b7462b;
+  text-decoration: none;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.cardLink:hover {
+  color: #96351e;
+}
+
+/* ─── Trabajador Upsell Banner ─── */
+.upsellBanner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 22px 28px;
+  border-radius: 22px;
+  border: 1px solid #eadfd1;
+  background: linear-gradient(135deg, #f6efe5 0%, #f4e8da 100%);
+  box-shadow: 0 8px 24px rgba(36, 49, 45, 0.04);
+}
+
+.upsellLeft {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.upsellIconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #fde9de;
+  color: #c65331;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.upsellTitle {
+  margin: 0 0 4px;
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: #1f2d2a;
+}
+
+.upsellDesc {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #68736f;
+}
+
+.upsellBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 22px;
+  border-radius: 999px;
+  border: 1px solid #e4dcd0;
+  background: #ffffff;
+  color: #1f2d2a;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(36, 49, 45, 0.05);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.upsellBtn:hover:not(:disabled) {
+  background: #fdfaf6;
+  transform: translateY(-1px);
+}
+
+.upsellBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ─── Mi Cuenta Section (Both Roles) ─── */
+.accountCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 28px 34px;
+  border-radius: 24px;
+  border: 1px solid #ece5dc;
+  background: #ffffff;
+  box-shadow: 0 10px 28px rgba(36, 49, 45, 0.05);
+}
+
+.accountInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.accountTitle {
+  margin: 4px 0 0;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1f2d2a;
+}
+
+.accountDesc {
+  margin: 0;
+  font-size: 0.93rem;
+  color: #6c7773;
+}
+
+.accountActions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-shrink: 0;
+}
+
+.outlinePillBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 11px 22px;
+  border-radius: 999px;
+  border: 1px solid #e2dad0;
+  background: #ffffff;
+  color: #1f2d2a;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.outlinePillBtn:hover {
+  background: #faf6f0;
+  border-color: #d2c6b8;
+}
+
+.textActionLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #b7462b;
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.textActionLink:hover {
+  color: #94341d;
+}
+
+/* ─── Admin KPI Row ─── */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.kpiCard {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 22px 24px;
+  border-radius: 22px;
+  border: 1px solid #ece5dc;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(36, 49, 45, 0.04);
+}
+
+.kpiIconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #fdebe1;
+  color: #c65331;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.kpiBody {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex: 1;
+}
+
+.kpiLabel {
+  font-size: 0.82rem;
+  color: #6c7773;
+  font-weight: 500;
+}
+
+.kpiValueRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.kpiValue {
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: #1f2d2a;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+}
+
+.kpiNote {
+  font-size: 0.76rem;
+  color: #7c8682;
+  font-weight: 500;
+}
+
+/* ─── Admin Priority Cases Table Card ─── */
+.priorityCard {
+  background: #ffffff;
+  border: 1px solid #ece5dc;
+  border-radius: 26px;
+  padding: 30px 34px;
+  box-shadow: 0 10px 30px rgba(36, 49, 45, 0.05);
+}
+
+.priorityHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.priorityTitleWrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.priorityTitle {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1f2d2a;
+  letter-spacing: -0.025em;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7c8682;
+  border-bottom: 1px solid #eee7de;
+}
+
+.table th:last-child,
+.table td:last-child {
+  text-align: right;
+}
+
+.table th:nth-child(3),
+.table td:nth-child(3) {
+  text-align: center;
+}
+
+.table td {
+  padding: 18px 12px;
+  border-bottom: 1px solid #f3ede5;
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.userName {
+  display: block;
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #1f2d2a;
+}
+
+.userRoleSub {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.78rem;
+  color: #7c8682;
+}
+
+.reasonCell {
+  font-size: 0.94rem;
+  color: #384541;
+}
+
+.badgePriority {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: #fde8e8;
+  color: #b42318;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.badgePending {
+  display: inline-block;
+  padding: 5px 14px;
+  border-radius: 999px;
+  background: #fef5d6;
+  color: #8f6214;
+  font-size: 0.76rem;
+  font-weight: 700;
+}
+
+.reviewAction {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #b7462b;
+  font-family: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.reviewAction:hover {
+  color: #93331c;
+  text-decoration: underline;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 920px) {
+  .grid4 {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .grid3,
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 680px) {
+  .hero {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 28px 24px;
+  }
+  .grid2,
+  .grid4 {
+    grid-template-columns: 1fr;
+  }
+  .upsellBanner,
+  .accountCard,
+  .priorityHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .accountActions {
+    width: 100%;
+    flex-wrap: wrap;
+  }
+}
+

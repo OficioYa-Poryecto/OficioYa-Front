@@ -1,3 +1,4 @@
+import { clearSession } from './session';
 
 const BASE_URL = '/api/v1';
 const TOKEN_KEY = 'oy_token';
@@ -21,10 +22,10 @@ export async function request(path, { method = 'GET', body, token } = {}) {
     throw new Error('No se pudo conectar con el servidor');
   }
 
-  if (response.status === 401) {
-    localStorage.removeItem(TOKEN_KEY);
+  if (response.status === 401 && jwt) {
+    clearSession();
     if (window.location.pathname !== LOGIN_PATH) {
-      window.location.assign(LOGIN_PATH);
+      window.location.assign('/auth?expired=1');
     }
   }
 

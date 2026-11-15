@@ -77,6 +77,15 @@ function ChevronRightIcon() {
   );
 }
 
+function BriefcaseIcon() {
+  return (
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="2" y="7" width="20" height="14" rx="2" ry="2" />
+      <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16" />
+    </svg>
+  );
+}
+
 function normalizeRoles(raw) {
   if (!raw) return [];
   const list = Array.isArray(raw) ? raw : [raw];
@@ -130,13 +139,13 @@ export default function HomePage() {
     isAdmin ? 'Laura' : isTrabajador && !isContratante ? 'Julián' : 'Ana'
   );
 
-  async function handleAddContratanteRole() {
+  async function handleAddRole(targetRole) {
     if (addingRole) return;
     setAddingRole(true);
     try {
-      const updated = await profileService.agregarRol('CONTRATANTE', session?.token);
+      const updated = await profileService.agregarRol(targetRole, session?.token);
       const nextRoles = normalizeRoles(
-        updated?.roles?.length ? updated.roles : [...roles, 'CONTRATANTE']
+        updated?.roles?.length ? updated.roles : [...roles, targetRole]
       );
       setRoles(nextRoles);
       const current = getSession();
@@ -148,7 +157,7 @@ export default function HomePage() {
         });
       }
     } catch {
-      const nextRoles = Array.from(new Set([...roles, 'CONTRATANTE']));
+      const nextRoles = Array.from(new Set([...roles, targetRole]));
       setRoles(nextRoles);
     } finally {
       setAddingRole(false);
@@ -495,7 +504,7 @@ export default function HomePage() {
           <button
             type="button"
             className={styles.upsellBtn}
-            onClick={handleAddContratanteRole}
+            onClick={() => handleAddRole('CONTRATANTE')}
             disabled={addingRole}
           >
             <span>+</span>
@@ -554,6 +563,31 @@ export default function HomePage() {
             Abrir <ChevronRightIcon />
           </span>
         </Link>
+      </section>
+
+      <section className={styles.upsellBanner}>
+        <div className={styles.upsellLeft}>
+          <div className={styles.upsellIconBox}>
+            <BriefcaseIcon />
+          </div>
+          <div>
+            <h3 className={styles.upsellTitle}>
+              ¿También ofreces un oficio?
+            </h3>
+            <p className={styles.upsellDesc}>
+              Agrega el rol de trabajador y usa la misma cuenta para recibir solicitudes.
+            </p>
+          </div>
+        </div>
+        <button
+          type="button"
+          className={styles.upsellBtn}
+          onClick={() => handleAddRole('TRABAJADOR')}
+          disabled={addingRole}
+        >
+          <span>+</span>
+          <span>{addingRole ? 'Agregando...' : 'Agregar rol de trabajador'}</span>
+        </button>
       </section>
     </div>
   );

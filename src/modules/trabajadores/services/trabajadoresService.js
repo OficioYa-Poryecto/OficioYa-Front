@@ -3,6 +3,7 @@
 // Rutas relativas a /api/v1 (las agrega httpClient).
 import { redirectToLogin } from '../../core/lib/authRedirect';
 import { request } from '../../core/lib/httpClient';
+import { borrarImagen, idDeUrlImagen, subirImagen, urlImagen } from '../../core/lib/imagesClient';
 import { USE_MOCKS } from '../config';
 import * as mockApi from './mockWorkerApi';
 import { getSession } from './session';
@@ -10,6 +11,16 @@ import { getSession } from './session';
 async function call(path, options = {}) {
   try {
     return await request(path, { ...options, token: getSession().token });
+  } catch (error) {
+    if (error.status === 401) redirectToLogin();
+    throw error;
+  }
+}
+
+// Mismo manejo de sesión vencida para las llamadas al servicio de imágenes.
+async function conImagenes(accion) {
+  try {
+    return await accion();
   } catch (error) {
     if (error.status === 401) redirectToLogin();
     throw error;
@@ -64,6 +75,25 @@ const realApi = {
   addPhoto: (workerId, { url, description }) => call(`/workers/${workerId}/photos`, json('POST', { url, description })),
   deletePhoto: (workerId, photoId) => call(`/workers/${workerId}/photos/${photoId}`, { method: 'DELETE' }),
 
+  // Galería con el servicio de imágenes: el archivo se sube allá (tipo WORK, rootId = id del trabajador)
+  // y Worker solo guarda la URL. Si Worker falla, se borra la imagen para no dejarla huérfana.
+  async subirFotoGaleria(workerId, file, description) {
+    const token = getSession().token;
+    const imagen = await conImagenes(() => subirImagen(file, { tipo: 'WORK', rootId: workerId, token }));
+    try {
+      return await realApi.addPhoto(workerId, { url: urlImagen(imagen.id), description });
+    } catch (error) {
+      await borrarImagen(imagen.id, { token }).catch(() => {});
+      throw error;
+    }
+  },
+  // Quita la foto de Worker y, si la imagen vive en el servicio de imágenes, también allá.
+  async eliminarFotoGaleria(workerId, photo) {
+    await realApi.deletePhoto(workerId, photo.id);
+    const imagenId = idDeUrlImagen(photo.url);
+    if (imagenId) await borrarImagen(imagenId, { token: getSession().token }).catch(() => {});
+  },
+
   // ---- Catálogos ----
   listTrades: () => call('/trades?active=true'),
   // Las zonas son del dominio User: hasta acordar su contrato se usan las de ejemplo.
@@ -89,6 +119,8 @@ export const {
   deleteSlot,
   addPhoto,
   deletePhoto,
+  subirFotoGaleria,
+  eliminarFotoGaleria,
   listTrades,
   listZones,
 } = api;

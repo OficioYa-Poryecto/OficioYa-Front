@@ -179,6 +179,16 @@ export function deletePhoto(workerId, photoId) {
   return responder(null);
 }
 
+// Sin servicio de imágenes: la foto se muestra desde la memoria del navegador.
+export function subirFotoGaleria(workerId, file, description) {
+  return addPhoto(workerId, { url: URL.createObjectURL(file), description });
+}
+
+export function eliminarFotoGaleria(workerId, photo) {
+  if (photo.url.startsWith('blob:')) URL.revokeObjectURL(photo.url);
+  return deletePhoto(workerId, photo.id);
+}
+
 // ---- Catálogos ----
 
 export function listTrades() {

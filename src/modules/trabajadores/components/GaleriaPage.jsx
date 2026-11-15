@@ -2,57 +2,70 @@ import { useState } from 'react';
 import Boton from '../../core/design-system/Boton';
 import ConfirmModal from '../../core/design-system/ConfirmModal';
 import EmptyState from '../../core/design-system/EmptyState';
-import Field from '../../core/design-system/Field';
 import StatusMessage from '../../core/design-system/StatusMessage';
 import ui from '../../core/design-system/ui.module.css';
+import { FORMATOS_IMAGEN, validarArchivoImagen } from '../../core/lib/imagesClient';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { addPhoto, deletePhoto } from '../services/trabajadoresService';
+import { eliminarFotoGaleria, subirFotoGaleria } from '../services/trabajadoresService';
 import EstadoPerfil from './EstadoPerfil';
 import { formatoFecha } from './formatos';
 import PageHeading from './PageHeading';
 import styles from './trabajador.module.css';
 
 const MAX_DESCRIPCION = 200;
-// Misma validación que WorkPhotoRequest en el backend.
-const URL_VALIDA = /^https?:\/\/\S+$/;
 
 function GaleriaPage() {
   const { data: perfil, loading, error: loadError, refresh } = useMyWorker();
-  const [url, setUrl] = useState('');
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState('');
+  const [inputKey, setInputKey] = useState(0);
   const [description, setDescription] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(null);
   if (!perfil) return <EstadoPerfil error={loadError} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
 
+  const elegirArchivo = (event) => {
+    const elegido = event.target.files?.[0] ?? null;
+    if (preview) URL.revokeObjectURL(preview);
+    setFile(elegido);
+    setPreview(elegido ? URL.createObjectURL(elegido) : '');
+    setError(elegido ? validarArchivoImagen(elegido) : '');
+    setSuccess(false);
+  };
+
   const add = async (event) => {
     event.preventDefault();
     setSuccess(false);
-    if (!url.trim()) {
-      setError('Ingresa la URL de la foto');
+    const invalido = validarArchivoImagen(file);
+    if (invalido) {
+      setError(invalido);
       return;
     }
-    if (!URL_VALIDA.test(url.trim())) {
-      setError('La URL debe empezar por http o https y no tener espacios');
-      return;
-    }
+    setSaving(true);
     try {
-      await addPhoto(perfil.id, { url: url.trim(), description });
+      await subirFotoGaleria(perfil.id, file, description);
       await refresh();
-      setUrl('');
+      if (preview) URL.revokeObjectURL(preview);
+      setFile(null);
+      setPreview('');
+      setInputKey((key) => key + 1);
       setDescription('');
       setError('');
       setSuccess(true);
     } catch (e) {
       setError(e.message);
+    } finally {
+      setSaving(false);
     }
   };
 
   const confirmDelete = async () => {
     try {
-      await deletePhoto(perfil.id, deleting);
+      await eliminarFotoGaleria(perfil.id, perfil.photos.find((photo) => photo.id === deleting));
       await refresh();
     } catch (e) {
       setError(e.message);
@@ -66,7 +79,7 @@ function GaleriaPage() {
       <PageHeading
         eyebrow="Tu trabajo"
         title="Galería de trabajos"
-        description="Muestra resultados reales con una URL y una descripción breve."
+        description="Muestra resultados reales con una foto y una descripción breve."
       />
       {locked && (
         <StatusMessage className={styles.notice} variant="warning">
@@ -93,17 +106,23 @@ function GaleriaPage() {
         <form className={`${ui.infoCard} ${styles.galleryForm}`} noValidate onSubmit={add}>
           <div className={styles.galleryIntro}>
             <h2>Agregar foto</h2>
-            <p>Usa una URL pública de la imagen.</p>
+            <p>JPG, PNG o WebP de hasta 5 MB.</p>
           </div>
           <div className={styles.galleryFields}>
-            <Field
-              error={error}
-              label="URL de la foto"
-              onChange={(value) => { setUrl(value); setError(''); }}
-              placeholder="https://..."
-              required
-              value={url}
-            />
+            <label className={ui.field}>
+              <span className={ui.fieldLabel}>Foto *</span>
+              <span className={`${ui.inputShell} ${error ? ui.inputError : ''}`}>
+                <input
+                  accept={FORMATOS_IMAGEN.join(',')}
+                  aria-invalid={error ? true : undefined}
+                  key={inputKey}
+                  onChange={elegirArchivo}
+                  type="file"
+                />
+              </span>
+              {error && <span className={ui.errorText}>{error}</span>}
+            </label>
+            {preview && <img alt="Vista previa de la foto" className={styles.galleryPreview} src={preview} />}
             <label className={ui.field}>
               <span className={ui.fieldLabel}>Descripción</span>
               <textarea
@@ -118,7 +137,7 @@ function GaleriaPage() {
                 <span>{description.length}/{MAX_DESCRIPCION}</span>
               </span>
             </label>
-            <Boton type="submit">Agregar foto</Boton>
+            <Boton disabled={saving} type="submit">{saving ? 'Subiendo…' : 'Agregar foto'}</Boton>
             {success && <StatusMessage>Foto agregada correctamente.</StatusMessage>}
           </div>
         </form>

@@ -2,8 +2,6 @@ import { Link } from 'react-router-dom';
 import Icon from './Icon';
 import styles from './ProfileView.module.css';
 
-// Columna derecha del perfil propio. Los datos de cada sección son de otros dominios
-// (Trabajadores y Servicios), así que aquí solo se enlaza a sus pantallas.
 const SECCIONES = {
     TRABAJADOR: {
         eyebrow: 'Mi trabajo',
@@ -35,6 +33,8 @@ const SECCIONES = {
 };
 
 function RoleSections({ roles }) {
+    const esAdmin = roles.includes('ADMIN');
+
     return (
         <div className={styles.content}>
             {Object.keys(SECCIONES).filter((rol) => roles.includes(rol)).map((rol) => {
@@ -58,10 +58,23 @@ function RoleSections({ roles }) {
             })}
 
             <section className={`card ${styles.trust}`}>
-                <span className={styles.icon}><Icon name="shield" size={24} /></span>
+                <span className={styles.icon}><Icon name="shield" size={20} /></span>
                 <div>
-                    <h2>Tu privacidad va primero</h2>
-                    <p className={styles.muted}>Tu contacto y dirección exacta permanecen ocultos hasta que una solicitud sea aceptada.</p>
+                    {esAdmin ? (
+                        <>
+                            <h2>Datos bajo tu cuidado</h2>
+                            <p className={styles.muted}>
+                                Ves el correo y los teléfonos completos de todas las cuentas. Úsalos solo para tareas de administración.
+                            </p>
+                        </>
+                    ) : (
+                        <>
+                            <h2>Tu privacidad va primero</h2>
+                            <p className={styles.muted}>
+                                Tu contacto y dirección exacta permanecen ocultos hasta que una solicitud sea aceptada.
+                            </p>
+                        </>
+                    )}
                 </div>
             </section>
         </div>

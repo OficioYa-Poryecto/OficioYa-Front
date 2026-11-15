@@ -12,6 +12,7 @@ import PhoneList from './PhoneList';
 import ProfileHeader from './ProfileHeader';
 import styles from './Form.module.css';
 import vista from './ProfileView.module.css';
+import Icon from './Icon';
 
 // Mismo límite que valida el back (UserUpdateDTO)
 const MAX_NOMBRE = 100;
@@ -214,7 +215,10 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
           <div className={styles.field}>
             <label htmlFor="email" className={styles.label}>Correo electrónico</label>
             <input id="email" value={perfil.email ?? ''} disabled />
-            <p className={styles.note}>🔒 Por seguridad, el correo no se puede editar.</p>
+            <p className={`${styles.note} ${vista.lockNote}`}>
+              <Icon name="lock" size={14} />
+              Por seguridad, el correo no se puede editar.
+            </p>
           </div>
         </form>
 

@@ -1,0 +1,25 @@
+/* Columna de alto completo: el pie queda abajo aunque la página tenga poco contenido */
+.shell {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+.main {
+    flex: 1;
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 32px 24px;
+}
+
+/* La página de autenticación maneja su propio ancho */
+.auth {
+    flex: 1;
+}
+
+@media (max-width: 680px) {
+    .main {
+        padding: 20px 16px;
+    }
+}

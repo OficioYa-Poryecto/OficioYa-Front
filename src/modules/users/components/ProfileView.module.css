@@ -6,7 +6,16 @@
     gap: 20px;
 }
 
-/* Encabezado a la izquierda y botones a la derecha */
+.page::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    background:
+            radial-gradient(circle at 92% 8%, rgba(235, 160, 120, 0.28) 0%, rgba(235, 160, 120, 0) 45%),
+            linear-gradient(180deg, #fffcf7 0%, #fdf4ec 100%);
+}
+
 .top {
     display: flex;
     justify-content: space-between;
@@ -84,6 +93,9 @@
 
 .badge,
 .badgeNeutral {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
     padding: 4px 12px;
     border-radius: 999px;
     font-size: 0.85rem;
@@ -139,22 +151,57 @@
 .contact {
     display: grid;
     gap: 14px;
+    padding: 24px 22px;
 }
 
 .contact h2 {
     margin: 0;
-    font-size: 1.15rem;
+    font-size: 1.25rem;
+    font-weight: 800;
+}
+
+.contactList {
+    display: grid;
 }
 
 .contactItem {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 14px;
+    padding: 12px 0;
 }
 
-.contactItem small {
-    display: block;
+.contactItem + .contactItem {
+    border-top: 1.5px solid #ece4d8;
+}
+
+.contactIcon {
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    background: #f7ece1;
+    color: var(--color-accent);
+}
+
+.contactText {
+    display: grid;
+    gap: 4px;
+    min-width: 0;
+}
+
+.contactLabel {
+    font-size: 0.8rem;
     color: var(--color-text-muted);
+}
+
+.contactValue {
+    font-size: 0.95rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    overflow-wrap: anywhere;
 }
 
 .icon {
@@ -168,10 +215,118 @@
 }
 
 .privacy {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin: 4px 0 0;
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: var(--color-surface-alt);
+    font-size: 0.78rem;
+    line-height: 1.45;
+}
+
+.privacy svg {
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+/* Ícono + texto dentro de los botones */
+.btnContent {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+}
+
+/* Columna derecha del perfil */
+.content {
+    display: grid;
+    gap: 20px;
+}
+
+.roleCard {
+    display: grid;
+    gap: 6px;
+}
+
+.roleCard h2,
+.trust h2 {
     margin: 0;
-    padding-top: 12px;
+    font-size: 1.35rem;
+}
+
+.chip {
+    justify-self: start;
+    padding: 6px 12px;
+    border-radius: 999px;
+    background: #fde3d8;
+    color: var(--color-accent);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+}
+
+.muted {
+    margin: 0;
+    font-size: 0.9rem;
+}
+
+.links {
+    display: grid;
+    margin-top: 10px;
+}
+
+.linkRow {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
     border-top: 1px solid var(--color-border);
-    font-size: 0.8rem;
+    color: var(--color-text);
+    text-decoration: none;
+}
+
+.linkRow strong {
+    flex: 1;
+    font-size: 0.95rem;
+}
+
+.linkRow:hover strong {
+    color: var(--color-primary);
+}
+
+.chevron {
+    color: var(--color-text-muted);
+}
+
+.trust {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    background: #e1e9e2;
+    border-color: #cfdcd2;
+    box-shadow: none;
+}
+
+.trust .icon {
+    background: #ffffff;
+    color: #2f5d50;
+    box-shadow: 0 2px 6px rgba(36, 49, 45, 0.06);
+}
+
+.trust h2 {
+    font-size: 1.1rem;
+}
+
+.trust .muted {
+    font-size: 0.82rem;
+}
+
+.lockNote {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
 @media (max-width: 760px) {

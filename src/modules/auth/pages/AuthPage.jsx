@@ -12,7 +12,9 @@ export default function AuthPage() {
       {/* Hero */}
       <div className={styles.hero}>
         <span className="eyebrow">Bienvenido a OficioYa</span>
-        <h1 className={styles.heroTitle}>Tu espacio en OficioYa</h1>
+          <h1 className={styles.heroTitle}>
+              Tu espacio en <span className={styles.accent}>OficioYa</span>
+          </h1>
         <p className={styles.heroSub}>
           <a href="#login" onClick={(e) => { e.preventDefault(); setView('login'); }}>
             Inicia sesión

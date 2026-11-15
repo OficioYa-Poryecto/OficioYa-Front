@@ -1,7 +1,7 @@
 
 .button {
     border: 1px solid transparent;
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     padding: 14px 24px;
     font: inherit;
     font-weight: 700;

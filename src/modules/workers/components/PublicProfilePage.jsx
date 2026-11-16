@@ -10,6 +10,7 @@ import { formatoDinero, formatoFecha, nombreUnidad } from './formats';
 import ScheduleEditor from './ScheduleEditor';
 import styles from './worker.module.css';
 import { useAccount } from '../hooks/useAccount';
+import { useProfilePhoto } from '../hooks/useProfilePhoto';
 
 // Perfil público de un trabajador (RF-08): oficios, tarifas, cobertura, disponibilidad y fotos.
 // No muestra datos de contacto: WorkerResponse no los trae y son de Identity.
@@ -18,6 +19,7 @@ function PublicProfilePage() {
   const { data: perfil, loading, error, notFound } = useWorker(id);
   const { data: zonas } = useZones();
   const account = useAccount(perfil ? `/users/${perfil.userId}` : null);
+  const photoUrl = useProfilePhoto(perfil?.userId);
 
   if (loading) return <div className={styles.publicPage}><EmptyState title="Cargando…" text="Estamos consultando el perfil." /></div>;
   if (notFound || perfil?.status === 'PAUSED') {
@@ -45,7 +47,9 @@ function PublicProfilePage() {
         </div>
       )}
       <section className={`${ui.infoCard} ${styles.publicHero}`}>
-        <span className={`${ui.avatar} ${ui.avatarProfile}`}><Icon name="wrench" size={34} /></span>
+        <span className={`${ui.avatar} ${ui.avatarProfile}`}>
+          {photoUrl ? <img alt="" className={ui.avatarImage} src={photoUrl} /> : <Icon name="wrench" size={34} />}
+        </span>
         <div>
           <p className="eyebrow">{primaryTrade.trade.category?.name ?? 'Trabajador de OficioYa'}</p>
           <h1>{account?.name ?? primaryTrade.trade.name}</h1>

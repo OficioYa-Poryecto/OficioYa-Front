@@ -57,6 +57,7 @@
   font-size: 30px;
   height: 108px;
   width: 108px;
+  overflow: hidden;
 }
 
 /* Tarjetas */
@@ -960,4 +961,10 @@
   .editForm .profileTitle .badges {
     flex-wrap: wrap;
   }
+}
+
+.avatarImage {
+  height: 100%;
+  object-fit: cover;
+  width: 100%;
 }

@@ -11,6 +11,7 @@ import { enmascararCorreo, enmascararTelefono, formatoDinero, nombreUnidad, getI
 import TradesSection from './TradesSection';
 import styles from './worker.module.css';
 import { useAccount } from '../hooks/useAccount';
+import { useProfilePhoto } from '../hooks/useProfilePhoto';
 
 
 // "Mi perfil": lo que ve el propio trabajador. Incluye su contacto enmascarado
@@ -19,6 +20,7 @@ function MyProfilePage() {
   const navigate = useNavigate();
   const { data: perfil, loading, error, refresh } = useMyWorker();
   const account = useAccount('/users/me');
+  const photoUrl = useProfilePhoto(perfil?.userId);
   if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
   const rawPhone = account?.phones?.[0];
@@ -42,6 +44,7 @@ function MyProfilePage() {
           roles={cuenta.hasRealName ? ['Trabajador', primaryTrade.trade.name] : [primaryTrade.trade.name]}
           statusLabel={paused ? 'Perfil pausado' : 'Perfil activo'}
           statusMuted={paused}
+          photoUrl={photoUrl}
         />
         <div className={styles.profileHeaderSide}>
           <span>Desde</span>

@@ -4,11 +4,13 @@ import ui from './/ui.module.css';
 const ROLE_ICONS = { Trabajador: 'wrench', Administrador: 'shield' };
 
 // statusLabel/statusMuted permiten mostrar otro estado (por ejemplo "Perfil pausado").
-function ProfileHero({ editing = false, initials, name, roles, statusLabel = 'Perfil activo', statusMuted = false }) {
+function ProfileHero({ editing = false, initials, name, roles, photoUrl, statusLabel = 'Perfil activo', statusMuted = false }) {
   return (
     <div className={ui.profileHero}>
       <div className={ui.profileAvatarWrap}>
-        <span className={`${ui.avatar} ${ui.avatarProfile}`}>{initials}</span>
+        <span className={`${ui.avatar} ${ui.avatarProfile}`}>
+          {photoUrl ? <img alt="" className={ui.avatarImage} src={photoUrl} /> : initials}
+        </span>
         {editing && (
           <button aria-label="Cambiar foto" type="button">
             <Icon name="edit" size={15} />

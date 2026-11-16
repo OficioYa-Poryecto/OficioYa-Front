@@ -21,7 +21,7 @@ export function validarTelefono(numero) {
 // Botón y mensaje para cada rol que el usuario todavía no tiene
 export const ROLES_AGREGABLES = {
   TRABAJADOR: {
-    boton: 'Agregar rol de trabajador',
+    boton: 'Quiero ser trabajador',
     agregado: 'Rol de trabajador agregado.',
     detalle: 'Inicia sesión de nuevo para completar tu perfil de trabajador.',
   },

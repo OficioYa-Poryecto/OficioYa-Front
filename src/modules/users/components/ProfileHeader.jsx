@@ -8,7 +8,7 @@ const ICONO_ROL = { CONTRATANTE: 'user', TRABAJADOR: 'wrench', ADMIN: 'shield' }
 
 // Avatar con iniciales (o foto de perfil), estado, nombre con el apellido resaltado e insignias de rol.
 // Lo usan el perfil (ProfileView), la edición (ProfileForm) y el detalle del admin (UserDetail).
-function ProfileHeader({ nombre, roles, activo, esPropio, etiqueta, userId, avatarUrl }) {
+function ProfileHeader({ nombre, roles, activo, esPropio, etiqueta, userId, avatarUrl, children }) {
   const [loadedPhotoUrl, setLoadedPhotoUrl] = useState(null);
   const partes = (nombre || 'Usuario').trim().split(/\s+/);
   const resaltado = partes.length > 1 ? partes.pop() : null;
@@ -34,15 +34,18 @@ function ProfileHeader({ nombre, roles, activo, esPropio, etiqueta, userId, avat
         )}
       </span>
       <div>
-        <span className="eyebrow">{etiqueta ?? (esPropio ? 'Mi perfil' : 'Perfil público')}</span>
-        {activo && (
-          <div className={styles.online}>
-            <span /> Perfil activo
-          </div>
-        )}
+        <div className={styles.headerTop}>
+          <span className={`eyebrow ${styles.etiqueta}`}>{etiqueta ?? (esPropio ? 'Mi perfil' : 'Perfil público')}</span>
+          {activo && (
+            <div className={styles.online}>
+              <span /> Perfil activo
+            </div>
+          )}
+        </div>
         <h1 className={styles.name}>
           {partes.join(' ')} {resaltado && <span className={styles.accent}>{resaltado}</span>}
         </h1>
+        {children}
         <div className={styles.badges}>
           {roles.map((rol, i) => (
             <span key={rol} className={i > 0 ? styles.badgeNeutral : styles.badge}>

@@ -91,9 +91,12 @@ export default function RegisterPage() {
   const [selectedRoleId, setSelectedRoleId] = useState('CONTRATANTE');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
+  const [emailTouched, setEmailTouched] = useState(false);
+  // Se activa al dar clic en "Crear mi cuenta" para resaltar lo que falta
+  const [submitted, setSubmitted] = useState(false);
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-
+  const [passwordFocused, setPasswordFocused] = useState(false);
   // Teléfonos: 1 a 3 filas, por defecto 1 marcada como principal
   const [phones, setPhones] = useState([
     { number: '', principal: true },
@@ -104,6 +107,38 @@ export default function RegisterPage() {
   const [photoFile, setPhotoFile] = useState(null);
   const [photoPreview, setPhotoPreview] = useState('');
   const fileInputRef = useRef(null);
+
+  // El correo se valida al salir del campo; si ya se mostró el error, se revalida mientras corrige
+  const emailInvalid = emailTouched && email.trim() !== '' && !validateEmail(email);
+
+  // Errores por campo: se muestran tras intentar enviar y se actualizan mientras el usuario corrige
+  const REQUIRED_MSG = 'Este campo es obligatorio.';
+  const nameError = submitted && !name.trim() ? REQUIRED_MSG : null;
+  const emailError =
+    submitted && !email.trim()
+      ? REQUIRED_MSG
+      : emailInvalid
+        ? 'Este correo no es válido. Revisa que tenga el formato nombre@correo.com'
+        : null;
+  const passwordError = !submitted
+    ? null
+    : !password
+      ? REQUIRED_MSG
+      : !validatePassword(password)
+        ? 'Tu contraseña aún no cumple todos los requisitos.'
+        : null;
+  const phoneErrors = phones.map((p, idx) => {
+    if (!submitted) return null;
+    const num = p.number.trim();
+    if (!num) return REQUIRED_MSG;
+    if (!PHONE_REGEX.test(num)) return 'Debe tener 10 dígitos y empezar por 3.';
+    // Repetido: se marca a partir de la segunda vez que aparece
+    if (phones.slice(0, idx).some((prev) => prev.number.trim() === num)) {
+      return 'Este número ya lo agregaste.';
+    }
+    return null;
+  });
+  const missingRules = PASSWORD_RULES.filter((rule) => !rule.validate(password));
 
   useEffect(() => {
     return () => {
@@ -134,7 +169,8 @@ export default function RegisterPage() {
     setPhotoPreview(URL.createObjectURL(file));
   };
 
-  const handleUseAvatar = () => {
+  // Quita la foto elegida y vuelve al avatar con iniciales
+  const handleRemovePhoto = () => {
     if (photoPreview) {
       URL.revokeObjectURL(photoPreview);
     }
@@ -223,9 +259,17 @@ export default function RegisterPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setEmailTouched(true);
+    setSubmitted(true);
     const validationError = validateForm();
     if (validationError) {
-      setError(validationError);
+      // Sin mensaje abajo: los campos con problema ya se resaltan en rojo
+      setError('');
+      // Llevar al usuario al primer campo obligatorio que falta o es inválido
+      // (setTimeout espera a que React pinte los campos marcados)
+      setTimeout(() => {
+        document.querySelector('form [aria-invalid="true"]')?.focus();
+      }, 0);
       return;
     }
 
@@ -316,16 +360,16 @@ export default function RegisterPage() {
           <div className={styles.cardHeader}>
             <div className={styles.stepBadge}>1</div>
             <div className={styles.cardHeaderInfo}>
-              <h2 className={styles.cardTitle}>Selecciona tus roles</h2>
+              <h2 className={styles.cardTitle}>¿Cómo quieres usar tu cuenta?</h2>
               <p className={styles.cardSubtitle}>
-                Podrás agregar el otro rol más adelante desde tu cuenta.
+                No te preocupes, puedes cambiarlo más adelante desde tu cuenta.
               </p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} noValidate>
             {/* Selector de Rol (3 tarjetas) */}
-            <div className={styles.roleGrid} role="radiogroup" aria-label="Selecciona tus roles">
+            <div className={styles.roleGrid} role="radiogroup" aria-label="¿Cómo quieres usar tu cuenta?">
               {ROLE_OPTIONS.map((opt) => {
                 const isActive = selectedRoleId === opt.id;
                 return (
@@ -352,26 +396,12 @@ export default function RegisterPage() {
               })}
             </div>
 
-            {/* Sección: Tus datos */}
-            <h3 className={styles.sectionTitle}>Tus datos</h3>
+            {/* Sección: Información de la cuenta (correo izquierda, contraseña derecha) */}
+            <div className={styles.sectionHeader}>
+              <div className={styles.stepBadge}>2</div>
+              <h3 className={styles.sectionTitle}>Información de la cuenta</h3>
+            </div>
             <div className={styles.gridTwo}>
-              <div className={styles.formGroup}>
-                <label className={styles.label} htmlFor="name">
-                  <span>
-                    Nombre completo <span className={styles.required}>*</span>
-                  </span>
-                </label>
-                <input
-                  id="name"
-                  type="text"
-                  placeholder="Escribe tu nombre completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  autoComplete="name"
-                  required
-                />
-              </div>
-
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="email">
                   <span>
@@ -381,102 +411,54 @@ export default function RegisterPage() {
                 <input
                   id="email"
                   type="email"
-                  placeholder="tu@correo.com"
+                  placeholder="Correo electrónico"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  onBlur={() => setEmailTouched(true)}
                   autoComplete="email"
+                  className={emailError ? styles.inputInvalid : undefined}
+                  aria-invalid={Boolean(emailError)}
+                  aria-describedby={emailError ? 'email-error' : undefined}
                   required
                 />
-              </div>
-            </div>
-
-            {/* Teléfonos dinámicos */}
-            <div className={styles.phoneSection}>
-              <div className={styles.phoneHeader}>
-                <span className={styles.label}>
-                  <span>
-                    Teléfonos de contacto <span className={styles.required}>*</span>
+                {emailError && (
+                  <span id="email-error" className={styles.fieldError} role="alert">
+                    {emailError}
                   </span>
-                </span>
-                <div className={styles.phoneMeta}>
-                  <span>{phones.length} de 3 teléfonos agregados.</span>
-                  {phones.length < 3 && (
-                    <button
-                      type="button"
-                      className={styles.addPhoneBtn}
-                      onClick={handleAddPhone}
-                    >
-                      + Agregar otro teléfono
-                    </button>
-                  )}
-                </div>
+                )}
               </div>
 
-              {phones.map((phone, idx) => (
-                <div key={idx} className={styles.phoneRow}>
-                  <div className={styles.phoneInputWrap}>
-                    <input
-                      type="tel"
-                      placeholder={idx === 0 ? 'Teléfono principal (ej. 3001234567)' : `Teléfono ${idx + 1}`}
-                      value={phone.number}
-                      onChange={(e) => handlePhoneChange(idx, e.target.value)}
-                      maxLength={10}
-                      aria-label={`Número de teléfono ${idx + 1}`}
-                      required
-                    />
-                  </div>
-
-                  <label className={styles.phonePrincipalLabel} title="Marcar como teléfono principal">
-                    <input
-                      type="radio"
-                      name="principalPhone"
-                      checked={phone.principal}
-                      onChange={() => handleSetPrincipal(idx)}
-                      className={styles.phoneRadio}
-                    />
-                    <span>Principal</span>
-                  </label>
-
-                  {phones.length > 1 && (
-                    <button
-                      type="button"
-                      className={styles.removePhoneBtn}
-                      onClick={() => handleRemovePhone(idx)}
-                      aria-label={`Eliminar teléfono ${idx + 1}`}
-                      title="Eliminar teléfono"
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                        <line x1="18" y1="6" x2="6" y2="18" />
-                        <line x1="6" y1="6" x2="18" y2="18" />
-                      </svg>
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-
-            {/* Sección: Seguridad */}
-            <h3 className={styles.sectionTitle}>Seguridad</h3>
-            <div className={styles.gridTwo}>
-              <div className={styles.formGroup}>
+              <div className={`${styles.formGroup} ${styles.passwordGroup}`}>
                 <label className={styles.label} htmlFor="password">
                   <span>
                     Crea una contraseña <span className={styles.required}>*</span>
                   </span>
                 </label>
-                <div className={styles.passWrap}>
+                <div
+                  className={styles.passWrap}
+                  onFocus={() => setPasswordFocused(true)}
+                  onBlur={(e) => {
+                    if (!e.currentTarget.contains(e.relatedTarget)) {
+                      setPasswordFocused(false);
+                    }
+                  }}
+                >
                   <input
                     id="password"
                     type={showPassword ? 'text' : 'password'}
-                    placeholder="Escribe una contraseña segura"
+                    placeholder="Contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     autoComplete="new-password"
+                    className={passwordError ? styles.inputInvalid : undefined}
+                    aria-invalid={Boolean(passwordError)}
+                    aria-describedby={passwordError ? 'password-error' : undefined}
                     required
                   />
                   <button
                     type="button"
                     className={styles.eyeBtn}
+                    onMouseDown={(e) => e.preventDefault()}
                     onClick={() => setShowPassword((prev) => !prev)}
                     aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
                   >
@@ -494,34 +476,139 @@ export default function RegisterPage() {
                     )}
                   </button>
                 </div>
-              </div>
 
-              {/* Checklist de requisitos de contraseña */}
-              <div className={styles.checklistCard}>
-                <div className={styles.checklistTitle}>Tu contraseña debe tener:</div>
-                <ul className={styles.checklist}>
-                  {PASSWORD_RULES.map((rule) => {
-                    const valid = rule.validate(password);
-                    return (
-                      <li
-                        key={rule.id}
-                        className={`${styles.checkItem} ${valid ? styles.checkItemValid : ''}`}
-                      >
-                        {valid ? (
-                          <span className={styles.checkIconValid}>✓</span>
-                        ) : (
-                          <span className={styles.checkIconPending} />
-                        )}
-                        <span>{rule.label}</span>
-                      </li>
-                    );
-                  })}
-                </ul>
+                {passwordError && (
+                  <span id="password-error" className={styles.fieldError}>
+                    {passwordError}
+                  </span>
+                )}
+
+                {/* Requisitos pendientes: globo a un lado, solo lo que falta y solo mientras se escribe */}
+                {passwordFocused && missingRules.length > 0 && (
+                  <div className={styles.passHint} role="status" aria-live="polite">
+                    <div className={styles.passHintTitle}>Te falta:</div>
+                    <ul className={styles.passHintList}>
+                      {missingRules.map((rule) => (
+                        <li key={rule.id}>{rule.label}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             </div>
 
-            {/* Sección: Foto de perfil (opcional, conectada a image-service) */}
-            <h3 className={styles.sectionTitle}>Foto de perfil</h3>
+            {/* Sección: Tus datos (nombre, teléfonos y foto) */}
+            <div className={`${styles.sectionHeader} ${styles.sectionHeaderDivided}`}>
+              <div className={styles.stepBadge}>3</div>
+              <h3 className={styles.sectionTitle}>Tus datos</h3>
+            </div>
+            <div className={styles.fullRow}>
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="name">
+                  <span>
+                    Nombre completo <span className={styles.required}>*</span>
+                  </span>
+                </label>
+                <input
+                  id="name"
+                  type="text"
+                  placeholder="Nombre completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  autoComplete="name"
+                  className={nameError ? styles.inputInvalid : undefined}
+                  aria-invalid={Boolean(nameError)}
+                  aria-describedby={nameError ? 'name-error' : undefined}
+                  required
+                />
+                {nameError && (
+                  <span id="name-error" className={styles.fieldError}>
+                    {nameError}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Teléfonos dinámicos */}
+            <div className={styles.phoneSection}>
+              <div className={styles.phoneHeader}>
+                <span className={styles.label}>
+                  <span>
+                    Teléfonos de contacto <span className={styles.required}>*</span>
+                  </span>
+                </span>
+                <div className={styles.phoneMeta}>
+                  <span>Puedes agregar hasta 3 teléfonos.</span>
+                  {phones.length < 3 && (
+                    <button
+                      type="button"
+                      className={styles.addPhoneBtn}
+                      onClick={handleAddPhone}
+                    >
+                      + Agregar otro teléfono
+                    </button>
+                  )}
+                </div>
+              </div>
+
+              {phones.map((phone, idx) => (
+                <div key={idx} className={styles.phoneItem}>
+                <div className={styles.phoneRow}>
+                  <div className={styles.phoneInputWrap}>
+                    <input
+                      type="tel"
+                      placeholder="Número de teléfono"
+                      value={phone.number}
+                      onChange={(e) => handlePhoneChange(idx, e.target.value)}
+                      maxLength={10}
+                      aria-label={`Número de teléfono ${idx + 1}`}
+                      className={phoneErrors[idx] ? styles.inputInvalid : undefined}
+                      aria-invalid={Boolean(phoneErrors[idx])}
+                      aria-describedby={phoneErrors[idx] ? `phone-error-${idx}` : undefined}
+                      required
+                    />
+                  </div>
+
+                  {/* Con un solo teléfono, ese es el principal: el selector solo aparece desde 2 */}
+                  {phones.length > 1 && (
+                    <label className={styles.phonePrincipalLabel} title="Marcar como teléfono principal">
+                      <input
+                        type="radio"
+                        name="principalPhone"
+                        checked={phone.principal}
+                        onChange={() => handleSetPrincipal(idx)}
+                        className={styles.phoneRadio}
+                      />
+                      <span>Principal</span>
+                    </label>
+                  )}
+
+                  {phones.length > 1 && (
+                    <button
+                      type="button"
+                      className={styles.removePhoneBtn}
+                      onClick={() => handleRemovePhone(idx)}
+                      aria-label={`Eliminar teléfono ${idx + 1}`}
+                      title="Eliminar teléfono"
+                    >
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <line x1="18" y1="6" x2="6" y2="18" />
+                        <line x1="6" y1="6" x2="18" y2="18" />
+                      </svg>
+                    </button>
+                  )}
+                </div>
+                {phoneErrors[idx] && (
+                  <span id={`phone-error-${idx}`} className={`${styles.fieldError} ${styles.phoneError}`}>
+                    {phoneErrors[idx]}
+                  </span>
+                )}
+                </div>
+              ))}
+            </div>
+
+            {/* Foto de perfil (opcional, conectada a image-service) */}
+            <span className={`${styles.label} ${styles.photoLabel}`}>Foto de perfil</span>
             <div className={styles.photoBox}>
               <div className={styles.avatarMock}>
                 {photoPreview ? (
@@ -539,7 +626,7 @@ export default function RegisterPage() {
                 <div className={styles.photoDesc}>
                   {photoFile
                     ? `Archivo seleccionado: ${photoFile.name}`
-                    : 'Para este perfil es opcional. JPG, PNG o WebP, máximo 5 MB.'}
+                    : 'Es opcional. Si no subes una, te asignamos un avatar con tus iniciales. JPG, PNG o WebP, máximo 5 MB.'}
                 </div>
                 <input
                   ref={fileInputRef}
@@ -561,13 +648,21 @@ export default function RegisterPage() {
                     </svg>
                     {photoFile ? 'Cambiar foto' : 'Subir foto'}
                   </button>
-                  <button
-                    type="button"
-                    className={styles.btnPhotoAvatar}
-                    onClick={handleUseAvatar}
-                  >
-                    Usar avatar
-                  </button>
+                  {photoFile && (
+                    <button
+                      type="button"
+                      className={styles.btnPhotoRemove}
+                      onClick={handleRemovePhoto}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <polyline points="3 6 5 6 21 6" />
+                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+                        <path d="M10 11v6" />
+                        <path d="M14 11v6" />
+                      </svg>
+                      Borrar foto
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -599,4 +694,3 @@ export default function RegisterPage() {
     </div>
   );
 }
-

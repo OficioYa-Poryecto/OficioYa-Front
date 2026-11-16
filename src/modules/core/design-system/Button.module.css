@@ -27,3 +27,31 @@
     color: var(--color-text);
     border-color: var(--color-border);
 }
+
+.outline {
+    background: transparent;
+    color: var(--color-primary);
+    border-color: var(--color-primary);
+}
+
+.outline:hover:not(:disabled) {
+    background: var(--color-surface);
+}
+
+.ghost {
+    background: transparent;
+    color: var(--color-text);
+}
+
+.ghost:hover:not(:disabled) {
+    background: var(--color-surface);
+}
+
+.danger {
+    background: var(--color-danger, #b42318);
+    color: #ffffff;
+}
+
+.danger:hover:not(:disabled) {
+    filter: brightness(0.92);
+}

@@ -243,3 +243,7 @@
   background: var(--color-surface-alt);
   cursor: not-allowed;
 }
+/* "Campos obligatorios" justo debajo del título */
+.encabezado h2 {
+  margin: 0 0 4px;
+}

@@ -2,10 +2,11 @@
 // Lo puede usar cualquier dominio: Users (foto de perfil), Worker (galeria y evidencias),
 // Solicitudes, Resenas y Reportes. Cada dominio pasa su propio token de sesion.
 //
-// La URL del servicio sale de VITE_IMAGES_API_URL. Si no esta definida se usa /api/v1/images
-// relativo (para cuando el servicio se exponga detras del orquestador o de un proxy).
 
-const IMAGES_BASE = `${(import.meta.env.VITE_IMAGES_API_URL ?? '').replace(/\/+$/, '')}/api/v1/images`;
+const IMAGES_BASE = '/api/v1/images';
+
+// Origen del orquestador (VITE_API_URL); acepta el valor con o sin "/api/v1" al final.
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
 
 // Mismos tipos y limites que ImageType en el back (imagenes activas por rootId).
 export const TIPOS_IMAGEN = {
@@ -77,14 +78,14 @@ export function borrarImagen(id, { token } = {}) {
   return enviar(`/${id}`, { method: 'DELETE', token });
 }
 
-/** URL publica de la imagen para usar directo en <img src>. */
+/** URL absoluta de la imagen (Worker exige http/https). Falla si falta VITE_API_URL. */
 export function urlImagen(id) {
-  return `${IMAGES_BASE}/${id}`;
+  if (!API_ORIGIN) throw new Error('Falta configurar VITE_API_URL: no se puede guardar la foto.');
+  return `${API_ORIGIN}${IMAGES_BASE}/${id}`;
 }
 
 /** Id de la imagen si la URL es de este servicio; null si es una URL externa. */
 export function idDeUrlImagen(url) {
-  if (typeof url !== 'string' || !url.startsWith(`${IMAGES_BASE}/`)) return null;
-  const id = url.slice(IMAGES_BASE.length + 1);
-  return /^[0-9a-f-]{36}$/i.test(id) ? id : null;
+  const match = typeof url === 'string' ? url.match(/\/api\/v1\/images\/([0-9a-f-]{36})(?:[/?#]|$)/i) : null;
+  return match ? match[1] : null;
 }

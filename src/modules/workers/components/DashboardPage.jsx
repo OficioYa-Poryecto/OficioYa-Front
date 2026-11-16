@@ -1,35 +1,55 @@
 import { useState } from 'react';
+import { Link } from 'react-router-dom';
+import Icon from './ui/Icon';
 import StatusMessage from './ui/StatusMessage';
 import Toggle from './ui/Toggle';
 import ui from './ui/ui.module.css';
+import { useAccount } from '../hooks/useAccount';
+import { useZones } from '../hooks/useCatalogs';
 import { useMyWorker } from '../hooks/useMyWorker';
 import { updateAvailableNow } from '../services/workersService';
-import ProfileStatus from './ProfileStatus';
 import { formatoDinero, nombreUnidad } from './formats';
 import PageHeading from './PageHeading';
+import ProfileStatus from './ProfileStatus';
 import styles from './worker.module.css';
+
+const WEEK = [
+  ['MONDAY', 'L'],
+  ['TUESDAY', 'M'],
+  ['WEDNESDAY', 'X'],
+  ['THURSDAY', 'J'],
+  ['FRIDAY', 'V'],
+  ['SATURDAY', 'S'],
+  ['SUNDAY', 'D'],
+];
 
 function DashboardPage() {
   const { data: perfil, loading, error, refresh } = useMyWorker();
+  const { data: zones } = useZones();
+  const account = useAccount('/users/me');
   const [actionError, setActionError] = useState('');
   if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
   const paused = perfil.status === 'PAUSED';
-  const estado = paused ? 'Pausado' : 'Activo';
   const { primaryTrade } = perfil;
-  const stats = [
-    { label: 'Estado', value: estado },
-    { label: 'Oficio principal', value: primaryTrade.trade.name },
-    { label: 'Tarifa', value: `${formatoDinero(primaryTrade.approxRate)} · ${nombreUnidad(primaryTrade.rateUnit)}` },
-    { label: 'Zonas', value: `${perfil.zoneIds.length} seleccionadas` },
-    { label: 'Franjas', value: `${perfil.slots.length} configuradas` },
-    { label: 'Fotos', value: `${perfil.photos.length} publicadas` },
-  ];
+  const firstName = account?.name?.trim().split(/\s+/)[0];
+  const zoneNames = perfil.zoneIds.map((id) => zones?.find((zone) => zone.id === id)?.name ?? `Zona ${id}`);
+  const activeDays = new Set(
+    perfil.slots.filter((slot) => slot.recurrenceType === 'RECURRING').map((slot) => slot.dayOfWeek),
+  );
 
-  const ejecutar = async (accion) => {
+  const steps = [
+    { label: 'Oficio y tarifa', done: Boolean(primaryTrade.approxRate), to: '/worker/profile' },
+    { label: 'Zonas de cobertura', done: perfil.zoneIds.length > 0, to: '/worker/coverage' },
+    { label: 'Horario de disponibilidad', done: perfil.slots.length > 0, to: '/worker/availability' },
+    { label: 'Fotos de tus trabajos', done: perfil.photos.length > 0, to: '/worker/gallery' },
+  ];
+  const progress = Math.round((steps.filter((step) => step.done).length / steps.length) * 100);
+
+  const toggleNow = async () => {
     setActionError('');
     try {
-      await accion();
+      await updateAvailableNow(perfil.id, !perfil.availableNow);
       await refresh();
     } catch (e) {
       setActionError(e.message);
@@ -39,10 +59,14 @@ function DashboardPage() {
   return (
     <div>
       <PageHeading
-        eyebrow="Tu actividad"
-        title="Mi panel"
-        description="Una vista rápida de cómo está tu perfil hoy."
-        action={<span className={`${styles.statusPill} ${paused ? styles.statusPaused : ''}`}>{estado}</span>}
+        action={
+          <div className={styles.nowSwitch}>
+            <Toggle checked={perfil.availableNow} disabled={paused} label="Disponible ahora" onChange={toggleNow} />
+          </div>
+        }
+        description="Así va tu perfil hoy y qué te falta para recibir más trabajos."
+        eyebrow="Resumen"
+        title={firstName ? `Hola, ${firstName}` : 'Hola'}
       />
       {paused && (
         <StatusMessage className={styles.notice} variant="warning">
@@ -50,28 +74,53 @@ function DashboardPage() {
         </StatusMessage>
       )}
       {actionError && <StatusMessage className={styles.notice} variant="error">{actionError}</StatusMessage>}
-      <div className={styles.statsGrid}>
-        {stats.map((stat) => (
-          <div className={`${ui.infoCard} ${styles.stat}`} key={stat.label}>
-            <span>{stat.label}</span>
-            <strong>{stat.value}</strong>
-          </div>
-        ))}
-      </div>
-      <section className={`${ui.infoCard} ${styles.panelControl}`}>
-        <div>
-          <h2>Disponible ahora</h2>
-          <p>Indica a los contratantes que puedes atender un trabajo en este momento.</p>
+
+      <section className={`${ui.infoCard} ${styles.progressCard}`}>
+        <div className={styles.progressTop}>
+          <h2>Tu perfil está al {progress}%</h2>
+          <span className={`${styles.statusPill} ${paused ? styles.statusPaused : ''}`}>{paused ? 'Pausado' : 'Activo'}</span>
         </div>
-        <div className={styles.panelActions}>
-          <Toggle
-            checked={perfil.availableNow}
-            disabled={paused}
-            label="Disponible ahora"
-            onChange={() => ejecutar(() => updateAvailableNow(perfil.id, !perfil.availableNow))}
-          />
-        </div>
+        <div className={styles.bar}><span style={{ width: `${progress}%` }} /></div>
+        <ul className={styles.steps}>
+          {steps.map((step) => (
+            <li className={step.done ? styles.stepDone : ''} key={step.label}>
+              <Icon name={step.done ? 'check' : 'arrow'} size={14} />
+              <span>{step.label}</span>
+              {!step.done && <Link to={step.to}>Completar</Link>}
+            </li>
+          ))}
+        </ul>
       </section>
+
+      <div className={styles.tiles}>
+        <Link className={`${styles.tile} ${styles.tileRate}`} to="/worker/profile">
+          <span>{primaryTrade.trade.name}</span>
+          <strong>{formatoDinero(primaryTrade.approxRate)}</strong>
+          <small>{nombreUnidad(primaryTrade.rateUnit)}</small>
+        </Link>
+        <Link className={styles.tile} to="/worker/coverage">
+          <span>Zonas</span>
+          <strong>{perfil.zoneIds.length}</strong>
+          <div className={styles.miniChips}>
+            {zoneNames.slice(0, 2).map((name) => <em key={name}>{name}</em>)}
+            {zoneNames.length > 2 && <em>+{zoneNames.length - 2}</em>}
+          </div>
+        </Link>
+        <Link className={styles.tile} to="/worker/gallery">
+          <span>Fotos</span>
+          <strong>{perfil.photos.length}</strong>
+          <small>publicadas</small>
+        </Link>
+        <Link className={`${styles.tile} ${styles.tileWeek}`} to="/worker/availability">
+          <span>Tu semana</span>
+          <div className={styles.week}>
+            {WEEK.map(([day, letter]) => (
+              <b className={activeDays.has(day) ? styles.dayOn : ''} key={day}>{letter}</b>
+            ))}
+          </div>
+          <small>{perfil.slots.length} franjas</small>
+        </Link>
+      </div>
     </div>
   );
 }

@@ -110,9 +110,9 @@ function GalleryPage() {
             <p>JPG, PNG o WebP de hasta 5 MB.</p>
           </div>
           <div className={styles.galleryFields}>
-            <label className={ui.field}>
+            <div className={ui.field}>
               <span className={ui.fieldLabel}>Foto *</span>
-              <span className={`${ui.inputShell} ${error ? ui.inputError : ''}`}>
+              <label className={`${styles.filePicker} ${error ? styles.filePickerError : ''}`}>
                 <input
                   accept={FORMATOS_IMAGEN.join(',')}
                   aria-invalid={error ? true : undefined}
@@ -120,9 +120,14 @@ function GalleryPage() {
                   onChange={elegirArchivo}
                   type="file"
                 />
-              </span>
+                <Icon name="upload" size={22} />
+                <span>
+                  <strong>{file ? file.name : 'Elegir una foto'}</strong>
+                  <small>{file ? 'Haz clic para cambiarla' : 'JPG, PNG o WebP, hasta 5 MB'}</small>
+                </span>
+              </label>
               {error && <span className={ui.errorText}>{error}</span>}
-            </label>
+            </div>
             {preview && <img alt="Vista previa de la foto" className={styles.galleryPreview} src={preview} />}
             <label className={ui.field}>
               <span className={ui.fieldLabel}>Descripción</span>

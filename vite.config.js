@@ -30,6 +30,21 @@ export default defineConfig({
         changeOrigin: true,
         secure: false,
       },
+      '/api/v1/search': {
+        target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/v1/reputation': {
+        target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
+      '/api/v1/reporting': {
+        target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
+        changeOrigin: true,
+        secure: false,
+      },
       '/api': {
         target: 'https://oficioya-orchestor-api-ghaxfaacfabxh4bv.chilecentral-01.azurewebsites.net',
         changeOrigin: true,

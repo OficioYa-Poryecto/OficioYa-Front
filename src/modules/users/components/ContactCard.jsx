@@ -3,16 +3,18 @@ import styles from './ProfileView.module.css';
 
 // Correo y teléfonos tal como los manda el back: enmascarados en /users/me (RF-03), completos para el admin (RF-08)
 function ContactCard({ email, phones, nota }) {
-    const ordenados = [...phones].sort((a, b) => Number(b.principal) - Number(a.principal));
+    const principal = phones.find((phone) => phone.principal);
+    const alternos = phones.filter((phone) => !phone.principal).map((phone) => phone.number);
     const datos = [
-        { key: 'email', icon: 'mail', etiqueta: 'Correo', valor: email },
-        ...ordenados.map((phone, i) => ({
-            key: phone.id,
+        { key: 'email', icon: 'mail', etiqueta: 'Correo', valores: [email] },
+        principal && { key: 'principal', icon: 'phone', etiqueta: 'Teléfono principal', valores: [principal.number] },
+        alternos.length > 0 && {
+            key: 'alternos',
             icon: 'phone',
-            etiqueta: i === 0 ? 'Teléfono principal' : `Teléfono alterno ${i}`,
-            valor: phone.number,
-        })),
-    ];
+            etiqueta: alternos.length > 1 ? 'Teléfonos alternos' : 'Teléfono alterno',
+            valores: alternos,
+        },
+    ].filter(Boolean);
 
     return (
         <section className={`card ${styles.contact}`}>
@@ -23,7 +25,9 @@ function ContactCard({ email, phones, nota }) {
                         <span className={styles.contactIcon}><Icon name={dato.icon} size={22} /></span>
                         <div className={styles.contactText}>
                             <span className={styles.contactLabel}>{dato.etiqueta}</span>
-                            <strong className={styles.contactValue}>{dato.valor}</strong>
+                            {dato.valores.map((valor, i) => (
+                                <strong key={i} className={styles.contactValue}>{valor}</strong>
+                            ))}
                         </div>
                     </div>
                 ))}

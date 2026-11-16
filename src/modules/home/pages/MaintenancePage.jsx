@@ -1,7 +1,9 @@
-import { clearSession, getSession } from '../../core/lib/session';
+import { useNavigate } from 'react-router-dom';
+import { getSession } from '../../core/lib/session';
 import styles from './MaintenancePage.module.css';
 
 export default function MaintenancePage() {
+  const navigate = useNavigate();
   const session = getSession();
   const roles = session?.roles ?? [];
   const isAdmin = Array.isArray(roles)
@@ -20,24 +22,26 @@ export default function MaintenancePage() {
         </div>
 
         <span className="eyebrow">Próximamente</span>
-        <h1 className={styles.title}>Estamos construyendo algo genial</h1>
-        <p className={styles.desc}>
-          Esta sección está en desarrollo. Pronto encontrarás aquí tu panel principal
-          con todas las funcionalidades de OficioYa.
-        </p>
+        <div className={styles.texto}>
+          <h1 className={styles.title}>¡Estamos construyendo algo genial!</h1>
+          <p className={styles.desc}>
+            Esta sección está en desarrollo. Pronto encontrarás aquí tu panel principal
+            con todas las funcionalidades de OficioYa.
+          </p>
 
-        <div className={styles.features}>
-          {[
-            { icon: '🔍', text: 'Buscar y contratar profesionales' },
-            { icon: '📋', text: 'Gestionar tus solicitudes de servicio' },
-            { icon: '⭐', text: 'Ver valoraciones y reseñas' },
-            { icon: '💬', text: 'Mensajería directa con trabajadores' },
-          ].map(({ icon, text }) => (
-            <div key={text} className={styles.featureItem}>
-              <span className={styles.featureIcon}>{icon}</span>
-              <span>{text}</span>
-            </div>
-          ))}
+          <div className={styles.features}>
+            {[
+              { icon: '🔍', text: 'Buscar y contratar profesionales' },
+              { icon: '📋', text: 'Gestionar tus solicitudes de servicio' },
+              { icon: '⭐', text: 'Ver valoraciones y reseñas' },
+              { icon: '💬', text: 'Mensajería directa con trabajadores' },
+            ].map(({ icon, text }) => (
+              <div key={text} className={styles.featureItem}>
+                <span className={styles.featureIcon}>{icon}</span>
+                <span>{text}</span>
+              </div>
+            ))}
+          </div>
         </div>
 
         {isAdmin && (
@@ -46,14 +50,8 @@ export default function MaintenancePage() {
           </div>
         )}
 
-        <button
-          className={styles.logoutBtn}
-          onClick={() => {
-            clearSession();
-            window.location.href = '/auth';
-          }}
-        >
-          Cerrar sesión
+        <button type="button" className={styles.btnInicio} onClick={() => navigate('/home')}>
+          Ir al inicio
         </button>
       </div>
     </div>

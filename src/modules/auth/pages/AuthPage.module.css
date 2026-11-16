@@ -102,20 +102,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
 }
 
 .cardTitle {
   font-size: 1.6rem;
   font-weight: 700;
-  margin: 4px 0 2px;
+  margin: 0 0 6px;
   letter-spacing: -0.03em;
 }
 
 .cardDesc {
   font-size: 0.875rem;
   color: var(--color-text-muted);
-  margin: 0 0 8px;
+  margin: 0 0 20px;
   line-height: 1.5;
 }
 
@@ -261,7 +261,7 @@
   width: 22px;
   height: 22px;
   border-radius: 50%;
-  background: var(--color-success);
+  background: var(--color-primary);
   color: #fff;
   display: flex;
   align-items: center;
@@ -271,9 +271,8 @@
 
 .accent {
   color: var(--color-primary);
-  background: linear-gradient(transparent 72%, rgba(220, 98, 63, 0.18) 72%);
-  padding: 0 4px;
-  border-radius: 6px;
+  background: none;
+  padding: 0;
 }
 
 .hero :global(.eyebrow),
@@ -284,7 +283,10 @@
   padding: 7px 14px;
   border-radius: 999px;
   background: #fde3d8;
-  margin-bottom: 10px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: normal;
 }
 
 .hero :global(.eyebrow) {

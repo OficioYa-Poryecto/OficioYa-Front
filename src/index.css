@@ -56,8 +56,8 @@
 
    /* Shared utility classes */
    .eyebrow {
-     text-transform: uppercase;
-     letter-spacing: 0.14em;
+     text-transform: none;
+     letter-spacing: normal;
      font-size: 0.75rem;
      font-weight: 700;
      color: var(--color-accent);

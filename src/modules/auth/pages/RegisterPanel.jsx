@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 import styles from './AuthPage.module.css';
 
 const BENEFITS = [
-  'Perfil adaptado a tu rol',
-  'Datos personales protegidos',
-  'Sin pagos ni comisiones',
+  { id: 'rol', content: <>Perfil <strong>adaptado</strong> a tu rol</> },
+  { id: 'datos', content: <>Datos personales <strong>protegidos</strong></> },
+  { id: 'pagos', content: <>Sin <strong>pagos ni comisiones</strong></> },
 ];
 
 export default function RegisterPanel() {
@@ -21,18 +21,18 @@ export default function RegisterPanel() {
       <span className="eyebrow">Soy nuevo en OficioYa</span>
       <h2 className={styles.cardTitle}>Crear una cuenta</h2>
       <p className={styles.cardDesc}>
-        Completa tus datos y configura tu perfil. Es gratis y solo toma unos minutos.
+        Completa tus datos y configura tu perfil. Es <strong>gratis</strong> y solo toma unos minutos.
       </p>
 
       <ul className={styles.benefits}>
         {BENEFITS.map((b) => (
-          <li key={b} className={styles.benefitItem}>
+          <li key={b.id} className={styles.benefitItem}>
             <span className={styles.checkIcon}>
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </span>
-            {b}
+            {b.content}
           </li>
         ))}
       </ul>

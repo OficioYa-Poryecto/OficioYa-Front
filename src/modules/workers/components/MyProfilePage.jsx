@@ -7,18 +7,28 @@ import StatusMessage from './ui/StatusMessage';
 import ui from './ui/ui.module.css';
 import { useMyWorker } from '../hooks/useMyWorker';
 import ProfileStatus from './ProfileStatus';
-import { enmascararCorreo, enmascararTelefono, formatoDinero, nombreUnidad } from './formats';
+import { enmascararCorreo, enmascararTelefono, formatoDinero, nombreUnidad, getInitials } from './formats';
 import TradesSection from './TradesSection';
 import styles from './worker.module.css';
+import { useAccount } from '../hooks/useAccount';
+
 
 // "Mi perfil": lo que ve el propio trabajador. Incluye su contacto enmascarado
 // (viene de Identity, no de Worker) y el manejo de sus oficios.
 function MyProfilePage() {
   const navigate = useNavigate();
   const { data: perfil, loading, error, refresh } = useMyWorker();
+  const account = useAccount('/users/me');
   if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
-  const cuenta = { initials: 'T', name: 'Trabajador', hasRealName: false, email: null, phone: null };
+  const rawPhone = account?.phones?.[0];
+  const cuenta = {
+    name: account?.name ?? 'Trabajador',
+    initials: getInitials(account?.name),
+    hasRealName: Boolean(account?.name),
+    email: account?.email ?? null,
+    phone: typeof rawPhone === 'string' ? rawPhone : (rawPhone?.number ?? null),
+  };
   const paused = perfil.status === 'PAUSED';
   const { primaryTrade } = perfil;
 

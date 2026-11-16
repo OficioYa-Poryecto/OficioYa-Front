@@ -99,6 +99,12 @@ const paths = {
       <path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 14h7" />
     </>
   ),
+    clock: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3 2" />
+    </>
+  ),
 };
 
 function Icon({ name, size = 20, className = '' }) {

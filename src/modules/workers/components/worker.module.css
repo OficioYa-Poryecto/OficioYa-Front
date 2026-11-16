@@ -1,25 +1,60 @@
+/* Tokens propios del módulo */
+.tokens,
+.publicPage {
+  --color-sage: #e3eae4;
+  --color-sage-dark: #2f5d4a;
+  --color-success-soft: #e4f1ea;
+  --color-warning: #9a6a10;
+  --color-warning-soft: #fff4dc;
+  --color-danger-soft: #fdecea;
+  --color-ink: #24312d;
+  --shadow-sm: 0 2px 10px rgba(36, 49, 45, 0.08);
+  --font-heading: var(--font-main);
+}
+
 /* Encabezado y estructura común de las pantallas del trabajador */
 .pageHeading {
-  align-items: flex-end;
+  align-items: center;
+  background: linear-gradient(120deg, var(--color-surface) 0%, var(--color-sage) 140%);
+  border: 1px solid var(--color-border);
+  border-left: 6px solid var(--color-primary);
+  border-radius: var(--radius-lg);
   display: flex;
   gap: 24px;
   justify-content: space-between;
-  margin-bottom: 34px;
+  margin-bottom: 22px;
+  padding: 22px 28px;
 }
 
 .pageHeading > div {
   max-width: 720px;
 }
 
-.pageHeading h1 {
-  font-size: clamp(34px, 4vw, 48px);
-  line-height: 1.08;
-  margin: 0;
+.eyebrowPill {
+  background: var(--color-primary-soft);
+  border-radius: 999px;
+  color: var(--color-accent);
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  padding: 5px 12px;
+  text-transform: uppercase;
 }
 
-.pageHeading p:last-child {
-  font-size: 16px;
-  margin: 12px 0 0;
+.pageHeading h1 {
+  font-size: clamp(28px, 3.4vw, 38px);
+  line-height: 1.1;
+  margin: 10px 0 0;
+}
+
+.accent {
+  color: var(--color-primary);
+}
+
+.pageHeading p {
+  font-size: 15px;
+  margin: 8px 0 0;
 }
 
 .notice {
@@ -61,7 +96,7 @@
 .twoCols {
   display: grid;
   gap: 12px;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
 /* Crear perfil */
@@ -218,17 +253,29 @@
   text-transform: uppercase;
 }
 
-.tradeRow,
-.inlineForm {
+.tradeRow {
   align-items: start;
   display: grid;
   gap: 14px;
-  grid-template-columns: 1.2fr 0.8fr 0.8fr auto;
-}
-
-.tradeRow {
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr) minmax(0, 0.8fr) auto;
   border-top: 1px solid var(--color-border);
   padding: 18px 0;
+}
+
+.inlineForm {
+  align-items: end;
+  display: grid;
+  gap: 14px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.inlineForm > label:first-child {
+  grid-column: 1 / -1;
+}
+
+.inlineForm > button {
+  grid-column: 1 / -1;
+  justify-self: end;
 }
 
 .tradeRow:first-of-type {
@@ -262,9 +309,6 @@
   margin-top: 24px;
 }
 
-.inlineForm > button {
-  margin-top: 24px;
-}
 
 /* Cobertura */
 .coverageLayout {
@@ -406,6 +450,11 @@
 .slotForm {
   display: grid;
   gap: 17px;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.slotForm > * { 
+  min-width: 0; 
 }
 
 .slotForm h2 {
@@ -908,9 +957,6 @@
 }
 
 @media (max-width: 580px) {
-  .pageHeading h1 {
-    font-size: 34px;
-  }
 
   .statsGrid,
   .tradeRow,

@@ -1,15 +1,20 @@
 import styles from './worker.module.css';
 
 function PageHeading({ eyebrow, title, description, action }) {
+  const words = title.split(' ');
+  const last = words.pop();
   return (
-    <div className={styles.pageHeading}>
+    <header className={styles.pageHeading}>
       <div>
-        <p className="eyebrow">{eyebrow}</p>
-        <h1>{title}</h1>
+        <span className={styles.eyebrowPill}>{eyebrow}</span>
+        <h1>
+          {words.length > 0 && `${words.join(' ')} `}
+          <span className={styles.accent}>{last}</span>
+        </h1>
         <p>{description}</p>
       </div>
       {action}
-    </div>
+    </header>
   );
 }
 

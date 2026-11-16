@@ -1,11 +1,11 @@
 import { useNavigate } from 'react-router-dom';
-import Boton from '../../core/design-system/Boton';
-import EmptyState from '../../core/design-system/EmptyState';
-import ui from '../../core/design-system/ui.module.css';
+import Button from '../../core/design-system/Button';
+import EmptyState from './ui/EmptyState';
+import ui from './ui/ui.module.css';
 import PageHeading from './PageHeading';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
-function PerfilRequerido() {
+function ProfileRequired() {
   const navigate = useNavigate();
 
   return (
@@ -21,11 +21,11 @@ function PerfilRequerido() {
           text="Crea tu perfil para configurar tus oficios y disponibilidad."
         />
         <div className={styles.center}>
-          <Boton onClick={() => navigate('/worker/create')}>Crear perfil</Boton>
+          <Button type="button" onClick={() => navigate('/worker/create')}>Crear perfil</Button>
         </div>
       </div>
     </div>
   );
 }
 
-export default PerfilRequerido;
+export default ProfileRequired;

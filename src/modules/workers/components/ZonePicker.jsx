@@ -1,6 +1,6 @@
-import Icon from '../../core/design-system/Icon';
-import ui from '../../core/design-system/ui.module.css';
-import styles from './trabajador.module.css';
+import Icon from './ui/Icon';
+import ui from './ui/ui.module.css';
+import styles from './worker.module.css';
 
 // Selector de barrios en forma de chips. Las zonas las define la administración (RF-05);
 // el trabajador solo elige dónde trabaja (RF-06).

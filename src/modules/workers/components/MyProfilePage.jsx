@@ -1,24 +1,24 @@
 import { useNavigate } from 'react-router-dom';
-import PrivateContactCard from '../../core/components/PrivateContactCard';
-import ProfileHero from '../../core/components/ProfileHero';
-import Boton from '../../core/design-system/Boton';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
+import PrivateContactCard from './ui/PrivateContactCard';
+import ProfileHero from './ui/ProfileHero';
+import Icon from './ui/Icon';
+import Button from '../../core/design-system/Button';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { getSession } from '../services/session';
-import EstadoPerfil from './EstadoPerfil';
-import { enmascararCorreo, enmascararTelefono, formatoDinero, nombreUnidad } from './formatos';
-import OficiosSection from './OficiosSection';
-import styles from './trabajador.module.css';
+import ProfileStatus from './ProfileStatus';
+import { enmascararCorreo, enmascararTelefono, formatoDinero, nombreUnidad } from './formats';
+import TradesSection from './TradesSection';
+import styles from './worker.module.css';
 
 // "Mi perfil": lo que ve el propio trabajador. Incluye su contacto enmascarado
 // (viene de Identity, no de Worker) y el manejo de sus oficios.
-function MiPerfilPage() {
+function MyProfilePage() {
   const navigate = useNavigate();
   const { data: perfil, loading, error, refresh } = useMyWorker();
-  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
+  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
-  const cuenta = getSession();
+  const cuenta = { initials: 'T', name: 'Trabajador', hasRealName: false, email: null, phone: null };
   const paused = perfil.status === 'PAUSED';
   const { primaryTrade } = perfil;
 
@@ -55,9 +55,10 @@ function MiPerfilPage() {
             <p className={styles.mutedText}>
               Así te ven los contratantes: oficios, tarifas, cobertura y disponibilidad, sin tus datos de contacto.
             </p>
-            <Boton icon="eye" onClick={() => navigate(`/workers/${perfil.id}`)} variant="outline">
+            <Button type="button" onClick={() => navigate(`/workers/${perfil.id}`)} variant="outline">
+              <Icon name="eye" size={18} />{' '}
               Ver perfil público
-            </Boton>
+            </Button>
           </section>
         </aside>
         <div>
@@ -65,11 +66,11 @@ function MiPerfilPage() {
             <h2>Mis oficios y tarifas</h2>
             <p>Tu oficio principal y los servicios adicionales que ofreces.</p>
           </div>
-          <OficiosSection locked={paused} perfil={perfil} refresh={refresh} />
+          <TradesSection locked={paused} perfil={perfil} refresh={refresh} />
         </div>
       </div>
     </div>
   );
 }
 
-export default MiPerfilPage;
+export default MyProfilePage;

@@ -1,9 +1,9 @@
-import Field from '../../core/design-system/Field';
-import SelectField from '../../core/design-system/SelectField';
-import { UNIDADES } from './formatos';
+import Field from './ui/Field';
+import SelectField from './ui/SelectField';
+import { UNIDADES } from './formats';
 
 // Tarifa + unidad, iguales en crear perfil, agregar oficio y editar oficio.
-function TarifaFields({ rate, unit, onRateChange, onUnitChange, rateError, unitError }) {
+function RateFields({ rate, unit, onRateChange, onUnitChange, rateError, unitError }) {
   return (
     <>
       <Field
@@ -31,4 +31,4 @@ function TarifaFields({ rate, unit, onRateChange, onUnitChange, rateError, unitE
   );
 }
 
-export default TarifaFields;
+export default RateFields;

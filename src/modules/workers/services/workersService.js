@@ -1,31 +1,11 @@
 // Acceso a datos del dominio Worker. Las pantallas importan SOLO de aquí.
-// Con VITE_USE_MOCKS=true responde mockWorkerApi; si no, llama al back por httpClient.
 // Rutas relativas a /api/v1 (las agrega httpClient).
-import { redirectToLogin } from '../../core/lib/authRedirect';
 import { request } from '../../core/lib/httpClient';
-import { borrarImagen, idDeUrlImagen, subirImagen, urlImagen } from '../../core/lib/imagesClient';
-import { USE_MOCKS } from '../config';
-import * as mockApi from './mockWorkerApi';
-import { getSession } from './session';
+import { getToken } from '../../core/lib/session';
+import { borrarImagen, idDeUrlImagen, subirImagen, urlImagen } from './imagesClient';
 
-async function call(path, options = {}) {
-  try {
-    return await request(path, { ...options, token: getSession().token });
-  } catch (error) {
-    if (error.status === 401) redirectToLogin();
-    throw error;
-  }
-}
-
-// Mismo manejo de sesión vencida para las llamadas al servicio de imágenes.
-async function conImagenes(accion) {
-  try {
-    return await accion();
-  } catch (error) {
-    if (error.status === 401) redirectToLogin();
-    throw error;
-  }
-}
+// httpClient ya agrega el token y redirige a /auth si vence la sesión.
+const call = (path, options) => request(path, options);
 
 const json = (method, body) => ({ method, body });
 
@@ -78,8 +58,8 @@ const realApi = {
   // Galería con el servicio de imágenes: el archivo se sube allá (tipo WORK, rootId = id del trabajador)
   // y Worker solo guarda la URL. Si Worker falla, se borra la imagen para no dejarla huérfana.
   async subirFotoGaleria(workerId, file, description) {
-    const token = getSession().token;
-    const imagen = await conImagenes(() => subirImagen(file, { tipo: 'WORK', rootId: workerId, token }));
+    const token = getToken();
+    const imagen = await subirImagen(file, { tipo: 'WORK', rootId: workerId, token });
     try {
       return await realApi.addPhoto(workerId, { url: urlImagen(imagen.id), description });
     } catch (error) {
@@ -91,16 +71,15 @@ const realApi = {
   async eliminarFotoGaleria(workerId, photo) {
     await realApi.deletePhoto(workerId, photo.id);
     const imagenId = idDeUrlImagen(photo.url);
-    if (imagenId) await borrarImagen(imagenId, { token: getSession().token }).catch(() => {});
+    if (imagenId) await borrarImagen(imagenId, { token: getToken() }).catch(() => {});
   },
 
   // ---- Catálogos ----
   listTrades: () => call('/trades?active=true'),
-  // Las zonas son del dominio User: hasta acordar su contrato se usan las de ejemplo.
-  listZones: () => mockApi.listZones(),
+  
+  // Las zonas son del dominio User.
+  listZones: () => call('/zones'),
 };
-
-const api = USE_MOCKS ? mockApi : realApi;
 
 export const {
   getMyWorker,
@@ -123,4 +102,4 @@ export const {
   eliminarFotoGaleria,
   listTrades,
   listZones,
-} = api;
+} = realApi;

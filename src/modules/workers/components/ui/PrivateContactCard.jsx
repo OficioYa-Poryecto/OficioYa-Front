@@ -1,5 +1,5 @@
-import Icon from '../design-system/Icon';
-import ui from '../design-system/ui.module.css';
+import Icon from './/Icon';
+import ui from './/ui.module.css';
 
 function PrivateContactCard({ email, phones }) {
   return (

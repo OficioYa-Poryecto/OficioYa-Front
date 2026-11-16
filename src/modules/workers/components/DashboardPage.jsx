@@ -1,18 +1,18 @@
 import { useState } from 'react';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import Toggle from '../../core/design-system/Toggle';
-import ui from '../../core/design-system/ui.module.css';
+import StatusMessage from './ui/StatusMessage';
+import Toggle from './ui/Toggle';
+import ui from './ui/ui.module.css';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { updateAvailableNow } from '../services/trabajadoresService';
-import EstadoPerfil from './EstadoPerfil';
-import { formatoDinero, nombreUnidad } from './formatos';
+import { updateAvailableNow } from '../services/workersService';
+import ProfileStatus from './ProfileStatus';
+import { formatoDinero, nombreUnidad } from './formats';
 import PageHeading from './PageHeading';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
-function PanelPage() {
+function DashboardPage() {
   const { data: perfil, loading, error, refresh } = useMyWorker();
   const [actionError, setActionError] = useState('');
-  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
+  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
   const paused = perfil.status === 'PAUSED';
   const estado = paused ? 'Pausado' : 'Activo';
@@ -76,4 +76,4 @@ function PanelPage() {
   );
 }
 
-export default PanelPage;
+export default DashboardPage;

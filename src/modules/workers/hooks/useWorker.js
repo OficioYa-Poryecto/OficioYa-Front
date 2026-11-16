@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { getWorker } from '../services/trabajadoresService';
+import { getWorker } from '../services/workersService';
 
 // Perfil público de cualquier trabajador por id (WorkerResponse). { data, loading, error, notFound }
 // notFound también cubre el 400 que da el back cuando el id no es un UUID válido.

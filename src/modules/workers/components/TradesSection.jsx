@@ -1,15 +1,15 @@
 import { useState } from 'react';
-import Boton from '../../core/design-system/Boton';
-import EmptyState from '../../core/design-system/EmptyState';
-import Icon from '../../core/design-system/Icon';
-import SelectField from '../../core/design-system/SelectField';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
-import { useTrades } from '../hooks/useCatalogos';
-import { addTrade, removeTrade, setPrimaryTrade, updateTrade } from '../services/trabajadoresService';
-import { validarTarifa } from './formatos';
-import TarifaFields from './TarifaFields';
-import styles from './trabajador.module.css';
+import Button from '../../core/design-system/Button';
+import EmptyState from './ui/EmptyState';
+import Icon from './ui/Icon';
+import SelectField from './ui/SelectField';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
+import { useTrades } from '../hooks/useCatalogs';
+import { addTrade, removeTrade, setPrimaryTrade, updateTrade } from '../services/workersService';
+import { validarTarifa } from './formats';
+import RateFields from './RateFields';
+import styles from './worker.module.css';
 
 // La tarifa y la unidad se editan en la fila y se envían con "Guardar".
 function TradeRow({ item, onSave, onPrimary, onRemove }) {
@@ -27,20 +27,20 @@ function TradeRow({ item, onSave, onPrimary, onRemove }) {
           {item.trade.category && <small>{item.trade.category.name}</small>}
         </div>
       </div>
-      <TarifaFields onRateChange={setRate} onUnitChange={setUnit} rate={rate} rateError={rateError} unit={unit} />
+      <RateFields onRateChange={setRate} onUnitChange={setUnit} rate={rate} rateError={rateError} unit={unit} />
       <div className={styles.rowActions}>
         {changed && !rateError && (
-          <Boton onClick={() => onSave(item.id, { approxRate: Number(rate), rateUnit: unit })}>Guardar</Boton>
+          <Button type="button" onClick={() => onSave(item.id, { approxRate: Number(rate), rateUnit: unit })}>Guardar</Button>
         )}
-        {onPrimary && <Boton onClick={onPrimary} variant="outline">Hacer principal</Boton>}
-        {onRemove && <Boton icon="trash" onClick={onRemove} variant="ghost">Quitar</Boton>}
+        {onPrimary && <Button type="button" onClick={onPrimary} variant="outline">Hacer principal</Button>}
+        {onRemove && <Button type="button" onClick={onRemove} variant="ghost"><Icon name="trash" size={18} /> Quitar</Button>}
       </div>
     </div>
   );
 }
 
 // Manejo de oficios dentro de "Mi perfil": principal, secundarios y alta de uno nuevo (RF-03 y RF-04).
-function OficiosSection({ perfil, refresh, locked }) {
+function TradesSection({ perfil, refresh, locked }) {
   const { data: oficiosActivos } = useTrades();
   const [tradeId, setTradeId] = useState('');
   const [rate, setRate] = useState('');
@@ -139,18 +139,18 @@ function OficiosSection({ perfil, refresh, locked }) {
             required
             value={tradeId}
           />
-          <TarifaFields
+          <RateFields
             onRateChange={(value) => { setRate(value); setErrores((e) => ({ ...e, rate: '' })); }}
             onUnitChange={setUnit}
             rate={rate}
             rateError={errores.rate}
             unit={unit}
           />
-          <Boton disabled={!disponibles.length} icon="plus" type="submit">Agregar</Boton>
+          <Button disabled={!disponibles.length} type="submit"><Icon name="plus" size={18} /> Agregar</Button>
         </div>
       </form>
     </div>
   );
 }
 
-export default OficiosSection;
+export default TradesSection;

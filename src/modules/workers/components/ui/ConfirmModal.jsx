@@ -1,4 +1,4 @@
-import Boton from './Boton';
+import Button from '../../../core/design-system/Button';
 import Icon from './Icon';
 import styles from './ConfirmModal.module.css';
 
@@ -10,8 +10,8 @@ function ConfirmModal({ title, text, onCancel, onConfirm }) {
         <h2>{title}</h2>
         <p>{text}</p>
         <div className={styles.actions}>
-          <Boton onClick={onCancel} variant="outline">Cancelar</Boton>
-          <Boton onClick={onConfirm} variant="danger">Confirmar</Boton>
+          <Button type="button" onClick={onCancel} variant="outline">Cancelar</Button>
+          <Button type="button" onClick={onConfirm} variant="danger">Confirmar</Button>
         </div>
       </div>
     </div>

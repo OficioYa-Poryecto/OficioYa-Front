@@ -1,20 +1,21 @@
 import { useState } from 'react';
-import Boton from '../../core/design-system/Boton';
-import ConfirmModal from '../../core/design-system/ConfirmModal';
-import EmptyState from '../../core/design-system/EmptyState';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
-import { FORMATOS_IMAGEN, validarArchivoImagen } from '../../core/lib/imagesClient';
+import Button from '../../core/design-system/Button';
+import ConfirmModal from './ui/ConfirmModal';
+import EmptyState from './ui/EmptyState';
+import Icon from './ui/Icon';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
+import { FORMATOS_IMAGEN, validarArchivoImagen } from '../services/imagesClient';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { eliminarFotoGaleria, subirFotoGaleria } from '../services/trabajadoresService';
-import EstadoPerfil from './EstadoPerfil';
-import { formatoFecha } from './formatos';
+import { eliminarFotoGaleria, subirFotoGaleria } from '../services/workersService';
+import ProfileStatus from './ProfileStatus';
+import { formatoFecha } from './formats';
 import PageHeading from './PageHeading';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
 const MAX_DESCRIPCION = 200;
 
-function GaleriaPage() {
+function GalleryPage() {
   const { data: perfil, loading, error: loadError, refresh } = useMyWorker();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
@@ -24,7 +25,7 @@ function GaleriaPage() {
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(null);
-  if (!perfil) return <EstadoPerfil error={loadError} loading={loading} />;
+  if (!perfil) return <ProfileStatus error={loadError} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
 
@@ -98,7 +99,7 @@ function GaleriaPage() {
               <div>
                 <span>{formatoFecha(photo.uploadedAt.slice(0, 10))}</span>
                 <p>{photo.description || 'Sin descripción'}</p>
-                <Boton icon="trash" onClick={() => setDeleting(photo.id)} variant="ghost">Eliminar</Boton>
+                <Button type="button" onClick={() => setDeleting(photo.id)} variant="ghost"><Icon name="trash" size={18} /> Eliminar</Button>
               </div>
             </article>
           ))}
@@ -137,7 +138,7 @@ function GaleriaPage() {
                 <span>{description.length}/{MAX_DESCRIPCION}</span>
               </span>
             </label>
-            <Boton disabled={saving} type="submit">{saving ? 'Subiendo…' : 'Agregar foto'}</Boton>
+            <Button disabled={saving} type="submit"><Icon name="upload" size={18} /> {saving ? 'Subiendo…' : 'Agregar foto'}</Button>
             {success && <StatusMessage>Foto agregada correctamente.</StatusMessage>}
           </div>
         </form>
@@ -154,4 +155,4 @@ function GaleriaPage() {
   );
 }
 
-export default GaleriaPage;
+export default GalleryPage;

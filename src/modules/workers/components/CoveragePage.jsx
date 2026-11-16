@@ -1,17 +1,17 @@
 import { useState } from 'react';
-import Boton from '../../core/design-system/Boton';
-import EmptyState from '../../core/design-system/EmptyState';
-import Icon from '../../core/design-system/Icon';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
-import { useZones } from '../hooks/useCatalogos';
+import Button from '../../core/design-system/Button';
+import EmptyState from './ui/EmptyState';
+import Icon from './ui/Icon';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
+import { useZones } from '../hooks/useCatalogs';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { addZone, removeZone } from '../services/trabajadoresService';
-import EstadoPerfil from './EstadoPerfil';
+import { addZone, removeZone } from '../services/workersService';
+import ProfileStatus from './ProfileStatus';
 import PageHeading from './PageHeading';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
-function CoberturaPage() {
+function CoveragePage() {
   const { data: perfil, loading, error, refresh } = useMyWorker();
   const { data: zonas } = useZones();
   const [search, setSearch] = useState('');
@@ -19,7 +19,7 @@ function CoberturaPage() {
   const [seleccion, setSeleccion] = useState(null);
   const [message, setMessage] = useState(null);
   const [saving, setSaving] = useState(false);
-  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
+  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
   const zoneIds = seleccion ?? perfil.zoneIds;
@@ -66,9 +66,9 @@ function CoberturaPage() {
         title="Mi área de cobertura"
         description="Elige, entre los barrios habilitados en OficioYa, a cuáles puedes desplazarte. Los contratantes te encontrarán por estas zonas."
         action={(
-          <Boton disabled={locked || saving || !seleccion || sinZonas} onClick={guardar}>
+          <Button type="button" disabled={locked || saving || !seleccion || sinZonas} onClick={guardar}>
             {saving ? 'Guardando…' : 'Guardar cambios'}
-          </Boton>
+          </Button>
         )}
       />
       {locked && (
@@ -129,4 +129,4 @@ function CoberturaPage() {
   );
 }
 
-export default CoberturaPage;
+export default CoveragePage;

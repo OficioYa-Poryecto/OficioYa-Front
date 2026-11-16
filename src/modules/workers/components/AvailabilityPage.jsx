@@ -1,19 +1,19 @@
 import { useState } from 'react';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import Toggle from '../../core/design-system/Toggle';
-import ui from '../../core/design-system/ui.module.css';
+import StatusMessage from './ui/StatusMessage';
+import Toggle from './ui/Toggle';
+import ui from './ui/ui.module.css';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { updateAvailableNow } from '../services/trabajadoresService';
-import EstadoPerfil from './EstadoPerfil';
+import { updateAvailableNow } from '../services/workersService';
+import ProfileStatus from './ProfileStatus';
 import PageHeading from './PageHeading';
 import ScheduleEditor from './ScheduleEditor';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
-function DisponibilidadPage() {
+function AvailabilityPage() {
   const { data: perfil, loading, error, refresh } = useMyWorker();
   const [toggleError, setToggleError] = useState('');
   const [cambiando, setCambiando] = useState(false);
-  if (!perfil) return <EstadoPerfil error={error} loading={loading} />;
+  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
 
   const locked = perfil.status === 'PAUSED';
 
@@ -62,4 +62,4 @@ function DisponibilidadPage() {
   );
 }
 
-export default DisponibilidadPage;
+export default AvailabilityPage;

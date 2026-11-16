@@ -1,14 +1,15 @@
 import { useState } from 'react';
-import Boton from '../../core/design-system/Boton';
-import ConfirmModal from '../../core/design-system/ConfirmModal';
-import EmptyState from '../../core/design-system/EmptyState';
-import Field from '../../core/design-system/Field';
-import SelectField from '../../core/design-system/SelectField';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
-import { createSlot, deleteSlot, updateSlot } from '../services/trabajadoresService';
-import { DIAS, formatoFecha, nombreDia } from './formatos';
-import styles from './trabajador.module.css';
+import Button from '../../core/design-system/Button';
+import ConfirmModal from './ui/ConfirmModal';
+import EmptyState from './ui/EmptyState';
+import Field from './ui/Field';
+import Icon from './ui/Icon';
+import SelectField from './ui/SelectField';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
+import { createSlot, deleteSlot, updateSlot } from '../services/workersService';
+import { DIAS, formatoFecha, nombreDia } from './formats';
+import styles from './worker.module.css';
 
 // Franjas de disponibilidad (RF-07 y RF-10): fijas (una fecha) o repetitivas (un día de la
 // semana durante un periodo), más el estado "disponible ahora".
@@ -81,8 +82,8 @@ function SlotItem({ slot, onEdit, onDelete }) {
       </div>
       {(onEdit || onDelete) && (
         <div className={styles.slotActions}>
-          <Boton icon="edit" onClick={onEdit} variant="ghost">Editar</Boton>
-          <Boton icon="trash" onClick={onDelete} variant="ghost">Eliminar</Boton>
+          <Button type="button" onClick={onEdit} variant="ghost"><Icon name="edit" size={18} /> Editar</Button>
+          <Button type="button" onClick={onDelete} variant="ghost"><Icon name="trash" size={18} /> Eliminar</Button>
         </div>
       )}
     </div>
@@ -275,8 +276,8 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
         </div>
         {message && <StatusMessage variant={message.type}>{message.text}</StatusMessage>}
         <div className={styles.slotActions}>
-          {editing && <Boton onClick={cancelar} variant="ghost">Cancelar</Boton>}
-          <Boton disabled={saving} type="submit">{saving ? 'Guardando…' : 'Guardar franja'}</Boton>
+          {editing && <Button type="button" onClick={cancelar} variant="ghost">Cancelar</Button>}
+          <Button disabled={saving} type="submit">{saving ? 'Guardando…' : 'Guardar franja'}</Button>
         </div>
       </form>
       {deleting && (

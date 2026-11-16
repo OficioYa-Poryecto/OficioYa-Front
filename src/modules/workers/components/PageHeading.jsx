@@ -1,4 +1,4 @@
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
 function PageHeading({ eyebrow, title, description, action }) {
   return (

@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from 'react';
-import { getMyWorker } from '../services/trabajadoresService';
+import { getMyWorker } from '../services/workersService';
 
 // Perfil del trabajador en sesión, compartido por todas las pantallas (layout, panel, oficios...).
 // Se consulta una sola vez; después de cada cambio la pantalla llama refresh().

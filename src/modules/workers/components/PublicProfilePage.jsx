@@ -1,18 +1,18 @@
 import { Link, useParams } from 'react-router-dom';
-import EmptyState from '../../core/design-system/EmptyState';
-import Icon from '../../core/design-system/Icon';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import ui from '../../core/design-system/ui.module.css';
-import { useZones } from '../hooks/useCatalogos';
+import EmptyState from './ui/EmptyState';
+import Icon from './ui/Icon';
+import StatusMessage from './ui/StatusMessage';
+import ui from './ui/ui.module.css';
+import { useZones } from '../hooks/useCatalogs';
 import { useWorker } from '../hooks/useWorker';
-import { getSession } from '../services/session';
-import { formatoDinero, formatoFecha, nombreUnidad } from './formatos';
+import { getSession } from '../../core/lib/session';
+import { formatoDinero, formatoFecha, nombreUnidad } from './formats';
 import ScheduleEditor from './ScheduleEditor';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
 // Perfil público de un trabajador (RF-08): oficios, tarifas, cobertura, disponibilidad y fotos.
 // No muestra datos de contacto: WorkerResponse no los trae y son de Identity.
-function PerfilPublicoPage() {
+function PublicProfilePage() {
   const { id } = useParams();
   const { data: perfil, loading, error, notFound } = useWorker(id);
   const { data: zonas } = useZones();
@@ -29,7 +29,7 @@ function PerfilPublicoPage() {
   }
   if (error) return <div className={styles.publicPage}><StatusMessage variant="error">No pudimos cargar el perfil: {error}</StatusMessage></div>;
 
-  const esPropio = perfil.userId === getSession().userId;
+  const esPropio = perfil.userId === getSession()?.userId;
   const oficios = [perfil.primaryTrade, ...perfil.secondaryTrades];
   const nombreZona = (zoneId) => zonas?.find((zona) => zona.id === zoneId)?.name ?? `Zona ${zoneId}`;
   const { primaryTrade } = perfil;
@@ -126,4 +126,4 @@ function PerfilPublicoPage() {
   );
 }
 
-export default PerfilPublicoPage;
+export default PublicProfilePage;

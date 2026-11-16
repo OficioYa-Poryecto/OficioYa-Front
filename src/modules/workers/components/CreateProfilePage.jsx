@@ -1,18 +1,18 @@
 import { useState } from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import Boton from '../../core/design-system/Boton';
-import SelectField from '../../core/design-system/SelectField';
-import StatusMessage from '../../core/design-system/StatusMessage';
-import Toggle from '../../core/design-system/Toggle';
-import ui from '../../core/design-system/ui.module.css';
-import { useTrades, useZones } from '../hooks/useCatalogos';
+import Button from '../../core/design-system/Button';
+import SelectField from './ui/SelectField';
+import StatusMessage from './ui/StatusMessage';
+import Toggle from './ui/Toggle';
+import ui from './ui/ui.module.css';
+import { useTrades, useZones } from '../hooks/useCatalogs';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { createWorker } from '../services/trabajadoresService';
-import { validarTarifa } from './formatos';
+import { createWorker } from '../services/workersService';
+import { validarTarifa } from './formats';
 import PageHeading from './PageHeading';
-import TarifaFields from './TarifaFields';
+import RateFields from './RateFields';
 import ZonePicker from './ZonePicker';
-import styles from './trabajador.module.css';
+import styles from './worker.module.css';
 
 function validar({ tradeId, rate, unit, zoneIds }) {
   const errores = {};
@@ -25,7 +25,7 @@ function validar({ tradeId, rate, unit, zoneIds }) {
   return errores;
 }
 
-function CrearPerfilPage() {
+function CreateProfilePage() {
   const navigate = useNavigate();
   const { data: perfil, loading, refresh } = useMyWorker();
   const { data: oficiosActivos } = useTrades();
@@ -96,7 +96,7 @@ function CrearPerfilPage() {
               value={tradeId}
             />
           </div>
-          <TarifaFields
+          <RateFields
             onRateChange={(value) => { setRate(value); limpiar('rate'); }}
             onUnitChange={(value) => { setUnit(value); limpiar('unit'); }}
             rate={rate}
@@ -115,7 +115,7 @@ function CrearPerfilPage() {
         </div>
         <div className={styles.formFooter}>
           <Toggle checked={availableNow} label="Disponible ahora" onChange={() => setAvailableNow(!availableNow)} />
-          <Boton disabled={saving} type="submit">{saving ? 'Creando…' : 'Crear perfil'}</Boton>
+          <Button disabled={saving} type="submit">{saving ? 'Creando…' : 'Crear perfil'}</Button>
         </div>
         {hayErrores && (
           <StatusMessage variant="error">Revisa los campos marcados antes de continuar.</StatusMessage>
@@ -130,4 +130,4 @@ function CrearPerfilPage() {
   );
 }
 
-export default CrearPerfilPage;
+export default CreateProfilePage;

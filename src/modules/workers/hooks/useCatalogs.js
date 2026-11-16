@@ -1,4 +1,4 @@
-import { listTrades, listZones } from '../services/trabajadoresService';
+import { listTrades, listZones } from '../services/workersService';
 import { useRequest } from './useRequest';
 
 // Oficios activos del catálogo (TradeResponse[]).

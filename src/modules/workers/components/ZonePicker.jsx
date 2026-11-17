@@ -4,7 +4,7 @@ import styles from './worker.module.css';
 
 // Selector de barrios en forma de chips. Las zonas las define la administración (RF-05);
 // el trabajador solo elige dónde trabaja (RF-06).
-function ZonePicker({ zonas, selected, onChange, error }) {
+function ZonePicker({ zones, selected, onChange, error }) {
   const toggle = (id) => onChange(selected.includes(id) ? selected.filter((zoneId) => zoneId !== id) : [...selected, id]);
 
   return (
@@ -13,18 +13,18 @@ function ZonePicker({ zonas, selected, onChange, error }) {
         Zonas de cobertura <span aria-hidden="true" className={ui.requiredMark}>*</span>
       </legend>
       <div className={styles.zonePicker}>
-        {zonas.map((zona) => {
-          const activo = selected.includes(zona.id);
+        {zones.map((zone) => {
+          const activo = selected.includes(zone.id);
           return (
             <button
               aria-pressed={activo}
               className={activo ? styles.zoneSelected : ''}
-              key={zona.id}
-              onClick={() => toggle(zona.id)}
+              key={zone.id}
+              onClick={() => toggle(zone.id)}
               type="button"
             >
               {activo && <Icon name="check" size={13} />}
-              {zona.name}
+              {zone.name}
             </button>
           );
         })}

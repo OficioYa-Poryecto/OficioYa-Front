@@ -12,42 +12,42 @@ import PageHeading from './PageHeading';
 import styles from './worker.module.css';
 
 function CoveragePage() {
-  const { data: perfil, loading, error, refresh } = useMyWorker();
-  const { data: zonas } = useZones();
+  const { data: profile, loading, error, refresh } = useMyWorker();
+  const { data: zones } = useZones();
   const [search, setSearch] = useState('');
   // Selección en edición; null = todavía sin cambios (se muestra la guardada).
-  const [seleccion, setSeleccion] = useState(null);
+  const [selection, setSeleccion] = useState(null);
   const [message, setMessage] = useState(null);
   const [saving, setSaving] = useState(false);
-  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
+  if (!profile) return <ProfileStatus error={error} loading={loading} />;
 
-  const locked = perfil.status === 'PAUSED';
-  const zoneIds = seleccion ?? perfil.zoneIds;
-  const listaZonas = zonas ?? [];
-  const nombreZona = (id) => listaZonas.find((zona) => zona.id === id)?.name ?? `Zona ${id}`;
-  const visibles = listaZonas.filter((zona) => zona.name.toLowerCase().includes(search.trim().toLowerCase()));
+  const locked = profile.status === 'PAUSED';
+  const zoneIds = selection ?? profile.zoneIds;
+  const zoneOptions = zones ?? [];
+  const zoneName = (id) => zoneOptions.find((zone) => zone.id === id)?.name ?? `Zona ${id}`;
+  const visibleZones = zoneOptions.filter((zone) => zone.name.toLowerCase().includes(search.trim().toLowerCase()));
 
   const toggleZone = (id) => {
     setMessage(null);
     setSeleccion(zoneIds.includes(id) ? zoneIds.filter((zoneId) => zoneId !== id) : [...zoneIds, id]);
   };
 
-  const sinZonas = zoneIds.length === 0;
+  const noZones = zoneIds.length === 0;
 
   // El back agrega y quita zonas una por una.
-  const guardar = async () => {
+  const handleSave = async () => {
     // RF-06: el área de cobertura necesita al menos una zona.
-    if (sinZonas) {
+    if (noZones) {
       setMessage({ type: 'error', text: 'Selecciona al menos un barrio antes de guardar.' });
       return;
     }
-    const agregar = zoneIds.filter((id) => !perfil.zoneIds.includes(id));
-    const quitar = perfil.zoneIds.filter((id) => !zoneIds.includes(id));
+    const toAdd = zoneIds.filter((id) => !profile.zoneIds.includes(id));
+    const toRemove = profile.zoneIds.filter((id) => !zoneIds.includes(id));
     setSaving(true);
     try {
       await Promise.all([
-        ...agregar.map((id) => addZone(perfil.id, id)),
-        ...quitar.map((id) => removeZone(perfil.id, id)),
+        ...toAdd.map((id) => addZone(profile.id, id)),
+        ...toRemove.map((id) => removeZone(profile.id, id)),
       ]);
       await refresh();
       setSeleccion(null);
@@ -66,7 +66,7 @@ function CoveragePage() {
         title="Mi área de cobertura"
         description="Elige, entre los barrios habilitados en OficioYa, a cuáles puedes desplazarte. Los contratantes te encontrarán por estas zonas."
         action={(
-          <Button type="button" disabled={locked || saving || !seleccion || sinZonas} onClick={guardar}>
+          <Button type="button" disabled={locked || saving || !selection || noZones} onClick={handleSave}>
             {saving ? 'Guardando…' : 'Guardar cambios'}
           </Button>
         )}
@@ -88,8 +88,8 @@ function CoveragePage() {
           {zoneIds.length ? (
             <div className={styles.tags}>
               {zoneIds.map((id) => (
-                <button aria-label={`Quitar ${nombreZona(id)}`} key={id} onClick={() => toggleZone(id)} type="button">
-                  {nombreZona(id)} <b>×</b>
+                <button aria-label={`Quitar ${zoneName(id)}`} key={id} onClick={() => toggleZone(id)} type="button">
+                  {zoneName(id)} <b>×</b>
                 </button>
               ))}
             </div>
@@ -113,12 +113,12 @@ function CoveragePage() {
               value={search}
             />
           </label>
-          {visibles.map((zona) => (
-            <label className={styles.zoneRow} key={zona.id}>
-              <span>{zona.name}</span>
+          {visibleZones.map((zone) => (
+            <label className={styles.zoneRow} key={zone.id}>
+              <span>{zone.name}</span>
               <input
-                checked={zoneIds.includes(zona.id)}
-                onChange={() => toggleZone(zona.id)}
+                checked={zoneIds.includes(zone.id)}
+                onChange={() => toggleZone(zone.id)}
                 type="checkbox"
               />
             </label>

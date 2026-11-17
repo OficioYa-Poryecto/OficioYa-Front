@@ -1,6 +1,6 @@
 import Field from './ui/Field';
 import SelectField from './ui/SelectField';
-import { UNIDADES } from './formats';
+import { UNITS } from './formats';
 
 // Tarifa + unidad, iguales en crear perfil, agregar oficio y editar oficio.
 function RateFields({ rate, unit, onRateChange, onUnitChange, rateError, unitError }) {
@@ -23,7 +23,7 @@ function RateFields({ rate, unit, onRateChange, onUnitChange, rateError, unitErr
         error={unitError}
         label="Unidad"
         onChange={onUnitChange}
-        options={UNIDADES}
+        options={UNITS}
         required
         value={unit}
       />

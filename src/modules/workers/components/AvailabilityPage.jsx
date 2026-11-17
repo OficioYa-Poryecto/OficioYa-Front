@@ -10,18 +10,18 @@ import ScheduleEditor from './ScheduleEditor';
 import styles from './worker.module.css';
 
 function AvailabilityPage() {
-  const { data: perfil, loading, error, refresh } = useMyWorker();
+  const { data: profile, loading, error, refresh } = useMyWorker();
   const [toggleError, setToggleError] = useState('');
   const [cambiando, setCambiando] = useState(false);
-  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
+  if (!profile) return <ProfileStatus error={error} loading={loading} />;
 
-  const locked = perfil.status === 'PAUSED';
+  const locked = profile.status === 'PAUSED';
 
-  const cambiarAhora = async () => {
+  const switchAvailableNow = async () => {
     setToggleError('');
     setCambiando(true);
     try {
-      await updateAvailableNow(perfil.id, !perfil.availableNow);
+      await updateAvailableNow(profile.id, !profile.availableNow);
       await refresh();
     } catch (e) {
       setToggleError(e.message);
@@ -49,14 +49,14 @@ function AvailabilityPage() {
             <p>Actívalo cuando puedas atender un trabajo de inmediato, aunque estés fuera de tus franjas.</p>
           </div>
           <Toggle
-            checked={perfil.availableNow}
+            checked={profile.availableNow}
             disabled={cambiando}
-            label={perfil.availableNow ? 'Disponible' : 'No disponible'}
-            onChange={cambiarAhora}
+            label={profile.availableNow ? 'Disponible' : 'No disponible'}
+            onChange={switchAvailableNow}
           />
         </section>
         {toggleError && <StatusMessage className={styles.notice} variant="error">{toggleError}</StatusMessage>}
-        <ScheduleEditor onChange={refresh} slots={perfil.slots} workerId={perfil.id} />
+        <ScheduleEditor onChange={refresh} slots={profile.slots} workerId={profile.id} />
       </div>
     </div>
   );

@@ -8,26 +8,26 @@ import { useAccount } from '../hooks/useAccount';
 import { useZones } from '../hooks/useCatalogs';
 import { useMyWorker } from '../hooks/useMyWorker';
 import { updateAvailableNow } from '../services/workersService';
-import { DIAS, formatoDinero, formatoFecha, nombreDia, nombreUnidad } from './formats';
+import { DAYS, formatMoney, formatDate, dayName, unitName } from './formats';
 import PageHeading from './PageHeading';
 import ProfileStatus from './ProfileStatus';
 import styles from './worker.module.css';
 
-const DAY_ORDER = DIAS.map((day) => day.value);
+const DAY_ORDER = DAYS.map((day) => day.value);
 
 function DashboardPage() {
-  const { data: perfil, loading, error, refresh } = useMyWorker();
+  const { data: profile, loading, error, refresh } = useMyWorker();
   const { data: zones } = useZones();
   const account = useAccount('/users/me');
   const [actionError, setActionError] = useState('');
-  if (!perfil) return <ProfileStatus error={error} loading={loading} />;
+  if (!profile) return <ProfileStatus error={error} loading={loading} />;
 
-  const paused = perfil.status === 'PAUSED';
-  const { primaryTrade, secondaryTrades } = perfil;
+  const paused = profile.status === 'PAUSED';
+  const { primaryTrade, secondaryTrades } = profile;
   const firstName = account?.name?.trim().split(/\s+/)[0];
-  const zoneNames = perfil.zoneIds.map((id) => zones?.find((zone) => zone.id === id)?.name ?? `Zona ${id}`);
+  const zoneNames = profile.zoneIds.map((id) => zones?.find((zone) => zone.id === id)?.name ?? `Zona ${id}`);
   const today = new Date().toISOString().slice(0, 10);
-  const slots = [...perfil.slots]
+  const slots = [...profile.slots]
     .filter((slot) => slot.recurrenceType === 'RECURRING' || slot.startDate >= today)
     .sort((a, b) => {
       const fixedA = a.recurrenceType !== 'RECURRING';
@@ -40,7 +40,7 @@ function DashboardPage() {
   const toggleNow = async () => {
     setActionError('');
     try {
-      await updateAvailableNow(perfil.id, !perfil.availableNow);
+      await updateAvailableNow(profile.id, !profile.availableNow);
       await refresh();
     } catch (e) {
       setActionError(e.message);
@@ -52,7 +52,7 @@ function DashboardPage() {
       <PageHeading
         action={
           <div className={styles.nowSwitch}>
-            <Toggle checked={perfil.availableNow} disabled={paused} label="Disponible ahora" onChange={toggleNow} />
+            <Toggle checked={profile.availableNow} disabled={paused} label="Disponible ahora" onChange={toggleNow} />
           </div>
         }
         description="Un vistazo rápido a lo que ven los contratantes de tu perfil."
@@ -80,7 +80,7 @@ function DashboardPage() {
                   <strong>{primaryTrade.trade.name}</strong>
                   <small>{primaryTrade.trade.category?.name}</small>
                 </div>
-                <b>{formatoDinero(primaryTrade.approxRate)}<small>{nombreUnidad(primaryTrade.rateUnit)}</small></b>
+                <b>{formatMoney(primaryTrade.approxRate)}<small>{unitName(primaryTrade.rateUnit)}</small></b>
               </li>
             </ul>
           </section>
@@ -96,7 +96,7 @@ function DashboardPage() {
                   <li key={item.id}>
                     <span className={styles.dashIcon}><Icon name="briefcase" size={18} /></span>
                     <div><strong>{item.trade.name}</strong></div>
-                    <b>{formatoDinero(item.approxRate)}<small>{nombreUnidad(item.rateUnit)}</small></b>
+                    <b>{formatMoney(item.approxRate)}<small>{unitName(item.rateUnit)}</small></b>
                   </li>
                 ))}
               </ul>
@@ -126,16 +126,16 @@ function DashboardPage() {
               <h2>Galería</h2>
               <Link to="/worker/gallery">Ver galería</Link>
             </header>
-            {perfil.photos.length === 0 ? (
+            {profile.photos.length === 0 ? (
               <p className={styles.mutedText}>Aún no has subido fotos de tus trabajos.</p>
             ) : (
               <div className={styles.dashPhotos}>
-                {perfil.photos.slice(0, 4).map((photo) => (
+                {profile.photos.slice(0, 4).map((photo) => (
                   <img alt={photo.description || 'Trabajo realizado'} key={photo.id} src={photo.url} />
                 ))}
               </div>
             )}
-            {perfil.photos.length > 4 && <small className={styles.dashMore}>+{perfil.photos.length - 4} fotos más</small>}
+            {profile.photos.length > 4 && <small className={styles.dashMore}>+{profile.photos.length - 4} fotos más</small>}
           </section>
 
           <section className={ui.infoCard}>
@@ -152,11 +152,11 @@ function DashboardPage() {
                   return (
                     <li key={slot.id}>
                       <span className={`${styles.dayChip} ${fixed ? styles.dayChipFixed : ''}`}>
-                        {fixed ? 'Fija' : nombreDia(slot.dayOfWeek).slice(0, 3)}
+                        {fixed ? 'Fija' : dayName(slot.dayOfWeek).slice(0, 3)}
                       </span>
                       <div>
                         <strong>{slot.startTime.slice(0, 5)} – {slot.endTime.slice(0, 5)}</strong>
-                        <small>{fixed ? formatoFecha(slot.startDate) : 'Cada semana'}</small>
+                        <small>{fixed ? formatDate(slot.startDate) : 'Cada semana'}</small>
                       </div>
                     </li>
                   );

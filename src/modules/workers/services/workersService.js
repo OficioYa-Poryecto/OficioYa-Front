@@ -2,7 +2,7 @@
 // Rutas relativas a /api/v1 (las agrega httpClient).
 import { request } from '../../core/lib/httpClient';
 import { getToken } from '../../core/lib/session';
-import { borrarImagen, idDeUrlImagen, subirImagen, urlImagen } from './imagesClient';
+import { deleteImage, imageIdFromUrl, uploadImage, imageUrl } from './imagesClient';
 
 // httpClient ya agrega el token y redirige a /auth si vence la sesión.
 const call = (path, options) => request(path, options);
@@ -24,7 +24,7 @@ const realApi = {
   getWorker: (id) => call(`/workers/${id}`),
   // datos = { availableNow, zoneIds, primaryTrade: { tradeId, approxRate, rateUnit } }
   // El userId no viaja: el back lo toma del token.
-  createWorker: (datos) => call('/workers', json('POST', datos)),
+  createWorker: (values) => call('/workers', json('POST', values)),
   updateAvailableNow: (workerId, availableNow) =>
     call(`/workers/${workerId}/availability-now`, json('PUT', { availableNow })),
   updateStatus: (workerId, status) => call(`/workers/${workerId}/status`, json('PUT', { status })),
@@ -35,7 +35,7 @@ const realApi = {
 
   // ---- Oficios del trabajador ----
   // datos = { tradeId, approxRate, rateUnit }
-  addTrade: (workerId, datos) => call(`/workers/${workerId}/trades`, json('POST', datos)),
+  addTrade: (workerId, values) => call(`/workers/${workerId}/trades`, json('POST', values)),
   updateTrade: (workerId, workerTradeId, { approxRate, rateUnit }) =>
     call(`/workers/${workerId}/trades/${workerTradeId}`, json('PUT', { approxRate, rateUnit })),
   removeTrade: (workerId, workerTradeId) =>
@@ -45,9 +45,9 @@ const realApi = {
 
   // ---- Franjas de disponibilidad ----
   // franja = { recurrenceType, dayOfWeek, startDate, endDate, startTime, endTime }
-  createSlot: (workerId, franja) => call(`/workers/${workerId}/availability-slots`, json('POST', franja)),
-  updateSlot: (workerId, slotId, franja) =>
-    call(`/workers/${workerId}/availability-slots/${slotId}`, json('PUT', franja)),
+  createSlot: (workerId, slot) => call(`/workers/${workerId}/availability-slots`, json('POST', slot)),
+  updateSlot: (workerId, slotId, slot) =>
+    call(`/workers/${workerId}/availability-slots/${slotId}`, json('PUT', slot)),
   deleteSlot: (workerId, slotId) =>
     call(`/workers/${workerId}/availability-slots/${slotId}`, { method: 'DELETE' }),
 
@@ -57,21 +57,21 @@ const realApi = {
 
   // Galería con el servicio de imágenes: el archivo se sube allá (tipo WORK, rootId = id del trabajador)
   // y Worker solo guarda la URL. Si Worker falla, se borra la imagen para no dejarla huérfana.
-  async subirFotoGaleria(workerId, file, description) {
+  async uploadGalleryPhoto(workerId, file, description) {
     const token = getToken();
-    const imagen = await subirImagen(file, { tipo: 'WORK', rootId: workerId, token });
+    const image = await uploadImage(file, { tipo: 'WORK', rootId: workerId, token });
     try {
-      return await realApi.addPhoto(workerId, { url: urlImagen(imagen.id), description });
+      return await realApi.addPhoto(workerId, { url: imageUrl(image.id), description });
     } catch (error) {
-      await borrarImagen(imagen.id, { token }).catch(() => {});
+      await deleteImage(image.id, { token }).catch(() => {});
       throw error;
     }
   },
   // Quita la foto de Worker y, si la imagen vive en el servicio de imágenes, también allá.
-  async eliminarFotoGaleria(workerId, photo) {
+  async deleteGalleryPhoto(workerId, photo) {
     await realApi.deletePhoto(workerId, photo.id);
-    const imagenId = idDeUrlImagen(photo.url);
-    if (imagenId) await borrarImagen(imagenId, { token: getToken() }).catch(() => {});
+    const imageId = imageIdFromUrl(photo.url);
+    if (imageId) await deleteImage(imageId, { token: getToken() }).catch(() => {});
   },
 
   // ---- Catálogos ----
@@ -98,8 +98,8 @@ export const {
   deleteSlot,
   addPhoto,
   deletePhoto,
-  subirFotoGaleria,
-  eliminarFotoGaleria,
+  uploadGalleryPhoto,
+  deleteGalleryPhoto,
   listTrades,
   listZones,
 } = realApi;

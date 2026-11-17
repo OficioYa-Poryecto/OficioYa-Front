@@ -6,7 +6,7 @@ import ui from './ui/ui.module.css';
 import { useZones } from '../hooks/useCatalogs';
 import { useWorker } from '../hooks/useWorker';
 import { getSession } from '../../core/lib/session';
-import { formatoDinero, formatoFecha, nombreUnidad } from './formats';
+import { formatMoney, formatDate, unitName } from './formats';
 import ScheduleEditor from './ScheduleEditor';
 import styles from './worker.module.css';
 import { useAccount } from '../hooks/useAccount';
@@ -16,13 +16,13 @@ import { useProfilePhoto } from '../hooks/useProfilePhoto';
 // No muestra datos de contacto: WorkerResponse no los trae y son de Identity.
 function PublicProfilePage() {
   const { id } = useParams();
-  const { data: perfil, loading, error, notFound } = useWorker(id);
-  const { data: zonas } = useZones();
-  const account = useAccount(perfil ? `/users/${perfil.userId}` : null);
-  const photoUrl = useProfilePhoto(perfil?.userId);
+  const { data: profile, loading, error, notFound } = useWorker(id);
+  const { data: zones } = useZones();
+  const account = useAccount(profile ? `/users/${profile.userId}` : null);
+  const photoUrl = useProfilePhoto(profile?.userId);
 
   if (loading) return <div className={styles.publicPage}><EmptyState title="Cargando…" text="Estamos consultando el perfil." /></div>;
-  if (notFound || perfil?.status === 'PAUSED') {
+  if (notFound || profile?.status === 'PAUSED') {
     return (
       <div className={styles.publicPage}>
         <div className={ui.infoCard}>
@@ -33,14 +33,14 @@ function PublicProfilePage() {
   }
   if (error) return <div className={styles.publicPage}><StatusMessage variant="error">No pudimos cargar el perfil: {error}</StatusMessage></div>;
 
-  const esPropio = perfil.userId === getSession()?.userId;
-  const oficios = [perfil.primaryTrade, ...perfil.secondaryTrades];
-  const nombreZona = (zoneId) => zonas?.find((zona) => zona.id === zoneId)?.name ?? `Zona ${zoneId}`;
-  const { primaryTrade } = perfil;
+  const isOwn = profile.userId === getSession()?.userId;
+  const trades = [profile.primaryTrade, ...profile.secondaryTrades];
+  const zoneName = (zoneId) => zones?.find((zone) => zone.id === zoneId)?.name ?? `Zona ${zoneId}`;
+  const { primaryTrade } = profile;
 
   return (
     <div className={styles.publicPage}>
-      {esPropio && (
+      {isOwn && (
         <div className={styles.previewBar}>
           <span><Icon name="eye" size={16} /> Así ven tu perfil los contratantes.</span>
           <Link to="/worker/profile">Volver a mi perfil</Link>
@@ -55,15 +55,15 @@ function PublicProfilePage() {
           <h1>{account?.name ?? primaryTrade.trade.name}</h1>
           {account?.name && <p>{primaryTrade.trade.name}</p>}
           <div className={`${ui.badges} ${ui.badgesWrap}`}>
-            {perfil.secondaryTrades.map((item) => (
+            {profile.secondaryTrades.map((item) => (
               <span className={ui.badgeNeutral} key={item.id}>{item.trade.name}</span>
             ))}
           </div>
         </div>
         <div className={styles.profileHeaderSide}>
           <span>Desde</span>
-          <strong>{formatoDinero(primaryTrade.approxRate)}</strong>
-          <small>{nombreUnidad(primaryTrade.rateUnit)}</small>
+          <strong>{formatMoney(primaryTrade.approxRate)}</strong>
+          <small>{unitName(primaryTrade.rateUnit)}</small>
         </div>
       </section>
 
@@ -71,10 +71,10 @@ function PublicProfilePage() {
         <aside className={styles.stack}>
           <section className={ui.infoCard}>
             <h2>Cobertura</h2>
-            {perfil.zoneIds.length ? (
+            {profile.zoneIds.length ? (
               <div className={styles.zoneChips}>
-                {perfil.zoneIds.map((zoneId) => (
-                  <span key={zoneId}><Icon name="map" size={13} /> {nombreZona(zoneId)}</span>
+                {profile.zoneIds.map((zoneId) => (
+                  <span key={zoneId}><Icon name="map" size={13} /> {zoneName(zoneId)}</span>
                 ))}
               </div>
             ) : (
@@ -93,13 +93,13 @@ function PublicProfilePage() {
           <section className={ui.infoCard}>
             <h2>Oficios y tarifas</h2>
             <ul className={styles.rateList}>
-              {oficios.map((item, index) => (
+              {trades.map((item, index) => (
                 <li key={item.id}>
                   <div>
                     <strong>{item.trade.name}</strong>
                     {index === 0 && <span className={styles.primaryTag}>Principal</span>}
                   </div>
-                  <span>{formatoDinero(item.approxRate)} <small>{nombreUnidad(item.rateUnit)}</small></span>
+                  <span>{formatMoney(item.approxRate)} <small>{unitName(item.rateUnit)}</small></span>
                 </li>
               ))}
             </ul>
@@ -107,18 +107,18 @@ function PublicProfilePage() {
           </section>
           <section className={ui.infoCard}>
             <h2>Disponibilidad</h2>
-            <ScheduleEditor availableNow={perfil.availableNow} readOnly slots={perfil.slots} />
+            <ScheduleEditor availableNow={profile.availableNow} readOnly slots={profile.slots} />
           </section>
           <section className={ui.infoCard}>
             <h2>Trabajos realizados</h2>
-            {perfil.photos.length ? (
+            {profile.photos.length ? (
               <div className={styles.publicGallery}>
-                {perfil.photos.map((photo) => (
+                {profile.photos.map((photo) => (
                   <figure key={photo.id}>
                     <img alt={photo.description || 'Trabajo realizado'} loading="lazy" src={photo.url} />
                     <figcaption>
                       {photo.description || 'Sin descripción'}
-                      <small>{formatoFecha(photo.uploadedAt.slice(0, 10))}</small>
+                      <small>{formatDate(photo.uploadedAt.slice(0, 10))}</small>
                     </figcaption>
                   </figure>
                 ))}

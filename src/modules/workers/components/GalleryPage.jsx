@@ -5,18 +5,18 @@ import EmptyState from './ui/EmptyState';
 import Icon from './ui/Icon';
 import StatusMessage from './ui/StatusMessage';
 import ui from './ui/ui.module.css';
-import { FORMATOS_IMAGEN, validarArchivoImagen } from '../services/imagesClient';
+import { IMAGE_FORMATS, validateImageFile } from '../services/imagesClient';
 import { useMyWorker } from '../hooks/useMyWorker';
-import { eliminarFotoGaleria, subirFotoGaleria } from '../services/workersService';
+import { deleteGalleryPhoto, uploadGalleryPhoto } from '../services/workersService';
 import ProfileStatus from './ProfileStatus';
-import { formatoFecha } from './formats';
+import { formatDate } from './formats';
 import PageHeading from './PageHeading';
 import styles from './worker.module.css';
 
-const MAX_DESCRIPCION = 200;
+const MAX_DESCRIPTION = 200;
 
 function GalleryPage() {
-  const { data: perfil, loading, error: loadError, refresh } = useMyWorker();
+  const { data: profile, loading, error: loadError, refresh } = useMyWorker();
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState('');
   const [inputKey, setInputKey] = useState(0);
@@ -25,30 +25,30 @@ function GalleryPage() {
   const [success, setSuccess] = useState(false);
   const [saving, setSaving] = useState(false);
   const [deleting, setDeleting] = useState(null);
-  if (!perfil) return <ProfileStatus error={loadError} loading={loading} />;
+  if (!profile) return <ProfileStatus error={loadError} loading={loading} />;
 
-  const locked = perfil.status === 'PAUSED';
+  const locked = profile.status === 'PAUSED';
 
-  const elegirArchivo = (event) => {
-    const elegido = event.target.files?.[0] ?? null;
+  const pickFile = (event) => {
+    const chosen = event.target.files?.[0] ?? null;
     if (preview) URL.revokeObjectURL(preview);
-    setFile(elegido);
-    setPreview(elegido ? URL.createObjectURL(elegido) : '');
-    setError(elegido ? validarArchivoImagen(elegido) : '');
+    setFile(chosen);
+    setPreview(chosen ? URL.createObjectURL(chosen) : '');
+    setError(chosen ? validateImageFile(chosen) : '');
     setSuccess(false);
   };
 
   const add = async (event) => {
     event.preventDefault();
     setSuccess(false);
-    const invalido = validarArchivoImagen(file);
-    if (invalido) {
-      setError(invalido);
+    const invalidReason = validateImageFile(file);
+    if (invalidReason) {
+      setError(invalidReason);
       return;
     }
     setSaving(true);
     try {
-      await subirFotoGaleria(perfil.id, file, description);
+      await uploadGalleryPhoto(profile.id, file, description);
       await refresh();
       if (preview) URL.revokeObjectURL(preview);
       setFile(null);
@@ -66,7 +66,7 @@ function GalleryPage() {
 
   const confirmDelete = async () => {
     try {
-      await eliminarFotoGaleria(perfil.id, perfil.photos.find((photo) => photo.id === deleting));
+      await deleteGalleryPhoto(profile.id, profile.photos.find((photo) => photo.id === deleting));
       await refresh();
     } catch (e) {
       setError(e.message);
@@ -89,15 +89,15 @@ function GalleryPage() {
       )}
       <div className={locked ? styles.locked : ''} inert={locked}>
         <section className={styles.galleryGrid}>
-          {perfil.photos.length === 0 ? (
+          {profile.photos.length === 0 ? (
             <div className={`${ui.infoCard} ${styles.galleryEmpty}`}>
               <EmptyState title="Galería vacía" text="Agrega una foto para mostrar tu trabajo." />
             </div>
-          ) : perfil.photos.map((photo) => (
+          ) : profile.photos.map((photo) => (
             <article className={`${ui.infoCard} ${styles.photoCard}`} key={photo.id}>
               <img alt={photo.description || 'Trabajo realizado'} src={photo.url} />
               <div>
-                <span>{formatoFecha(photo.uploadedAt.slice(0, 10))}</span>
+                <span>{formatDate(photo.uploadedAt.slice(0, 10))}</span>
                 <p>{photo.description || 'Sin descripción'}</p>
                 <Button type="button" onClick={() => setDeleting(photo.id)} variant="ghost"><Icon name="trash" size={18} /> Eliminar</Button>
               </div>
@@ -114,10 +114,10 @@ function GalleryPage() {
               <span className={ui.fieldLabel}>Foto *</span>
               <label className={`${styles.filePicker} ${error ? styles.filePickerError : ''}`}>
                 <input
-                  accept={FORMATOS_IMAGEN.join(',')}
+                  accept={IMAGE_FORMATS.join(',')}
                   aria-invalid={error ? true : undefined}
                   key={inputKey}
-                  onChange={elegirArchivo}
+                  onChange={pickFile}
                   type="file"
                 />
                 <Icon name="upload" size={22} />
@@ -133,14 +133,14 @@ function GalleryPage() {
               <span className={ui.fieldLabel}>Descripción</span>
               <textarea
                 className={ui.textarea}
-                maxLength={MAX_DESCRIPCION}
+                maxLength={MAX_DESCRIPTION}
                 onChange={(event) => setDescription(event.target.value)}
                 placeholder="Describe brevemente este trabajo"
                 value={description}
               />
               <span className={styles.fieldMeta}>
                 <span>Opcional</span>
-                <span>{description.length}/{MAX_DESCRIPCION}</span>
+                <span>{description.length}/{MAX_DESCRIPTION}</span>
               </span>
             </label>
             <Button disabled={saving} type="submit"><Icon name="upload" size={18} /> {saving ? 'Subiendo…' : 'Agregar foto'}</Button>

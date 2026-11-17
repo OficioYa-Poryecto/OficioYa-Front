@@ -8,76 +8,76 @@ import SelectField from './ui/SelectField';
 import StatusMessage from './ui/StatusMessage';
 import ui from './ui/ui.module.css';
 import { createSlot, deleteSlot, updateSlot } from '../services/workersService';
-import { DIAS, formatoFecha, nombreDia } from './formats';
+import { DAYS, formatDate, dayName } from './formats';
 import styles from './worker.module.css';
 
 // Franjas de disponibilidad (RF-07 y RF-10): fijas (una fecha) o repetitivas (un día de la
 // semana durante un periodo), más el estado "disponible ahora".
 // readOnly = solo lectura (perfil público); si no, permite crear, editar y eliminar.
 
-const DIAS_SEMANA = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
-const ORDEN_DIAS = DIAS.map((dia) => dia.value);
+const WEEKDAYS = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+const DAY_ORDER = DAYS.map((dia) => dia.value);
 
-function hoy() {
-  const fecha = new Date();
-  fecha.setMinutes(fecha.getMinutes() - fecha.getTimezoneOffset());
-  return fecha.toISOString().slice(0, 10);
+function today() {
+  const date = new Date();
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
+  return date.toISOString().slice(0, 10);
 }
 
-function diaDeFecha(fecha) {
-  return DIAS_SEMANA[new Date(`${fecha}T00:00:00Z`).getUTCDay()];
+function weekdayOf(date) {
+  return WEEKDAYS[new Date(`${date}T00:00:00Z`).getUTCDay()];
 }
 
 // Igual que AvailabilitySlotService en el back: una franja fija usa solo startDate.
-function seCruzan(a, b) {
+function overlaps(a, b) {
   if (a.startTime >= b.endTime || b.startTime >= a.endTime) return false;
   if (a.recurrenceType === 'FIXED' && b.recurrenceType === 'FIXED') return a.startDate === b.startDate;
   if (a.recurrenceType === 'RECURRING' && b.recurrenceType === 'RECURRING') {
     return a.dayOfWeek === b.dayOfWeek && a.startDate <= b.endDate && b.startDate <= a.endDate;
   }
-  const fija = a.recurrenceType === 'FIXED' ? a : b;
-  const repetitiva = a.recurrenceType === 'RECURRING' ? a : b;
-  return diaDeFecha(fija.startDate) === repetitiva.dayOfWeek
-    && fija.startDate >= repetitiva.startDate
-    && fija.startDate <= repetitiva.endDate;
+  const fixed = a.recurrenceType === 'FIXED' ? a : b;
+  const recurring = a.recurrenceType === 'RECURRING' ? a : b;
+  return weekdayOf(fixed.startDate) === recurring.dayOfWeek
+    && fixed.startDate >= recurring.startDate
+    && fixed.startDate <= recurring.endDate;
 }
 
 // Devuelve { campo: mensaje } con los obligatorios que faltan o son incoherentes.
 function validar({ recurrenceType, dayOfWeek, startDate, endDate, startTime, endTime }) {
-  const errores = {};
-  if (!startDate) errores.startDate = 'Selecciona una fecha';
-  if (!startTime) errores.startTime = 'Selecciona la hora de inicio';
-  if (!endTime) errores.endTime = 'Selecciona la hora de fin';
-  if (startTime && endTime && startTime >= endTime) errores.endTime = 'Debe ser posterior a la hora de inicio';
+  const errors = {};
+  if (!startDate) errors.startDate = 'Selecciona una fecha';
+  if (!startTime) errors.startTime = 'Selecciona la hora de inicio';
+  if (!endTime) errors.endTime = 'Selecciona la hora de fin';
+  if (startTime && endTime && startTime >= endTime) errors.endTime = 'Debe ser posterior a la hora de inicio';
   if (recurrenceType === 'RECURRING') {
-    if (!dayOfWeek) errores.dayOfWeek = 'Selecciona el día';
+    if (!dayOfWeek) errors.dayOfWeek = 'Selecciona el día';
     // El back exige fecha de fin para las repetitivas.
-    if (!endDate) errores.endDate = 'Selecciona la fecha de fin';
-    else if (startDate && endDate < startDate) errores.endDate = 'No puede ser anterior a la de inicio';
+    if (!endDate) errors.endDate = 'Selecciona la fecha de fin';
+    else if (startDate && endDate < startDate) errors.endDate = 'No puede ser anterior a la de inicio';
   }
-  return errores;
+  return errors;
 }
 
-function ordenar(slots) {
-  const repetitivas = slots
+function sortSlots(slots) {
+  const recurringSlots = slots
     .filter((slot) => slot.recurrenceType === 'RECURRING')
-    .sort((a, b) => ORDEN_DIAS.indexOf(a.dayOfWeek) - ORDEN_DIAS.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime));
-  const fijas = slots
+    .sort((a, b) => DAY_ORDER.indexOf(a.dayOfWeek) - DAY_ORDER.indexOf(b.dayOfWeek) || a.startTime.localeCompare(b.startTime));
+  const fixedSlots = slots
     .filter((slot) => slot.recurrenceType === 'FIXED')
     .sort((a, b) => a.startDate.localeCompare(b.startDate) || a.startTime.localeCompare(b.startTime));
-  return { repetitivas, fijas };
+  return { recurringSlots, fixedSlots };
 }
 
 function SlotItem({ slot, onEdit, onDelete }) {
-  const fija = slot.recurrenceType === 'FIXED';
+  const fixed = slot.recurrenceType === 'FIXED';
   return (
     <div className={styles.slot}>
-      <span className={`${styles.slotType} ${fija ? styles.slotFixed : ''}`}>{fija ? 'Fija' : 'Repetitiva'}</span>
+      <span className={`${styles.slotType} ${fixed ? styles.slotFixed : ''}`}>{fixed ? 'Fija' : 'Repetitiva'}</span>
       <div>
-        <strong>{fija ? formatoFecha(slot.startDate) : `Todos los ${nombreDia(slot.dayOfWeek).toLowerCase()}`}</strong>
+        <strong>{fixed ? formatDate(slot.startDate) : `Todos los ${dayName(slot.dayOfWeek).toLowerCase()}`}</strong>
         <small>
           {slot.startTime.slice(0, 5)}–{slot.endTime.slice(0, 5)}
-          {!fija && ` · del ${formatoFecha(slot.startDate)} al ${formatoFecha(slot.endDate)}`}
+          {!fixed && ` · del ${formatDate(slot.startDate)} al ${formatDate(slot.endDate)}`}
         </small>
       </div>
       {(onEdit || onDelete) && (
@@ -92,11 +92,11 @@ function SlotItem({ slot, onEdit, onDelete }) {
 
 function SlotList({ slots, onEdit, onDelete, emptyText }) {
   if (slots.length === 0) return <EmptyState title="Sin franjas" text={emptyText} />;
-  const { repetitivas, fijas } = ordenar(slots);
-  const grupo = (titulo, lista) => lista.length > 0 && (
+  const { recurringSlots, fixedSlots } = sortSlots(slots);
+  const daySlots = (heading, list) => list.length > 0 && (
     <div className={styles.slotGroup}>
-      <h3>{titulo}</h3>
-      {lista.map((slot) => (
+      <h3>{heading}</h3>
+      {list.map((slot) => (
         <SlotItem
           key={slot.id}
           onDelete={onDelete && (() => onDelete(slot.id))}
@@ -108,13 +108,13 @@ function SlotList({ slots, onEdit, onDelete, emptyText }) {
   );
   return (
     <>
-      {grupo('Cada semana', repetitivas)}
-      {grupo('Fechas puntuales', fijas)}
+      {daySlots('Cada semana', recurringSlots)}
+      {daySlots('Fechas puntuales', fixedSlots)}
     </>
   );
 }
 
-function DisponibleAhora({ availableNow }) {
+function AvailableNow({ availableNow }) {
   return (
     <div className={`${styles.nowBadge} ${availableNow ? styles.nowOn : ''}`}>
       <span /> {availableNow ? 'Disponible ahora' : 'No disponible en este momento'}
@@ -122,19 +122,19 @@ function DisponibleAhora({ availableNow }) {
   );
 }
 
-const FORM_VACIO = () => ({
+const EMPTY_FORM = () => ({
   recurrenceType: 'RECURRING',
   dayOfWeek: 'MONDAY',
-  startDate: hoy(),
+  startDate: today(),
   endDate: '',
   startTime: '08:00',
   endTime: '12:00',
 });
 
 function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, workerId, onChange }) {
-  const [form, setForm] = useState(FORM_VACIO);
+  const [form, setForm] = useState(EMPTY_FORM);
   const [editing, setEditing] = useState(null);
-  const [errores, setErrores] = useState({});
+  const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [saving, setSaving] = useState(false);
@@ -142,44 +142,44 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
   if (readOnly) {
     return (
       <div className={styles.scheduleRead}>
-        <DisponibleAhora availableNow={availableNow} />
+        <AvailableNow availableNow={availableNow} />
         <SlotList emptyText="Este trabajador aún no ha publicado su disponibilidad." slots={slots} />
       </div>
     );
   }
 
-  const cambiar = (campo) => (valor) => {
-    setForm((actual) => ({ ...actual, [campo]: valor }));
-    setErrores((actual) => ({ ...actual, [campo]: '' }));
+  const setField = (field) => (fieldValue) => {
+    setForm((current) => ({ ...current, [field]: fieldValue }));
+    setErrors((current) => ({ ...current, [field]: '' }));
     setMessage(null);
   };
 
-  const cancelar = () => {
+  const cancelEdit = () => {
     setEditing(null);
-    setForm(FORM_VACIO());
-    setErrores({});
+    setForm(EMPTY_FORM());
+    setErrors({});
   };
 
   const save = async (event) => {
     event.preventDefault();
     setMessage(null);
     // Mismo cuerpo que AvailabilitySlotRequest en el back.
-    const franja = form.recurrenceType === 'FIXED'
+    const slotItem = form.recurrenceType === 'FIXED'
       ? { ...form, dayOfWeek: null, endDate: null }
       : form;
-    const encontrados = Object.fromEntries(Object.entries(validar(franja)).filter(([, texto]) => texto));
-    setErrores(encontrados);
-    if (Object.keys(encontrados).length) return;
-    if (slots.some((slot) => slot.id !== editing && seCruzan(slot, franja))) {
+    const foundErrors = Object.fromEntries(Object.entries(validar(slotItem)).filter(([, labelText]) => labelText));
+    setErrors(foundErrors);
+    if (Object.keys(foundErrors).length) return;
+    if (slots.some((slot) => slot.id !== editing && overlaps(slot, slotItem))) {
       setMessage({ type: 'error', text: 'Esta franja se cruza con otra que ya tienes.' });
       return;
     }
     setSaving(true);
     try {
-      if (editing) await updateSlot(workerId, editing, franja);
-      else await createSlot(workerId, franja);
+      if (editing) await updateSlot(workerId, editing, slotItem);
+      else await createSlot(workerId, slotItem);
       await onChange();
-      cancelar();
+      cancelEdit();
       setMessage({ type: 'success', text: 'Franja guardada correctamente.' });
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -198,7 +198,7 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
       startTime: slot.startTime.slice(0, 5),
       endTime: slot.endTime.slice(0, 5),
     });
-    setErrores({});
+    setErrors({});
     setMessage(null);
   };
 
@@ -207,7 +207,7 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
     try {
       await deleteSlot(workerId, deleting);
       await onChange();
-      if (editing === deleting) cancelar();
+      if (editing === deleting) cancelEdit();
       setMessage({ type: 'success', text: 'Franja eliminada.' });
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -216,7 +216,7 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
     }
   };
 
-  const repetitiva = form.recurrenceType === 'RECURRING';
+  const recurring = form.recurrenceType === 'RECURRING';
 
   return (
     <div className={styles.availabilityLayout}>
@@ -238,45 +238,45 @@ function ScheduleEditor({ slots = [], availableNow = false, readOnly = false, wo
         <h2>{editing ? 'Editar franja' : 'Nueva franja'}</h2>
         <div aria-label="Tipo de franja" className={styles.segmented} role="group">
           <button
-            aria-pressed={repetitiva}
-            className={repetitiva ? styles.segmentActive : ''}
-            onClick={() => cambiar('recurrenceType')('RECURRING')}
+            aria-pressed={recurring}
+            className={recurring ? styles.segmentActive : ''}
+            onClick={() => setField('recurrenceType')('RECURRING')}
             type="button"
           >
             Repetitiva
           </button>
           <button
-            aria-pressed={!repetitiva}
-            className={!repetitiva ? styles.segmentActive : ''}
-            onClick={() => cambiar('recurrenceType')('FIXED')}
+            aria-pressed={!recurring}
+            className={!recurring ? styles.segmentActive : ''}
+            onClick={() => setField('recurrenceType')('FIXED')}
             type="button"
           >
             Fija
           </button>
         </div>
         <p className={styles.mutedText}>
-          {repetitiva
+          {recurring
             ? 'Se repite el mismo día cada semana durante el periodo que elijas.'
             : 'Solo aplica a una fecha. Úsala para un día distinto a tu horario habitual.'}
         </p>
-        {repetitiva ? (
+        {recurring ? (
           <>
-            <SelectField error={errores.dayOfWeek} label="Día de la semana" onChange={cambiar('dayOfWeek')} options={DIAS} required value={form.dayOfWeek} />
+            <SelectField error={errors.dayOfWeek} label="Día de la semana" onChange={setField('dayOfWeek')} options={DAYS} required value={form.dayOfWeek} />
             <div className={styles.twoCols}>
-              <Field error={errores.startDate} label="Desde" onChange={cambiar('startDate')} required type="date" value={form.startDate} />
-              <Field error={errores.endDate} label="Hasta" min={form.startDate} onChange={cambiar('endDate')} required type="date" value={form.endDate} />
+              <Field error={errors.startDate} label="Desde" onChange={setField('startDate')} required type="date" value={form.startDate} />
+              <Field error={errors.endDate} label="Hasta" min={form.startDate} onChange={setField('endDate')} required type="date" value={form.endDate} />
             </div>
           </>
         ) : (
-          <Field error={errores.startDate} label="Fecha" onChange={cambiar('startDate')} required type="date" value={form.startDate} />
+          <Field error={errors.startDate} label="Fecha" onChange={setField('startDate')} required type="date" value={form.startDate} />
         )}
         <div className={styles.twoCols}>
-          <Field error={errores.startTime} label="Hora de inicio" onChange={cambiar('startTime')} required type="time" value={form.startTime} />
-          <Field error={errores.endTime} label="Hora de fin" onChange={cambiar('endTime')} required type="time" value={form.endTime} />
+          <Field error={errors.startTime} label="Hora de inicio" onChange={setField('startTime')} required type="time" value={form.startTime} />
+          <Field error={errors.endTime} label="Hora de fin" onChange={setField('endTime')} required type="time" value={form.endTime} />
         </div>
         {message && <StatusMessage variant={message.type}>{message.text}</StatusMessage>}
         <div className={styles.slotActions}>
-          {editing && <Button type="button" onClick={cancelar} variant="ghost">Cancelar</Button>}
+          {editing && <Button type="button" onClick={cancelEdit} variant="ghost">Cancelar</Button>}
           <Button disabled={saving} type="submit">{saving ? 'Guardando…' : 'Guardar franja'}</Button>
         </div>
       </form>

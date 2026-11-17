@@ -4,9 +4,9 @@ import ProfileStatus from './ProfileStatus';
 
 // Con perfil va al panel; sin perfil (GET /workers/me -> 404) va a crear el perfil.
 function WorkerHome() {
-  const { data: perfil, loading, error } = useMyWorker();
+  const { data: profile, loading, error } = useMyWorker();
   if (loading || error) return <ProfileStatus error={error} loading={loading} />;
-  return <Navigate to={perfil ? '/worker/dashboard' : '/worker/create'} replace />;
+  return <Navigate to={profile ? '/worker/dashboard' : '/worker/create'} replace />;
 }
 
 export default WorkerHome;

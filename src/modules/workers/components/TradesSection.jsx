@@ -7,7 +7,7 @@ import StatusMessage from './ui/StatusMessage';
 import ui from './ui/ui.module.css';
 import { useTrades } from '../hooks/useCatalogs';
 import { addTrade, removeTrade, setPrimaryTrade, updateTrade } from '../services/workersService';
-import { validarTarifa } from './formats';
+import { validateRate } from './formats';
 import RateFields from './RateFields';
 import styles from './worker.module.css';
 
@@ -15,7 +15,7 @@ import styles from './worker.module.css';
 function TradeRow({ item, onSave, onPrimary, onRemove }) {
   const [rate, setRate] = useState(String(item.approxRate));
   const [unit, setUnit] = useState(item.rateUnit);
-  const rateError = validarTarifa(rate);
+  const rateError = validateRate(rate);
   const changed = Number(rate) !== Number(item.approxRate) || unit !== item.rateUnit;
 
   return (
@@ -40,25 +40,25 @@ function TradeRow({ item, onSave, onPrimary, onRemove }) {
 }
 
 // Manejo de oficios dentro de "Mi perfil": principal, secundarios y alta de uno nuevo (RF-03 y RF-04).
-function TradesSection({ perfil, refresh, locked }) {
-  const { data: oficiosActivos } = useTrades();
+function TradesSection({ profile, refresh, locked }) {
+  const { data: activeTrades } = useTrades();
   const [tradeId, setTradeId] = useState('');
   const [rate, setRate] = useState('');
   const [unit, setUnit] = useState('PER_JOB');
-  const [errores, setErrores] = useState({});
+  const [errors, setErrors] = useState({});
   const [message, setMessage] = useState(null);
 
-  const { primaryTrade, secondaryTrades } = perfil;
-  const ofrecidos = [primaryTrade, ...secondaryTrades].map((item) => item.trade.id);
-  const disponibles = (oficiosActivos ?? []).filter((oficio) => !ofrecidos.includes(oficio.id));
+  const { primaryTrade, secondaryTrades } = profile;
+  const offeredIds = [primaryTrade, ...secondaryTrades].map((item) => item.trade.id);
+  const availableTrades = (activeTrades ?? []).filter((tradeItem) => !offeredIds.includes(tradeItem.id));
 
   // Ejecuta un cambio en el back y vuelve a consultar el perfil.
-  const ejecutar = async (accion, texto = 'Cambios guardados correctamente.') => {
+  const runAction = async (action, labelText = 'Cambios guardados correctamente.') => {
     setMessage(null);
     try {
-      await accion();
+      await action();
       await refresh();
-      setMessage({ type: 'success', text: texto });
+      setMessage({ type: 'success', text: labelText });
       return true;
     } catch (e) {
       setMessage({ type: 'error', text: e.message });
@@ -68,14 +68,14 @@ function TradesSection({ perfil, refresh, locked }) {
 
   const add = async (event) => {
     event.preventDefault();
-    const encontrados = {};
-    if (!tradeId) encontrados.tradeId = 'Selecciona un oficio';
-    const tarifa = validarTarifa(rate);
-    if (tarifa) encontrados.rate = tarifa;
-    setErrores(encontrados);
-    if (Object.keys(encontrados).length) return;
-    const ok = await ejecutar(
-      () => addTrade(perfil.id, { tradeId, approxRate: Number(rate), rateUnit: unit }),
+    const foundErrors = {};
+    if (!tradeId) foundErrors.tradeId = 'Selecciona un oficio';
+    const rateValue = validateRate(rate);
+    if (rateValue) foundErrors.rate = rateValue;
+    setErrors(foundErrors);
+    if (Object.keys(foundErrors).length) return;
+    const ok = await runAction(
+      () => addTrade(profile.id, { tradeId, approxRate: Number(rate), rateUnit: unit }),
       'Oficio agregado correctamente.',
     );
     if (ok) {
@@ -84,7 +84,7 @@ function TradesSection({ perfil, refresh, locked }) {
     }
   };
 
-  const saveTrade = (workerTradeId, cambios) => ejecutar(() => updateTrade(perfil.id, workerTradeId, cambios));
+  const saveTrade = (workerTradeId, changes) => runAction(() => updateTrade(profile.id, workerTradeId, changes));
 
   return (
     <div className={`${styles.stack} ${locked ? styles.locked : ''}`} inert={locked}>
@@ -116,8 +116,8 @@ function TradesSection({ perfil, refresh, locked }) {
           <TradeRow
             item={item}
             key={`${item.id}-${item.approxRate}-${item.rateUnit}`}
-            onPrimary={() => ejecutar(() => setPrimaryTrade(perfil.id, item.id))}
-            onRemove={() => ejecutar(() => removeTrade(perfil.id, item.id), 'Oficio quitado.')}
+            onPrimary={() => runAction(() => setPrimaryTrade(profile.id, item.id))}
+            onRemove={() => runAction(() => removeTrade(profile.id, item.id), 'Oficio quitado.')}
             onSave={saveTrade}
           />
         ))}
@@ -131,22 +131,22 @@ function TradesSection({ perfil, refresh, locked }) {
         </div>
         <div className={styles.inlineForm}>
           <SelectField
-            error={errores.tradeId}
+            error={errors.tradeId}
             label="Oficio"
-            onChange={(value) => { setTradeId(value); setErrores((e) => ({ ...e, tradeId: '' })); }}
-            options={disponibles.map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
-            placeholder={disponibles.length ? 'Selecciona un oficio' : 'Ya ofreces todos los oficios'}
+            onChange={(value) => { setTradeId(value); setErrors((e) => ({ ...e, tradeId: '' })); }}
+            options={availableTrades.map((tradeItem) => ({ value: String(tradeItem.id), label: tradeItem.name }))}
+            placeholder={availableTrades.length ? 'Selecciona un oficio' : 'Ya ofreces todos los oficios'}
             required
             value={tradeId}
           />
           <RateFields
-            onRateChange={(value) => { setRate(value); setErrores((e) => ({ ...e, rate: '' })); }}
+            onRateChange={(value) => { setRate(value); setErrors((e) => ({ ...e, rate: '' })); }}
             onUnitChange={setUnit}
             rate={rate}
-            rateError={errores.rate}
+            rateError={errors.rate}
             unit={unit}
           />
-          <Button disabled={!disponibles.length} type="submit"><Icon name="plus" size={18} /> Agregar</Button>
+          <Button disabled={!availableTrades.length} type="submit"><Icon name="plus" size={18} /> Agregar</Button>
         </div>
       </form>
     </div>

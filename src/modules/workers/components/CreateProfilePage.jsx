@@ -8,47 +8,47 @@ import ui from './ui/ui.module.css';
 import { useTrades, useZones } from '../hooks/useCatalogs';
 import { useMyWorker } from '../hooks/useMyWorker';
 import { createWorker } from '../services/workersService';
-import { validarTarifa } from './formats';
+import { validateRate } from './formats';
 import PageHeading from './PageHeading';
 import RateFields from './RateFields';
 import ZonePicker from './ZonePicker';
 import styles from './worker.module.css';
 
 function validar({ tradeId, rate, unit, zoneIds }) {
-  const errores = {};
-  if (!tradeId) errores.tradeId = 'Selecciona tu oficio principal';
-  const tarifa = validarTarifa(rate);
-  if (tarifa) errores.rate = tarifa;
-  if (!unit) errores.unit = 'Selecciona la unidad';
+  const errors = {};
+  if (!tradeId) errors.tradeId = 'Selecciona tu oficio principal';
+  const rateInput = validateRate(rate);
+  if (rateInput) errors.rate = rateInput;
+  if (!unit) errors.unit = 'Selecciona la unidad';
   // RF-06: el área de cobertura necesita al menos una zona.
-  if (zoneIds.length === 0) errores.zoneIds = 'Selecciona al menos un barrio';
-  return errores;
+  if (zoneIds.length === 0) errors.zoneIds = 'Selecciona al menos un barrio';
+  return errors;
 }
 
 function CreateProfilePage() {
   const navigate = useNavigate();
-  const { data: perfil, loading, refresh } = useMyWorker();
-  const { data: oficiosActivos } = useTrades();
-  const { data: zonas } = useZones();
+  const { data: profile, loading, refresh } = useMyWorker();
+  const { data: activeTrades } = useTrades();
+  const { data: zones } = useZones();
   const [tradeId, setTradeId] = useState('');
   const [rate, setRate] = useState('');
   const [unit, setUnit] = useState('PER_JOB');
   const [zoneIds, setZoneIds] = useState([]);
   const [availableNow, setAvailableNow] = useState(true);
-  const [errores, setErrores] = useState({});
+  const [errors, setErrors] = useState({});
   const [submitError, setSubmitError] = useState('');
   const [saving, setSaving] = useState(false);
 
   // Quien ya tiene perfil no vuelve a crearlo.
-  if (!loading && perfil) return <Navigate replace to="/worker/profile" />;
+  if (!loading && profile) return <Navigate replace to="/worker/profile" />;
 
-  const limpiar = (campo) => setErrores((actual) => ({ ...actual, [campo]: '' }));
+  const clearError = (field) => setErrors((current) => ({ ...current, [field]: '' }));
 
   const submit = async (event) => {
     event.preventDefault();
-    const encontrados = validar({ tradeId, rate, unit, zoneIds });
-    setErrores(encontrados);
-    if (Object.keys(encontrados).length) return;
+    const foundErrors = validar({ tradeId, rate, unit, zoneIds });
+    setErrors(foundErrors);
+    if (Object.keys(foundErrors).length) return;
     setSaving(true);
     setSubmitError('');
     try {
@@ -66,7 +66,7 @@ function CreateProfilePage() {
     }
   };
 
-  const hayErrores = Object.values(errores).some(Boolean);
+  const hasErrors = Object.values(errors).some(Boolean);
 
   return (
     <div>
@@ -87,29 +87,29 @@ function CreateProfilePage() {
         <div className={ui.formGrid}>
           <div className={styles.span2}>
             <SelectField
-              error={errores.tradeId}
+              error={errors.tradeId}
               label="Oficio principal"
-              onChange={(value) => { setTradeId(value); limpiar('tradeId'); }}
-              options={(oficiosActivos ?? []).map((oficio) => ({ value: String(oficio.id), label: oficio.name }))}
+              onChange={(value) => { setTradeId(value); clearError('tradeId'); }}
+              options={(activeTrades ?? []).map((trade) => ({ value: String(trade.id), label: trade.name }))}
               placeholder="Selecciona un oficio"
               required
               value={tradeId}
             />
           </div>
           <RateFields
-            onRateChange={(value) => { setRate(value); limpiar('rate'); }}
-            onUnitChange={(value) => { setUnit(value); limpiar('unit'); }}
+            onRateChange={(value) => { setRate(value); clearError('rate'); }}
+            onUnitChange={(value) => { setUnit(value); clearError('unit'); }}
             rate={rate}
-            rateError={errores.rate}
+            rateError={errors.rate}
             unit={unit}
-            unitError={errores.unit}
+            unitError={errors.unit}
           />
           <div className={styles.span2}>
             <ZonePicker
-              error={errores.zoneIds}
-              onChange={(ids) => { setZoneIds(ids); limpiar('zoneIds'); }}
+              error={errors.zoneIds}
+              onChange={(ids) => { setZoneIds(ids); clearError('zoneIds'); }}
               selected={zoneIds}
-              zonas={zonas ?? []}
+              zones={zones ?? []}
             />
           </div>
         </div>
@@ -117,7 +117,7 @@ function CreateProfilePage() {
           <Toggle checked={availableNow} label="Disponible ahora" onChange={() => setAvailableNow(!availableNow)} />
           <Button disabled={saving} type="submit">{saving ? 'Creando…' : 'Crear perfil'}</Button>
         </div>
-        {hayErrores && (
+        {hasErrors && (
           <StatusMessage variant="error">Revisa los campos marcados antes de continuar.</StatusMessage>
         )}
         {submitError && (

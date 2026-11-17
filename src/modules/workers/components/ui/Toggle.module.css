@@ -1,0 +1,43 @@
+.row {
+  align-items: center;
+  display: flex;
+  font-size: 13px;
+  font-weight: 700;
+  gap: 9px;
+}
+
+.disabled {
+  opacity: 0.6;
+}
+
+.toggle {
+  background: #c9cecb;
+  border: 0;
+  border-radius: 99px;
+  height: 25px;
+  padding: 3px;
+  transition: 0.2s ease;
+  width: 44px;
+}
+
+.toggle:disabled {
+  cursor: not-allowed;
+}
+
+.toggle span {
+  background: #ffffff;
+  border-radius: 50%;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  display: block;
+  height: 19px;
+  transition: 0.2s ease;
+  width: 19px;
+}
+
+.on {
+  background: var(--color-success);
+}
+
+.on span {
+  transform: translateX(19px);
+}

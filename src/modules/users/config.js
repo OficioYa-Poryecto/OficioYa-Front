@@ -32,6 +32,24 @@ export const ROLES_AGREGABLES = {
   },
 };
 
+// Botón y confirmación para quitar un rol cuando la cuenta tiene ambos
+export const ROLES_QUITABLES = {
+  TRABAJADOR: {
+    boton: 'Dejar de ser trabajador',
+    descripcion: 'Tu perfil de trabajador se pausa y deja de aparecer en búsquedas. No puedes tener solicitudes activas como trabajador.',
+    titulo: '¿Dejar de ser trabajador?',
+    texto: 'Tu perfil de trabajador quedará pausado y no aparecerá en las búsquedas. No se borran tus datos y puedes volver a activarlo cuando quieras.',
+    quitado: 'Ya no eres trabajador.',
+  },
+  CONTRATANTE: {
+    boton: 'Dejar de ser contratante',
+    descripcion: 'Ya no podrás solicitar servicios con esta cuenta. No puedes tener solicitudes activas como contratante.',
+    titulo: '¿Dejar de ser contratante?',
+    texto: 'Ya no podrás solicitar servicios con esta cuenta hasta que vuelvas a agregar el rol.',
+    quitado: 'Ya no eres contratante.',
+  },
+};
+
 // Nombre legible de cada rol (perfil, edición y listado del admin)
 export const NOMBRES_ROL = {
   CONTRATANTE: 'Contratante',

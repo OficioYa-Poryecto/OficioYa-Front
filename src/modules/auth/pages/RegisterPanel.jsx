@@ -32,7 +32,7 @@ export default function RegisterPanel() {
                 <polyline points="20 6 9 17 4 12" />
               </svg>
             </span>
-            {b.content}
+            <span>{b.content}</span>
           </li>
         ))}
       </ul>

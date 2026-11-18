@@ -385,7 +385,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/users/me" className={styles.actionCard}>
+          <Link to="/worker/profile" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <WrenchIcon />
@@ -400,7 +400,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/worker/availability" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClockIcon />
@@ -465,7 +465,7 @@ export default function HomePage() {
         </section>
 
         <section className={styles.grid2}>
-          <Link to="/users/me" className={styles.actionCard}>
+          <Link to="/worker/profile" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <WrenchIcon />
@@ -480,7 +480,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/worker/availability" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClockIcon />

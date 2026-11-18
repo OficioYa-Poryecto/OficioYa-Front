@@ -92,6 +92,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   const rolesFaltantes = esAdmin
       ? []
       : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
+  // RF-13. Solo se puede quitar un rol si la cuenta tiene ambos y no se acaba de quitar uno
   const rolesQuitables = !esAdmin && !rolQuitado && Object.keys(ROLES_QUITABLES).every((r) => roles.includes(r))
       ? Object.keys(ROLES_QUITABLES)
       : [];
@@ -215,6 +216,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
     }
   }
 
+  // RF-13. El token todavía trae el rol quitado: se cierra la sesión para que el próximo login traiga los roles nuevos
   async function confirmarQuitarRol() {
     const rol = rolPorQuitar;
     setRolPorQuitar(null);
@@ -248,9 +250,15 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
               <div className={vista.correo}>
                 <span>{perfil.email}</span>
                 <span className={`${styles.note} ${vista.lockNote}`}>
-                <Icon name="lock" size={14} />
-                Por seguridad, el correo no se puede editar.
-              </span>
+                  <Icon name="lock" size={14} />
+                  Por seguridad, el correo no se puede editar.
+                </span>
+                {perfil.birthDate && (
+                    <span className={`${styles.note} ${vista.lockNote}`}>
+                      <Icon name="lock" size={14} />
+                      Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
+                    </span>
+                )}
               </div>
             </ProfileHeader>
             <div className={reg.photoActions}>
@@ -275,36 +283,6 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
               </button>
             </div>
           </div>
-              {perfil.birthDate && (
-                <span className={`${styles.note} ${vista.lockNote}`}>
-                  <Icon name="lock" size={14} />
-                  Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
-                </span>
-              )}
-            </div>
-          </ProfileHeader>
-          <div className={reg.photoActions}>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleSelectPhoto}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className={reg.btnPhotoUpload}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              {photoFile ? 'Cambiar foto' : 'Subir foto'}
-            </button>
-          </div>
-        </div>
 
           <div className={styles.encabezado}>
             <h2 className={reg.sectionTitle}>Datos personales</h2>
@@ -317,9 +295,9 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
             <div className={styles.field}>
               <div className={styles.labelRow}>
                 <label htmlFor="name" className={reg.label}>
-                <span>
-                  Nombre completo <span className={reg.required}>*</span>
-                </span>
+                  <span>
+                    Nombre completo <span className={reg.required}>*</span>
+                  </span>
                 </label>
                 <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
               </div>
@@ -347,6 +325,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
 
           <PhoneList phones={phones} errores={erroresTelefono} onChange={cambiarTelefonos} />
 
+          {/* Roles: agregar el que falta (RF-02). Quitar uno va en la zona de peligro */}
           {rolesFaltantes.length > 0 && (
               <>
                 <div className={styles.encabezado}>
@@ -375,15 +354,6 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
                 </p>
               </div>
           )}
-          {rolQuitado && (
-              <div className={vista.success}>
-                <span className={vista.successIcon}>✓</span>
-                <p>
-                  <strong>{ROLES_QUITABLES[rolQuitado].quitado}</strong> Inicia sesión de nuevo para aplicar el cambio.
-                </p>
-                <Button type="button" onClick={() => navigate('/auth', { replace: true })}>Iniciar sesión</Button>
-              </div>
-          )}
 
           {guardado && (
               <div className={vista.success}>
@@ -405,6 +375,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
           </div>
         </div>
 
+        {/* RF-13. Zona de peligro: quitar un rol (solo si la cuenta tiene ambos) */}
         {(rolesQuitables.length > 0 || rolQuitado) && (
             <section className={styles.dangerZone}>
               <h2 className={styles.dangerTitle}>Zona de peligro</h2>

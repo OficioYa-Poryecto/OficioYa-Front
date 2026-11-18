@@ -29,7 +29,7 @@ function Navbar() {
   const isAdmin = userRoles.includes('ADMIN');
 
   const [userName, setUserName] = useState(
-    () => localStorage.getItem('oy_userName') || (isAdmin ? 'Laura Pérez' : 'Ana Castro')
+    () => localStorage.getItem('oy_userName') || ''
   );
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);

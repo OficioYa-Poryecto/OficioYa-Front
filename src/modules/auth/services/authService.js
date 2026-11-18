@@ -58,3 +58,8 @@ export async function hasWorkerProfile() {
     return true;
   }
 }
+
+/** GET /api/v1/users/me → UserDto */
+export function fetchMyProfile() {
+  return request('/users/me');
+}

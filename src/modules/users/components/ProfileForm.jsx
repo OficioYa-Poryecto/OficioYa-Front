@@ -10,6 +10,7 @@ import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import Skeleton from './Skeleton';
 import PhoneList from './PhoneList';
+import { useLocalidades } from '../hooks/useLocalidades';
 import ProfileHeader from './ProfileHeader';
 import styles from './Form.module.css';
 import vista from './ProfileView.module.css';
@@ -73,6 +74,8 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   const [name, setName] = useState(perfil.name ?? '');
   const [nombreVisible, setNombreVisible] = useState(perfil.name ?? '');
   const [phones, setPhones] = useState(() => copiarTelefonos(telefonos.telefonos));
+  const [localityId, setLocalityId] = useState(perfil.locality?.id ?? '');
+  const localidades = useLocalidades();
   const [enviado, setEnviado] = useState(false);
   const [tocado, setTocado] = useState(false);
   const [error, setError] = useState(null);
@@ -180,7 +183,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
     setGuardado(false);
     setGuardando(true);
     try {
-      await onGuardar({ name: name.trim() });
+      await onGuardar({ name: name.trim(), localityId: localityId ? Number(localityId) : undefined });
       setNombreVisible(name.trim());
       await guardarTelefonos();
       if (photoFile && perfil?.id) {
@@ -320,6 +323,25 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
                   required
               />
               {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
+            </div>
+
+            {/* RF-14. Una localidad; no se puede dejar vacía una vez elegida */}
+            <div className={styles.field}>
+              <label htmlFor="localityId" className={reg.label}>Zona de cobertura</label>
+              <select
+                  id="localityId"
+                  className={reg.select}
+                  value={localityId}
+                  onChange={(e) => {
+                    setLocalityId(e.target.value);
+                    setGuardado(false);
+                  }}
+              >
+                <option value="" disabled={Boolean(perfil.locality)}>Selecciona una localidad</option>
+                {localidades.map((localidad) => (
+                    <option key={localidad.id} value={localidad.id}>{localidad.name}</option>
+                ))}
+              </select>
             </div>
           </form>
 

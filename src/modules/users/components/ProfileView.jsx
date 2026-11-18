@@ -10,6 +10,7 @@ import ContactCard from './ContactCard';
 import RoleSections from './RoleSections';
 import Icon from './Icon';
 import styles from './ProfileView.module.css';
+import { calculateAge } from '../utils/calculateAge';
 
 function ProfileView() {
   const { id } = useParams();
@@ -112,7 +113,8 @@ function ProfileView() {
                 <ContactCard
                     email={perfil.email}
                     phones={perfil.phones ?? []}
-                    birthDate={perfil.birthDate}
+                    edad={perfil.birthDate ? calculateAge(perfil.birthDate) : null}
+                    localidad={perfil.locality?.name}
                     nota="Datos protegidos. Solo administración puede consultarlos completos."
                 />
               </aside>

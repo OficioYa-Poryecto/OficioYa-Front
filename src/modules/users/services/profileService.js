@@ -35,3 +35,7 @@ export function eliminarTelefono(id, token) {
 export function obtenerPerfilPublico(id, token) {
   return request(`/users/${id}`, { token });
 }
+
+export function listarLocalidades() {
+  return request('/localities');
+}

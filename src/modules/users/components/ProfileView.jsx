@@ -112,6 +112,7 @@ function ProfileView() {
                 <ContactCard
                     email={perfil.email}
                     phones={perfil.phones ?? []}
+                    birthDate={perfil.birthDate}
                     nota="Datos protegidos. Solo administración puede consultarlos completos."
                 />
               </aside>

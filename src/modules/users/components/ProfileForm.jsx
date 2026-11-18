@@ -14,6 +14,7 @@ import styles from './Form.module.css';
 import vista from './ProfileView.module.css';
 import reg from '../../auth/pages/RegisterPage.module.css';
 import Icon from './Icon';
+import { formatBirthDate } from '../utils/formatBirthDate';
 
 // Mismo límite que valida el back (UserUpdateDTO)
 const MAX_NOMBRE = 100;
@@ -221,6 +222,12 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
                 <Icon name="lock" size={14} />
                 Por seguridad, el correo no se puede editar.
               </span>
+              {perfil.birthDate && (
+                <span className={`${styles.note} ${vista.lockNote}`}>
+                  <Icon name="lock" size={14} />
+                  Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
+                </span>
+              )}
             </div>
           </ProfileHeader>
           <div className={reg.photoActions}>

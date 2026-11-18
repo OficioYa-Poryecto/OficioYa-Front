@@ -254,7 +254,6 @@
 /* Etiqueta de foto dentro de "Tus datos" */
 .photoLabel {
   display: block;
-  margin-top: 20px;
 }
 
 /* Error de validación por campo (correo) */
@@ -492,7 +491,7 @@
   align-items: center;
   gap: 20px;
   background: var(--color-bg);
-  margin-top: 12px;
+  margin-top: 6px;
 }
 
 @media (max-width: 580px) {
@@ -684,4 +683,36 @@
 .btnSubmit:disabled {
   opacity: 0.6;
   cursor: not-allowed;
+}
+
+.select {
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  padding-right: 48px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%2368736f' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 18px center;
+  background-size: 20px;
+}
+
+.select:focus {
+  border-color: var(--color-primary);
+  outline: none;
+}
+
+.gridFull {
+  grid-column: 1 / -1;
+}
+
+.phoneSection {
+  margin-bottom: 20px;
+}
+
+.phoneSection .phoneHeader {
+  margin-bottom: 6px;
+}
+
+.phoneSection .phoneItem:last-child {
+  margin-bottom: 0;
 }

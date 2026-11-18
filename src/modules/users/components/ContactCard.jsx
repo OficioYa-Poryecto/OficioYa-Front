@@ -3,8 +3,8 @@ import styles from './ProfileView.module.css';
 import { formatBirthDate } from '../utils/formatBirthDate';
 
 // Correo y teléfonos tal como los manda el back: enmascarados en /users/me (RF-03), completos para el admin (RF-08).
-// La fecha de nacimiento (RF-01) solo llega en esas dos vistas; las cuentas antiguas no la tienen
-function ContactCard({ email, phones, birthDate, nota }) {
+// La fecha de nacimiento (RF-01) solo llega en esas dos vistas: el perfil propio muestra la edad y el admin la fecha
+function ContactCard({ email, phones, birthDate, edad, localidad, nota }) {
     const principal = phones.find((phone) => phone.principal);
     const alternos = phones.filter((phone) => !phone.principal).map((phone) => phone.number);
     const datos = [
@@ -16,6 +16,8 @@ function ContactCard({ email, phones, birthDate, nota }) {
             etiqueta: alternos.length > 1 ? 'Teléfonos alternos' : 'Teléfono alterno',
             valores: alternos,
         },
+        edad != null && { key: 'edad', icon: 'calendar', etiqueta: 'Edad', valores: [`${edad} años`] },
+        localidad && { key: 'localidad', icon: 'pin', etiqueta: 'Zona de cobertura', valores: [localidad] },
         birthDate && { key: 'birthDate', icon: 'calendar', etiqueta: 'Fecha de nacimiento', valores: [formatBirthDate(birthDate)] },
     ].filter(Boolean);
 

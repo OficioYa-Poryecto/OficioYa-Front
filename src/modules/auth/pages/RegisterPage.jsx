@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { uploadImage } from '../../core/lib/imageService';
 import { login, register } from '../services/authService';
+import { useLocalidades } from '../../users/hooks/useLocalidades';
 import { PASSWORD_RULES, validatePassword } from '../utils/passwordPolicy';
 import styles from './RegisterPage.module.css';
 
@@ -106,6 +107,8 @@ export default function RegisterPage() {
   const [name, setName] = useState('');
   const [birthDate, setBirthDate] = useState('');
   const [birthDateTouched, setBirthDateTouched] = useState(false);
+  const [localityId, setLocalityId] = useState('');
+  const localidades = useLocalidades();
   const [email, setEmail] = useState('');
   const [emailTouched, setEmailTouched] = useState(false);
   // Se activa al dar clic en "Crear mi cuenta" para resaltar lo que falta
@@ -314,6 +317,7 @@ export default function RegisterPage() {
       email: email.trim(),
       password,
       birthDate,
+      localityId: localityId ? Number(localityId) : undefined,
       phones: phones.map((p) => ({
         number: p.number.trim(),
         principal: Boolean(p.principal),
@@ -586,6 +590,17 @@ export default function RegisterPage() {
                     {birthDateError}
                   </span>
                 )}
+              </div>
+
+              {/* RF-14. Zona de cobertura opcional; se puede cambiar después en Editar perfil */}
+              <div className={`${styles.formGroup} ${styles.gridFull}`}>
+                <label className={styles.label} htmlFor="localityId">Zona de cobertura (opcional)</label>
+                <select id="localityId" className={styles.select} value={localityId} onChange={(e) => setLocalityId(e.target.value)}>
+                  <option value="">Selecciona una localidad</option>
+                  {localidades.map((localidad) => (
+                    <option key={localidad.id} value={localidad.id}>{localidad.name}</option>
+                  ))}
+                </select>
               </div>
             </div>
 

@@ -12,7 +12,10 @@ export function agregarRol(rol, token) {
   return request(`/users/me/roles/${rol}`, { method: 'POST', token });
 }
 
-// Teléfonos completos (sin enmascarar) del dueño, para editarlos
+export function quitarRol(rol, token) {
+  return request(`/users/me/roles/${rol}`, { method: 'DELETE', token });
+}
+
 export function obtenerMisTelefonos(token) {
   return request('/users/me/phones', { token });
 }

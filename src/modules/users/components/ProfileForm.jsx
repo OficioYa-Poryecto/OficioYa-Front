@@ -3,8 +3,9 @@ import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { usePhones } from '../hooks/usePhones';
 import { uploadImage } from '../../core/lib/imageService';
-import { getSession } from '../../core/lib/session';
-import { ROLES_AGREGABLES } from '../config';
+import { clearSession, getSession } from '../../core/lib/session';
+import { ROLES_AGREGABLES, ROLES_QUITABLES } from '../config';
+import ConfirmModal from '../../workers/components/ui/ConfirmModal';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import Skeleton from './Skeleton';
@@ -25,12 +26,12 @@ let siguienteClave = 0;
 
 function copiarTelefonos(lista) {
   return [...lista]
-    .sort((a, b) => Number(b.principal) - Number(a.principal))
-    .map(({ number, principal }) => ({ clave: siguienteClave++, number, principal }));
+      .sort((a, b) => Number(b.principal) - Number(a.principal))
+      .map(({ number, principal }) => ({ clave: siguienteClave++, number, principal }));
 }
 
 function ProfileForm() {
-  const { perfil, cargando, error, actualizar, agregarRol } = useProfile();
+  const { perfil, cargando, error, actualizar, agregarRol, quitarRol } = useProfile();
   const telefonos = usePhones();
   const navigate = useNavigate();
 
@@ -38,35 +39,37 @@ function ProfileForm() {
   const errorCarga = error ?? telefonos.error;
 
   return (
-    <section className={vista.page}>
-      <div className={vista.top}>
-        <div>
-          <span className={reg.eyebrow}>Mi cuenta</span>
-          <h1 className={reg.heroTitle}>
-            Editar <span className={reg.brandHighlight}>perfil</span>
-          </h1>
-          <p className={reg.heroSub}>Mantén tus datos al día para que puedan encontrarte y contactarte.</p>
+      <section className={vista.page}>
+        <div className={vista.top}>
+          <div>
+            <span className={reg.eyebrow}>Mi cuenta</span>
+            <h1 className={reg.heroTitle}>
+              Editar <span className={reg.brandHighlight}>perfil</span>
+            </h1>
+            <p className={reg.heroSub}>Mantén tus datos al día para que puedan encontrarte y contactarte.</p>
+          </div>
         </div>
-      </div>
 
-      {cargandoTodo || errorCarga ? (
-        <div className={reg.card}>
-          <Skeleton lines={3} error={errorCarga} />
-        </div>
-      ) : (
-        <Contenido
-          perfil={perfil}
-          telefonos={telefonos}
-          onGuardar={actualizar}
-          onAgregarRol={agregarRol}
-          onSalir={() => navigate('/users/me')}
-        />
-      )}
-    </section>
+        {cargandoTodo || errorCarga ? (
+            <div className={reg.card}>
+              <Skeleton lines={3} error={errorCarga} />
+            </div>
+        ) : (
+            <Contenido
+                perfil={perfil}
+                telefonos={telefonos}
+                onGuardar={actualizar}
+                onAgregarRol={agregarRol}
+                onQuitarRol={quitarRol}
+                onSalir={() => navigate('/users/me')}
+            />
+        )}
+      </section>
   );
 }
 
-function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
+function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, onSalir }) {
+  const navigate = useNavigate();
   const [name, setName] = useState(perfil.name ?? '');
   const [nombreVisible, setNombreVisible] = useState(perfil.name ?? '');
   const [phones, setPhones] = useState(() => copiarTelefonos(telefonos.telefonos));
@@ -75,16 +78,25 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
   const [error, setError] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
-  const [rolGuardando, setRolGuardando] = useState(null);
-  const [rolAgregado, setRolAgregado] = useState(null);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const [rolGuardando, setRolGuardando] = useState(null);
+  const [rolAgregado, setRolAgregado] = useState(null);
+  const [rolPorQuitar, setRolPorQuitar] = useState(null);
+  const [rolQuitando, setRolQuitando] = useState(null);
+  const [rolQuitado, setRolQuitado] = useState(null);
   const fileInputRef = useRef(null);
 
   const roles = perfil.roles ?? [];
-  const rolesFaltantes = roles.includes('ADMIN')
-    ? []
-    : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
+  const esAdmin = roles.includes('ADMIN');
+  const rolesFaltantes = esAdmin
+      ? []
+      : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
+  // RF-13. Solo se puede quitar un rol si la cuenta tiene ambos y no se acaba de quitar uno
+  const rolesQuitables = !esAdmin && !rolQuitado && Object.keys(ROLES_QUITABLES).every((r) => roles.includes(r))
+      ? Object.keys(ROLES_QUITABLES)
+      : [];
+  const ocupadoRol = rolGuardando !== null || rolQuitando !== null;
   const errorNombre = name.trim() === '' ? 'El nombre es obligatorio' : null;
   const erroresTelefono = phones.map((phone, idx) => {
     if (!enviado) return null;
@@ -204,140 +216,210 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onSalir }) {
     }
   }
 
+  // RF-13. El token todavía trae el rol quitado: se cierra la sesión para que el próximo login traiga los roles nuevos
+  async function confirmarQuitarRol() {
+    const rol = rolPorQuitar;
+    setRolPorQuitar(null);
+    setError(null);
+    setRolAgregado(null);
+    setRolQuitando(rol);
+    try {
+      await onQuitarRol(rol);
+      localStorage.removeItem('oy_userName');
+      clearSession();
+      setRolQuitado(rol);
+    } catch (e) {
+      setError(e.message);
+    } finally {
+      setRolQuitando(null);
+    }
+  }
+
   return (
-    <>
-      <div className={`${reg.card} ${styles.form}`}>
-        <div className={vista.top}>
-          <ProfileHeader
-            nombre={nombreVisible || perfil.name}
-            roles={roles}
-            activo={perfil.accountStatus === 'ACTIVE'}
-            esPropio
-            userId={perfil.id}
-            avatarUrl={photoPreview}
-          >
-            <div className={vista.correo}>
-              <span>{perfil.email}</span>
-              <span className={`${styles.note} ${vista.lockNote}`}>
-                <Icon name="lock" size={14} />
-                Por seguridad, el correo no se puede editar.
-              </span>
-              {perfil.birthDate && (
+      <>
+        <div className={`${reg.card} ${styles.form}`}>
+          <div className={vista.top}>
+            <ProfileHeader
+                nombre={nombreVisible || perfil.name}
+                roles={roles}
+                activo={perfil.accountStatus === 'ACTIVE'}
+                esPropio
+                userId={perfil.id}
+                avatarUrl={photoPreview}
+            >
+              <div className={vista.correo}>
+                <span>{perfil.email}</span>
                 <span className={`${styles.note} ${vista.lockNote}`}>
                   <Icon name="lock" size={14} />
-                  Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
+                  Por seguridad, el correo no se puede editar.
                 </span>
-              )}
+                {perfil.birthDate && (
+                    <span className={`${styles.note} ${vista.lockNote}`}>
+                      <Icon name="lock" size={14} />
+                      Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
+                    </span>
+                )}
+              </div>
+            </ProfileHeader>
+            <div className={reg.photoActions}>
+              <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp"
+                  onChange={handleSelectPhoto}
+                  style={{ display: 'none' }}
+              />
+              <button
+                  type="button"
+                  className={reg.btnPhotoUpload}
+                  onClick={() => fileInputRef.current?.click()}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                  <polyline points="17 8 12 3 7 8" />
+                  <line x1="12" y1="3" x2="12" y2="15" />
+                </svg>
+                {photoFile ? 'Cambiar foto' : 'Subir foto'}
+              </button>
             </div>
-          </ProfileHeader>
-          <div className={reg.photoActions}>
-            <input
-              ref={fileInputRef}
-              type="file"
-              accept="image/jpeg,image/png,image/webp"
-              onChange={handleSelectPhoto}
-              style={{ display: 'none' }}
-            />
-            <button
-              type="button"
-              className={reg.btnPhotoUpload}
-              onClick={() => fileInputRef.current?.click()}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                <polyline points="17 8 12 3 7 8" />
-                <line x1="12" y1="3" x2="12" y2="15" />
-              </svg>
-              {photoFile ? 'Cambiar foto' : 'Subir foto'}
+          </div>
+
+          <div className={styles.encabezado}>
+            <h2 className={reg.sectionTitle}>Datos personales</h2>
+            <p className={styles.note}>
+              <span className={reg.required}>*</span> Campos obligatorios
+            </p>
+          </div>
+
+          <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
+            <div className={styles.field}>
+              <div className={styles.labelRow}>
+                <label htmlFor="name" className={reg.label}>
+                  <span>
+                    Nombre completo <span className={reg.required}>*</span>
+                  </span>
+                </label>
+                <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
+              </div>
+              <input
+                  id="name"
+                  value={name}
+                  onChange={(e) => {
+                    setName(e.target.value);
+                    setGuardado(false);
+                  }}
+                  onBlur={() => {
+                    setTocado(true);
+                    if (name.trim()) {
+                      setNombreVisible(name.trim());
+                    }
+                  }}
+                  maxLength={MAX_NOMBRE}
+                  className={tocado && errorNombre ? reg.inputInvalid : undefined}
+                  aria-invalid={Boolean(tocado && errorNombre)}
+                  required
+              />
+              {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
+            </div>
+          </form>
+
+          <PhoneList phones={phones} errores={erroresTelefono} onChange={cambiarTelefonos} />
+
+          {/* Roles: agregar el que falta (RF-02). Quitar uno va en la zona de peligro */}
+          {rolesFaltantes.length > 0 && (
+              <>
+                <div className={styles.encabezado}>
+                  <h2 className={reg.sectionTitle}>Roles de la cuenta</h2>
+                </div>
+                <div className={vista.actions}>
+                  {rolesFaltantes.map((rol) => (
+                      <Button
+                          key={rol}
+                          type="button"
+                          variant="secondary"
+                          onClick={() => activarRol(rol)}
+                          disabled={ocupadoRol}
+                      >
+                        {rolGuardando === rol ? 'Guardando...' : ROLES_AGREGABLES[rol].boton}
+                      </Button>
+                  ))}
+                </div>
+              </>
+          )}
+          {rolAgregado && (
+              <div className={vista.success}>
+                <span className={vista.successIcon}>✓</span>
+                <p>
+                  <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
+                </p>
+              </div>
+          )}
+
+          {guardado && (
+              <div className={vista.success}>
+                <span className={vista.successIcon}>✓</span>
+                <p>
+                  <strong>Cambios guardados.</strong> Tu perfil ya está actualizado.
+                </p>
+              </div>
+          )}
+          <ErrorMessage error={error} />
+
+          <div className={reg.actionsFooter}>
+            <button type="button" className={reg.linkBack} onClick={onSalir}>
+              {guardado ? 'Volver al perfil' : 'Cancelar'}
+            </button>
+            <button type="submit" form={FORM_ID} className={reg.btnSubmit} disabled={guardando || rolQuitado !== null}>
+              {guardando ? 'Guardando...' : 'Guardar cambios'}
             </button>
           </div>
         </div>
 
-        {rolesFaltantes.length > 0 && (
-          <div className={vista.actions}>
-            {rolesFaltantes.map((rol) => (
-              <Button
-                key={rol}
-                type="button"
-                variant="secondary"
-                onClick={() => activarRol(rol)}
-                disabled={rolGuardando !== null}
-              >
-                {rolGuardando === rol ? 'Guardando...' : ROLES_AGREGABLES[rol].boton}
-              </Button>
-            ))}
-          </div>
-        )}
-        {rolAgregado && (
-          <div className={vista.success}>
-            <span className={vista.successIcon}>✓</span>
-            <p>
-              <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
-            </p>
-          </div>
+        {/* RF-13. Zona de peligro: quitar un rol (solo si la cuenta tiene ambos) */}
+        {(rolesQuitables.length > 0 || rolQuitado) && (
+            <section className={styles.dangerZone}>
+              <h2 className={styles.dangerTitle}>Zona de peligro</h2>
+              {rolesQuitables.length > 0 && (
+                  <div className={styles.dangerBox}>
+                    {rolesQuitables.map((rol) => (
+                        <div key={rol} className={styles.dangerRow}>
+                          <div>
+                            <strong>{ROLES_QUITABLES[rol].boton}</strong>
+                            <p>{ROLES_QUITABLES[rol].descripcion}</p>
+                          </div>
+                          <button
+                              type="button"
+                              className={styles.dangerButton}
+                              onClick={() => setRolPorQuitar(rol)}
+                              disabled={ocupadoRol}
+                          >
+                            {rolQuitando === rol ? 'Quitando...' : 'Quitar rol'}
+                          </button>
+                        </div>
+                    ))}
+                  </div>
+              )}
+              {rolQuitado && (
+                  <div className={vista.success}>
+                    <span className={vista.successIcon}>✓</span>
+                    <p>
+                      <strong>{ROLES_QUITABLES[rolQuitado].quitado}</strong> Inicia sesión de nuevo para aplicar el cambio.
+                    </p>
+                    <Button type="button" onClick={() => navigate('/auth', { replace: true })}>Iniciar sesión</Button>
+                  </div>
+              )}
+            </section>
         )}
 
-        <div className={styles.encabezado}>
-          <h2 className={reg.sectionTitle}>Datos personales</h2>
-          <p className={styles.note}>
-            <span className={reg.required}>*</span> Campos obligatorios
-          </p>
-        </div>
-
-        <form id={FORM_ID} onSubmit={manejarEnvio} className={styles.form} noValidate>
-          <div className={styles.field}>
-            <div className={styles.labelRow}>
-              <label htmlFor="name" className={reg.label}>
-                <span>
-                  Nombre completo <span className={reg.required}>*</span>
-                </span>
-              </label>
-              <span className={styles.counter}>{name.length}/{MAX_NOMBRE}</span>
-            </div>
-            <input
-              id="name"
-              value={name}
-              onChange={(e) => {
-                setName(e.target.value);
-                setGuardado(false);
-              }}
-              onBlur={() => {
-                setTocado(true);
-                if (name.trim()) {
-                  setNombreVisible(name.trim());
-                }
-              }}
-              maxLength={MAX_NOMBRE}
-              className={tocado && errorNombre ? reg.inputInvalid : undefined}
-              aria-invalid={Boolean(tocado && errorNombre)}
-              required
+        {rolPorQuitar && (
+            <ConfirmModal
+                title={ROLES_QUITABLES[rolPorQuitar].titulo}
+                text={ROLES_QUITABLES[rolPorQuitar].texto}
+                onCancel={() => setRolPorQuitar(null)}
+                onConfirm={confirmarQuitarRol}
             />
-            {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
-          </div>
-        </form>
-
-        <PhoneList phones={phones} errores={erroresTelefono} onChange={cambiarTelefonos} />
-
-        {guardado && (
-          <div className={vista.success}>
-            <span className={vista.successIcon}>✓</span>
-            <p>
-              <strong>Cambios guardados.</strong> Tu perfil ya está actualizado.
-            </p>
-          </div>
         )}
-        <ErrorMessage error={error} />
-
-        <div className={reg.actionsFooter}>
-          <button type="button" className={reg.linkBack} onClick={onSalir}>
-            {guardado ? 'Volver al perfil' : 'Cancelar'}
-          </button>
-          <button type="submit" form={FORM_ID} className={reg.btnSubmit} disabled={guardando}>
-            {guardando ? 'Guardando...' : 'Guardar cambios'}
-          </button>
-        </div>
-      </div>
-    </>
+      </>
   );
 }
 

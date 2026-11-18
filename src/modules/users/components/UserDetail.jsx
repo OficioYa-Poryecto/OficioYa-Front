@@ -54,6 +54,7 @@ function UserDetail() {
             <ContactCard
                 email={user.email}
                 phones={user.phones ?? []}
+                birthDate={user.birthDate}
                 nota="Datos completos visibles solo para administración."
             />
           </aside>

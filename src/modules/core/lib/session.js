@@ -25,6 +25,7 @@ export function clearSession() {
   localStorage.removeItem(USER_ID_KEY);
   localStorage.removeItem(ROLES_KEY);
   localStorage.removeItem(EXPIRES_AT_KEY);
+  localStorage.removeItem('oy_userName');
 }
 
 export function getSession() {

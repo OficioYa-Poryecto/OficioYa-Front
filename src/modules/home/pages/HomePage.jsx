@@ -134,10 +134,7 @@ export default function HomePage() {
   const isTrabajador = roles.includes('TRABAJADOR');
   const isBoth = isContratante && isTrabajador;
 
-  const firstName = getFirstName(
-    profileName,
-    isAdmin ? 'Laura' : isTrabajador && !isContratante ? 'Julián' : 'Ana'
-  );
+  const firstName = getFirstName(profileName, '');
 
   async function handleAddRole(targetRole) {
     if (addingRole) return;
@@ -173,7 +170,7 @@ export default function HomePage() {
         <section className={styles.hero}>
           <div className={styles.heroContent}>
             <span className={styles.eyebrowPill}>PANEL DE ADMINISTRACIÓN</span>
-            <h1 className={styles.heroTitle}>Hola, {firstName}</h1>
+            <h1 className={styles.heroTitle}>{firstName ? `Hola, ${firstName}` : 'Hola'}</h1>
             <p className={styles.heroSubtitle}>Esto es lo que necesita atención hoy.</p>
             <span className={styles.adminBadgeInline}>
               <ShieldCheckIcon size={14} />
@@ -341,7 +338,13 @@ export default function HomePage() {
           <div className={styles.heroContent}>
             <span className={styles.eyebrowPill}>INICIO</span>
             <h1 className={styles.heroTitle}>
-              Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+              {firstName ? (
+                <>
+                  Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+                </>
+              ) : (
+                'Hola'
+              )}
             </h1>
             <p className={styles.heroSubtitle}>¿Qué quieres hacer hoy?</p>
           </div>
@@ -382,7 +385,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/users/me" className={styles.actionCard}>
+          <Link to="/worker/profile" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <WrenchIcon />
@@ -397,7 +400,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/worker/availability" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClockIcon />
@@ -446,7 +449,13 @@ export default function HomePage() {
           <div className={styles.heroContent}>
             <span className={styles.eyebrowPill}>INICIO</span>
             <h1 className={styles.heroTitle}>
-              Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+              {firstName ? (
+                <>
+                  Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+                </>
+              ) : (
+                'Hola'
+              )}
             </h1>
             <p className={styles.heroSubtitle}>¿Qué quieres hacer hoy?</p>
           </div>
@@ -456,7 +465,7 @@ export default function HomePage() {
         </section>
 
         <section className={styles.grid2}>
-          <Link to="/users/me" className={styles.actionCard}>
+          <Link to="/worker/profile" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <WrenchIcon />
@@ -471,7 +480,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/worker/availability" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClockIcon />
@@ -524,7 +533,13 @@ export default function HomePage() {
         <div className={styles.heroContent}>
           <span className={styles.eyebrowPill}>INICIO</span>
           <h1 className={styles.heroTitle}>
-            Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+            {firstName ? (
+              <>
+                Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
+              </>
+            ) : (
+              'Hola'
+            )}
           </h1>
           <p className={styles.heroSubtitle}>¿Qué quieres hacer hoy?</p>
         </div>

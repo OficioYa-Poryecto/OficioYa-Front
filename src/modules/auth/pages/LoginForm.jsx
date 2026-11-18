@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { hasWorkerProfile, login } from '../services/authService';
+import { fetchMyProfile, hasWorkerProfile, login } from '../services/authService';
 import { saveSession } from '../../core/lib/session';
 import styles from './AuthPage.module.css';
 
@@ -50,12 +50,19 @@ export default function LoginForm({ onForgot }) {
         expiresInSeconds: data.expiresInSeconds,
       });
 
-      if (rolesArray.includes('TRABAJADOR')) {
-        const workerExists = await hasWorkerProfile();
-        if (!workerExists) {
-          navigate('/worker/create');
-          return;
-        }
+      const [profileData, workerExists] = await Promise.all([
+        fetchMyProfile().catch(() => null),
+        rolesArray.includes('TRABAJADOR') ? hasWorkerProfile() : Promise.resolve(true),
+      ]);
+
+      if (profileData?.name) {
+        localStorage.setItem('oy_userName', profileData.name);
+        window.dispatchEvent(new Event('oy-profile-updated'));
+      }
+
+      if (rolesArray.includes('TRABAJADOR') && !workerExists) {
+        navigate('/worker/create');
+        return;
       }
 
       navigate('/home');

@@ -15,6 +15,20 @@ function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test((email || '').trim());
 }
 
+// Fecha máxima permitida para ser mayor de 18 años (hoy menos 18 años en formato AAAA-MM-DD)
+function getMaxAdultBirthDate() {
+  const today = new Date();
+  const year = today.getFullYear() - 18;
+  const month = String(today.getMonth() + 1).padStart(2, '0');
+  const day = String(today.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+function isAdultBirthDate(dateStr) {
+  if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return false;
+  return dateStr <= getMaxAdultBirthDate();
+}
+
 const ROLE_OPTIONS = [
   {
     id: 'CONTRATANTE',
@@ -90,6 +104,8 @@ export default function RegisterPage() {
   // Rol seleccionado ('CONTRATANTE' | 'TRABAJADOR' | 'AMBOS')
   const [selectedRoleId, setSelectedRoleId] = useState('CONTRATANTE');
   const [name, setName] = useState('');
+  const [birthDate, setBirthDate] = useState('');
+  const [birthDateTouched, setBirthDateTouched] = useState(false);
   const [email, setEmail] = useState('');
   const [emailTouched, setEmailTouched] = useState(false);
   // Se activa al dar clic en "Crear mi cuenta" para resaltar lo que falta
@@ -113,7 +129,14 @@ export default function RegisterPage() {
 
   // Errores por campo: se muestran tras intentar enviar y se actualizan mientras el usuario corrige
   const REQUIRED_MSG = 'Este campo es obligatorio.';
+  const maxBirthDate = getMaxAdultBirthDate();
   const nameError = submitted && !name.trim() ? REQUIRED_MSG : null;
+  const birthDateError =
+    submitted && !birthDate
+      ? REQUIRED_MSG
+      : (submitted || birthDateTouched) && birthDate && !isAdultBirthDate(birthDate)
+        ? 'Debes ser mayor de edad para registrarte.'
+        : null;
   const emailError =
     submitted && !email.trim()
       ? REQUIRED_MSG
@@ -219,6 +242,12 @@ export default function RegisterPage() {
     if (!name.trim()) {
       return 'El nombre completo es obligatorio.';
     }
+    if (!birthDate) {
+      return 'La fecha de nacimiento es obligatoria.';
+    }
+    if (!isAdultBirthDate(birthDate)) {
+      return 'Debes ser mayor de edad para registrarte.';
+    }
     if (!email.trim()) {
       return 'El correo electrónico es obligatorio.';
     }
@@ -260,6 +289,7 @@ export default function RegisterPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setEmailTouched(true);
+    setBirthDateTouched(true);
     setSubmitted(true);
     const validationError = validateForm();
     if (validationError) {
@@ -283,6 +313,7 @@ export default function RegisterPage() {
       name: name.trim(),
       email: email.trim(),
       password,
+      birthDate,
       phones: phones.map((p) => ({
         number: p.number.trim(),
         principal: Boolean(p.principal),
@@ -497,12 +528,12 @@ export default function RegisterPage() {
               </div>
             </div>
 
-            {/* Sección: Tus datos (nombre, teléfonos y foto) */}
+            {/* Sección: Tus datos (nombre, fecha de nacimiento, teléfonos y foto) */}
             <div className={`${styles.sectionHeader} ${styles.sectionHeaderDivided}`}>
               <div className={styles.stepBadge}>3</div>
               <h3 className={styles.sectionTitle}>Tus datos</h3>
             </div>
-            <div className={styles.fullRow}>
+            <div className={styles.gridTwo}>
               <div className={styles.formGroup}>
                 <label className={styles.label} htmlFor="name">
                   <span>
@@ -524,6 +555,35 @@ export default function RegisterPage() {
                 {nameError && (
                   <span id="name-error" className={styles.fieldError}>
                     {nameError}
+                  </span>
+                )}
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.label} htmlFor="birthDate">
+                  <span>
+                    Fecha de nacimiento <span className={styles.required}>*</span>
+                  </span>
+                </label>
+                <input
+                  id="birthDate"
+                  type="date"
+                  max={maxBirthDate}
+                  value={birthDate}
+                  onChange={(e) => {
+                    setBirthDate(e.target.value);
+                    setBirthDateTouched(true);
+                  }}
+                  onBlur={() => setBirthDateTouched(true)}
+                  autoComplete="bday"
+                  className={birthDateError ? styles.inputInvalid : undefined}
+                  aria-invalid={Boolean(birthDateError)}
+                  aria-describedby={birthDateError ? 'birthdate-error' : undefined}
+                  required
+                />
+                {birthDateError && (
+                  <span id="birthdate-error" className={styles.fieldError} role="alert">
+                    {birthDateError}
                   </span>
                 )}
               </div>

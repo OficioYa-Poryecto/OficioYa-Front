@@ -2,7 +2,7 @@ import { request } from '../../core/lib/httpClient';
 
 export const createRequestService = {
   create: async (payload, token) => {
-    const result = await request('/requests', { method: 'PUT', body: payload, token });
+    const result = await request('/requests', { method: 'POST', body: payload, token });
     const sent = typeof result?.sent === 'number' ? result.sent : (result?.workersId?.length ?? 0);
     if (sent < 1) {
       throw new Error(

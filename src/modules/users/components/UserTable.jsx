@@ -1,8 +1,10 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import Skeleton from './Skeleton';
 import { useAdminUsers } from '../hooks/useAdminUsers';
 import { NOMBRES_ROL } from '../config';
+import { getProfilePhotoUrl } from '../../core/lib/imageService';
+import { getSession } from '../../core/lib/session';
 import styles from './UserTable.module.css';
 import vista from './ProfileView.module.css';
 
@@ -84,8 +86,13 @@ function UserTable() {
                         {visibles.map((user) => (
                             <tr key={user.id}>
                                 <td>
-                                    <strong>{user.name}</strong>
-                                    <small className={styles.roles}>{user.roles.map((r) => NOMBRES_ROL[r] ?? r).join(' · ')}</small>
+                                    <div className={styles.usuario}>
+                                        <Avatar userId={user.id} nombre={user.name} />
+                                        <div>
+                                            <strong>{user.name}</strong>
+                                            <small className={styles.roles}>{user.roles.map((r) => NOMBRES_ROL[r] ?? r).join(' · ')}</small>
+                                        </div>
+                                    </div>
                                 </td>
                                 <td>{enmascararCorreo(user.email)}</td>
                                 <td>
@@ -103,6 +110,29 @@ function UserTable() {
                 )}
             </div>
         </section>
+    );
+}
+
+// Foto de perfil del usuario (o sus iniciales si no tiene), igual que en ProfileHeader
+function Avatar({ userId, nombre }) {
+    const [foto, setFoto] = useState(null);
+    const partes = (nombre || 'Usuario').trim().split(/\s+/);
+    const iniciales = (partes[0][0] + (partes.length > 1 ? partes[partes.length - 1][0] : partes[0][1] ?? '')).toUpperCase();
+
+    useEffect(() => {
+        let activo = true;
+        getProfilePhotoUrl(userId, getSession()?.token).then((url) => {
+            if (activo) setFoto(url);
+        });
+        return () => {
+            activo = false;
+        };
+    }, [userId]);
+
+    return (
+        <span className={styles.avatar}>
+            {foto ? <img src={foto} alt="" /> : iniciales}
+        </span>
     );
 }
 

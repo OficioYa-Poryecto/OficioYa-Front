@@ -243,71 +243,181 @@
   background: var(--color-surface-alt);
   cursor: not-allowed;
 }
-/* "Campos obligatorios" justo debajo del título */
+/* Datos sensibles (correo y nacimiento) en dos columnas */
+.datosSensibles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  margin: 0;
+}
+
+@media (max-width: 640px) {
+  .datosSensibles {
+    grid-template-columns: 1fr;
+  }
+}
+
+.dato dt {
+  font-weight: 700;
+  font-size: 0.9rem;
+  margin-bottom: 4px;
+}
+
+.dato dd {
+  margin: 0;
+  color: var(--color-text);
+  overflow-wrap: anywhere;
+}
+
+/* Separador de los botones más cerca del último teléfono */
+.form .footerCompacto {
+  margin-top: 0;
+}
+
+/* "Campos obligatorios" justo debajo del título.
+   Todos los títulos del formulario con el mismo tamaño */
 .encabezado h2 {
   margin: 0 0 4px;
+  font-size: 1.35rem;
 }
 
-.dangerZone {
-  margin-top: 1.5rem;
+/* RF-13. Sobre mi cuenta: título fuera; la tarjeta lleva el borde rojo y cada opción va en su propio recuadro neutro */
+.cuenta {
+  display: grid;
+  gap: 20px;
+  margin-top: 2rem;
 }
 
-.dangerTitle {
-  margin: 0 0 0.75rem;
+/* Igual que .brandHighlight del título "Editar perfil", pero en rojo */
+.resaltadoPeligro {
+  color: var(--color-danger);
+  background: linear-gradient(transparent 75%, color-mix(in srgb, var(--color-danger) 18%, transparent) 75%);
+  padding: 0 4px;
+  border-radius: 6px;
+}
+
+.cuenta .cuentaLista {
+  display: grid;
+  gap: 16px;
+  border-color: var(--color-danger);
+}
+
+/* Mismo espacio arriba y abajo dentro de la tarjeta (la tarjeta trae 36px arriba y 40px abajo) */
+.cuenta .cuentaLista {
+  padding-bottom: 36px;
+}
+
+@media (max-width: 640px) {
+  .cuenta .cuentaLista {
+    padding-bottom: 24px;
+  }
+}
+
+/* Error: mismo espacio arriba (16px del gap + 20px) que abajo (36px de la tarjeta)
+   y alineado con el texto de las opciones (mismo padding lateral que .cuentaFila) */
+.cuentaError {
+  margin-top: 20px;
+  padding: 0 1.5rem;
+}
+
+.cuentaError p {
+  margin: 0;
+  line-height: 1.4;
+}
+
+@media (max-width: 640px) {
+  .cuentaError {
+    margin-top: 8px;
+  }
+}
+
+.cuentaFila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+}
+
+.cuentaOpcion {
+  display: block;
   font-size: 1.1rem;
   color: var(--color-danger);
 }
 
-.dangerBox {
-  border: 1px solid var(--color-danger);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface);
-}
-
-.dangerRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  padding: 1rem 1.25rem;
-}
-
-.dangerRow + .dangerRow {
-  border-top: 1px solid var(--color-border);
-}
-
-.dangerRow p {
-  margin: 0.25rem 0 0;
+.cuentaFila p {
+  margin: 0.35rem 0 0;
   font-size: 0.9rem;
   color: var(--color-text-muted);
 }
 
-.dangerButton {
+.cuentaFila button {
   flex-shrink: 0;
-  padding: 0.55rem 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  background: var(--color-surface-alt);
-  color: var(--color-danger);
-  font: inherit;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.dangerButton:hover:not(:disabled) {
-  background: var(--color-danger);
-  border-color: var(--color-danger);
-  color: #ffffff;
-}
-
-.dangerButton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
 }
 
 @media (max-width: 600px) {
-  .dangerRow {
+  .cuentaFila {
     flex-direction: column;
     align-items: flex-start;
   }
+}
+
+/* RF-13. Confirmación para dejar de ser trabajador/contratante (basada en el ConfirmModal de workers, sin modificarlo) */
+.modalFondo {
+  align-items: center;
+  backdrop-filter: blur(3px);
+  background: rgba(28, 35, 32, 0.48);
+  display: flex;
+  inset: 0;
+  justify-content: center;
+  padding: 20px;
+  position: fixed;
+  z-index: 100;
+}
+
+.modal {
+  background: var(--color-surface);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  max-width: 440px;
+  padding: 36px 40px;
+  text-align: center;
+  width: 100%;
+  display: grid;
+  justify-items: center;
+  gap: 16px;
+}
+
+/* Título y descripción con el mismo ancho y líneas equilibradas */
+.modal h2,
+.modal p {
+  margin: 0;
+  max-width: 340px;
+  width: 100%;
+  text-wrap: balance;
+}
+
+.modal p {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.modalIcono {
+  align-items: center;
+  background: color-mix(in srgb, var(--color-danger) 12%, transparent);
+  border-radius: 50%;
+  color: var(--color-danger);
+  display: flex;
+  height: 72px;
+  justify-content: center;
+  width: 72px;
+}
+
+.modalAcciones {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  margin-top: 8px;
 }

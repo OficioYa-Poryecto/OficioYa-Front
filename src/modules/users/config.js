@@ -22,12 +22,14 @@ export function validarTelefono(numero) {
 export const ROLES_AGREGABLES = {
   TRABAJADOR: {
     boton: 'Quiero ser trabajador',
-    agregado: 'Rol de trabajador agregado.',
+    descripcion: 'Ofrece tus servicios y aparece en las búsquedas de quienes necesitan un oficio.',
+    agregado: 'Ya eres trabajador.',
     detalle: 'Inicia sesión de nuevo para completar tu perfil de trabajador.',
   },
   CONTRATANTE: {
-    boton: 'Agregar rol de contratante',
-    agregado: 'Rol de contratante agregado.',
+    boton: 'Quiero ser contratante',
+    descripcion: 'Solicita servicios a trabajadores con esta misma cuenta.',
+    agregado: 'Ya eres contratante.',
     detalle: 'Ya puedes solicitar servicios con esta misma cuenta.',
   },
 };
@@ -35,17 +37,19 @@ export const ROLES_AGREGABLES = {
 // Botón y confirmación para quitar un rol cuando la cuenta tiene ambos
 export const ROLES_QUITABLES = {
   TRABAJADOR: {
-    boton: 'Dejar de ser trabajador',
-    descripcion: 'Tu perfil de trabajador se pausa y deja de aparecer en búsquedas. No puedes tener solicitudes activas como trabajador.',
+    boton: 'Quiero dejar de ser trabajador',
+    descripcion: 'Tu perfil de trabajador se pausa y deja de aparecer en búsquedas.',
+    aviso: 'No puedes tener solicitudes activas como trabajador.',
     titulo: '¿Dejar de ser trabajador?',
-    texto: 'Tu perfil de trabajador quedará pausado y no aparecerá en las búsquedas. No se borran tus datos y puedes volver a activarlo cuando quieras.',
+    texto: 'Tu perfil se pausará y no aparecerá en búsquedas. Puedes reactivarlo cuando quieras.',
     quitado: 'Ya no eres trabajador.',
   },
   CONTRATANTE: {
-    boton: 'Dejar de ser contratante',
-    descripcion: 'Ya no podrás solicitar servicios con esta cuenta. No puedes tener solicitudes activas como contratante.',
+    boton: 'Quiero dejar de ser contratante',
+    descripcion: 'Ya no podrás solicitar servicios con esta cuenta.',
+    aviso: 'No puedes tener solicitudes activas como contratante.',
     titulo: '¿Dejar de ser contratante?',
-    texto: 'Ya no podrás solicitar servicios con esta cuenta hasta que vuelvas a agregar el rol.',
+    texto: 'No podrás solicitar servicios hasta que vuelvas a ser contratante.',
     quitado: 'Ya no eres contratante.',
   },
 };

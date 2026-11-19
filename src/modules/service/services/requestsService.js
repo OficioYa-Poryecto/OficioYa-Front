@@ -4,7 +4,7 @@ import { decodeRole } from './jwt';
 const BASE = '/requests';
 
 // Cambia a false cuando el backend esté disponible
-const USE_MOCK = true;
+const USE_MOCK = false;
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
@@ -44,7 +44,9 @@ export const requestsService = {
       }
       return [...mockRequests];
     }
-    return request(BASE, { token });
+    // El back separa el listado por rol: /requests/contractor y /requests/worker.
+    const path = decodeRole(token) === 'TRABAJADOR' ? `${BASE}/worker` : `${BASE}/contractor`;
+    return request(path, { token });
   },
 
   // TRABAJADOR

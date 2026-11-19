@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { uploadImage } from '../../core/lib/imageService';
+import { saveSession } from '../../core/lib/session';
 import { login, register } from '../services/authService';
 import { useLocalidades } from '../../users/hooks/useLocalidades';
 import { PASSWORD_RULES, validatePassword } from '../utils/passwordPolicy';
@@ -327,26 +328,61 @@ export default function RegisterPage() {
 
     try {
       const createdUser = await register(payload);
-      if (photoFile) {
-        try {
-          const authData = await login({
-            email: payload.email,
-            password: payload.password,
+
+      // Auto-login inmediato tras registro exitoso
+      try {
+        const authData = await login({
+          email: payload.email,
+          password: payload.password,
+        });
+
+        if (authData?.token) {
+          const rolesArray = Array.isArray(authData.roles)
+            ? authData.roles
+            : Array.from(authData.roles ?? []);
+
+          saveSession({
+            token: authData.token,
+            userId: authData.userId,
+            roles: rolesArray,
+            expiresInSeconds: authData.expiresInSeconds,
           });
-          const targetUserId = createdUser?.id || authData?.userId;
-          if (authData?.token && targetUserId) {
-            await uploadImage({
-              file: photoFile,
-              rootId: targetUserId,
-              tipo: 'PROFILE',
-              token: authData.token,
-            });
+
+          // Pre-cargar nombre en localStorage para el saludo sin parpadeo
+          const userName = createdUser?.name || payload.name;
+          if (userName) {
+            localStorage.setItem('oy_userName', userName);
+            window.dispatchEvent(new Event('oy-profile-updated'));
           }
-        } catch {
-          // Si falla la subida opcional de foto, no bloqueamos la cuenta recién creada
+
+          // Subir foto opcional si se seleccionó una
+          if (photoFile) {
+            try {
+              const targetUserId = createdUser?.id || authData.userId;
+              await uploadImage({
+                file: photoFile,
+                rootId: targetUserId,
+                tipo: 'PROFILE',
+                token: authData.token,
+              });
+            } catch {
+              // Si falla la subida opcional de foto, no interrumpimos el registro
+            }
+          }
+
+          // Redirección directa según rol
+          if (rolesArray.includes('TRABAJADOR')) {
+            navigate('/worker/create-profile');
+          } else {
+            navigate('/home');
+          }
+          return;
         }
+      } catch {
+        // Si el auto-login falla por algún motivo de red, fallback a pantalla de login
       }
-      // Éxito: redirigir a /auth?registered=1
+
+      // Éxito con fallback: redirigir a /auth?registered=1 si no se completó el auto-login
       navigate('/auth?registered=1');
     } catch (err) {
       if (err.status === 409) {

@@ -370,7 +370,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/solicitudes" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClipboardIcon />
@@ -564,7 +564,7 @@ export default function HomePage() {
           </span>
         </Link>
 
-        <Link to="/maintenance" className={styles.actionCard}>
+        <Link to="/solicitudes" className={styles.actionCard}>
           <div>
             <div className={styles.iconBox}>
               <ClipboardIcon />

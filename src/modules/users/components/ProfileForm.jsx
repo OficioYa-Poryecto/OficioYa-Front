@@ -5,7 +5,7 @@ import { usePhones } from '../hooks/usePhones';
 import { uploadImage } from '../../core/lib/imageService';
 import { clearSession, getSession } from '../../core/lib/session';
 import { ROLES_AGREGABLES, ROLES_QUITABLES } from '../config';
-import ConfirmModal from '../../workers/components/ui/ConfirmModal';
+import AlertIcon from '../../workers/components/ui/Icon';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import Skeleton from './Skeleton';
@@ -79,6 +79,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   const [enviado, setEnviado] = useState(false);
   const [tocado, setTocado] = useState(false);
   const [error, setError] = useState(null);
+  const [errorCuenta, setErrorCuenta] = useState(null);
   const [guardando, setGuardando] = useState(false);
   const [guardado, setGuardado] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
@@ -92,11 +93,13 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
 
   const roles = perfil.roles ?? [];
   const esAdmin = roles.includes('ADMIN');
-  const rolesFaltantes = esAdmin
+  // Sobre mi cuenta: con un solo rol se ofrece agregar el otro (RF-02); con ambos, dejar cualquiera (RF-13).
+  // Después de agregar o quitar uno no se muestran más opciones hasta volver a iniciar sesión
+  const cambioHecho = rolAgregado !== null || rolQuitado !== null;
+  const rolesFaltantes = esAdmin || cambioHecho
       ? []
       : Object.keys(ROLES_AGREGABLES).filter((r) => !roles.includes(r));
-  // RF-13. Solo se puede quitar un rol si la cuenta tiene ambos y no se acaba de quitar uno
-  const rolesQuitables = !esAdmin && !rolQuitado && Object.keys(ROLES_QUITABLES).every((r) => roles.includes(r))
+  const rolesQuitables = !esAdmin && !cambioHecho && Object.keys(ROLES_QUITABLES).every((r) => roles.includes(r))
       ? Object.keys(ROLES_QUITABLES)
       : [];
   const ocupadoRol = rolGuardando !== null || rolQuitando !== null;
@@ -207,13 +210,13 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   }
 
   async function activarRol(rol) {
-    setError(null);
+    setErrorCuenta(null);
     setRolGuardando(rol);
     try {
       await onAgregarRol(rol);
       setRolAgregado(rol);
     } catch (e) {
-      setError(e.message);
+      setErrorCuenta(e.message);
     } finally {
       setRolGuardando(null);
     }
@@ -223,7 +226,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   async function confirmarQuitarRol() {
     const rol = rolPorQuitar;
     setRolPorQuitar(null);
-    setError(null);
+    setErrorCuenta(null);
     setRolAgregado(null);
     setRolQuitando(rol);
     try {
@@ -232,7 +235,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
       clearSession();
       setRolQuitado(rol);
     } catch (e) {
-      setError(e.message);
+      setErrorCuenta(e.message);
     } finally {
       setRolQuitando(null);
     }
@@ -249,21 +252,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
                 esPropio
                 userId={perfil.id}
                 avatarUrl={photoPreview}
-            >
-              <div className={vista.correo}>
-                <span>{perfil.email}</span>
-                <span className={`${styles.note} ${vista.lockNote}`}>
-                  <Icon name="lock" size={14} />
-                  Por seguridad, el correo no se puede editar.
-                </span>
-                {perfil.birthDate && (
-                    <span className={`${styles.note} ${vista.lockNote}`}>
-                      <Icon name="lock" size={14} />
-                      Nacimiento: {formatBirthDate(perfil.birthDate)} (no se puede editar).
-                    </span>
-                )}
-              </div>
-            </ProfileHeader>
+            />
             <div className={reg.photoActions}>
               <input
                   ref={fileInputRef}
@@ -286,6 +275,24 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
               </button>
             </div>
           </div>
+
+          {/* Datos sensibles: solo texto, no se pueden modificar */}
+          <div className={styles.encabezado}>
+            <h2 className={reg.sectionTitle}>Datos sensibles</h2>
+            <p className={styles.note}>
+              <Icon name="lock" size={12} /> Por seguridad, los datos sensibles no se pueden modificar.
+            </p>
+          </div>
+          <dl className={styles.datosSensibles}>
+            <div className={styles.dato}>
+              <dt>Correo electrónico</dt>
+              <dd>{perfil.email}</dd>
+            </div>
+            <div className={styles.dato}>
+              <dt>Fecha de nacimiento</dt>
+              <dd>{perfil.birthDate ? formatBirthDate(perfil.birthDate) : 'No registrada'}</dd>
+            </div>
+          </dl>
 
           <div className={styles.encabezado}>
             <h2 className={reg.sectionTitle}>Datos personales</h2>
@@ -325,57 +332,29 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
               {tocado && errorNombre && <p className={styles.fieldError}>{errorNombre}</p>}
             </div>
 
-            {/* RF-14. Una localidad; no se puede dejar vacía una vez elegida */}
-            <div className={styles.field}>
-              <label htmlFor="localityId" className={reg.label}>Zona de cobertura</label>
-              <select
-                  id="localityId"
-                  className={reg.select}
-                  value={localityId}
-                  onChange={(e) => {
-                    setLocalityId(e.target.value);
-                    setGuardado(false);
-                  }}
-              >
-                <option value="" disabled={Boolean(perfil.locality)}>Selecciona una localidad</option>
-                {localidades.map((localidad) => (
-                    <option key={localidad.id} value={localidad.id}>{localidad.name}</option>
-                ))}
-              </select>
-            </div>
+            {/* RF-14. Una localidad; no se puede dejar vacía una vez elegida (no aplica para administradores) */}
+            {!esAdmin && (
+                <div className={styles.field}>
+                  <label htmlFor="localityId" className={reg.label}>Zona de cobertura</label>
+                  <select
+                      id="localityId"
+                      className={reg.select}
+                      value={localityId}
+                      onChange={(e) => {
+                        setLocalityId(e.target.value);
+                        setGuardado(false);
+                      }}
+                  >
+                    <option value="" disabled={Boolean(perfil.locality)}>Selecciona una localidad</option>
+                    {localidades.map((localidad) => (
+                        <option key={localidad.id} value={localidad.id}>{localidad.name}</option>
+                    ))}
+                  </select>
+                </div>
+            )}
           </form>
 
           <PhoneList phones={phones} errores={erroresTelefono} onChange={cambiarTelefonos} />
-
-          {/* Roles: agregar el que falta (RF-02). Quitar uno va en la zona de peligro */}
-          {rolesFaltantes.length > 0 && (
-              <>
-                <div className={styles.encabezado}>
-                  <h2 className={reg.sectionTitle}>Roles de la cuenta</h2>
-                </div>
-                <div className={vista.actions}>
-                  {rolesFaltantes.map((rol) => (
-                      <Button
-                          key={rol}
-                          type="button"
-                          variant="secondary"
-                          onClick={() => activarRol(rol)}
-                          disabled={ocupadoRol}
-                      >
-                        {rolGuardando === rol ? 'Guardando...' : ROLES_AGREGABLES[rol].boton}
-                      </Button>
-                  ))}
-                </div>
-              </>
-          )}
-          {rolAgregado && (
-              <div className={vista.success}>
-                <span className={vista.successIcon}>✓</span>
-                <p>
-                  <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
-                </p>
-              </div>
-          )}
 
           {guardado && (
               <div className={vista.success}>
@@ -387,7 +366,7 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
           )}
           <ErrorMessage error={error} />
 
-          <div className={reg.actionsFooter}>
+          <div className={`${reg.actionsFooter} ${styles.footerCompacto}`}>
             <button type="button" className={reg.linkBack} onClick={onSalir}>
               {guardado ? 'Volver al perfil' : 'Cancelar'}
             </button>
@@ -397,49 +376,88 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
           </div>
         </div>
 
-        {/* RF-13. Zona de peligro: quitar un rol (solo si la cuenta tiene ambos) */}
-        {(rolesQuitables.length > 0 || rolQuitado) && (
-            <section className={styles.dangerZone}>
-              <h2 className={styles.dangerTitle}>Zona de peligro</h2>
-              {rolesQuitables.length > 0 && (
-                  <div className={styles.dangerBox}>
-                    {rolesQuitables.map((rol) => (
-                        <div key={rol} className={styles.dangerRow}>
-                          <div>
-                            <strong>{ROLES_QUITABLES[rol].boton}</strong>
-                            <p>{ROLES_QUITABLES[rol].descripcion}</p>
-                          </div>
-                          <button
-                              type="button"
-                              className={styles.dangerButton}
-                              onClick={() => setRolPorQuitar(rol)}
-                              disabled={ocupadoRol}
-                          >
-                            {rolQuitando === rol ? 'Quitando...' : 'Quitar rol'}
-                          </button>
-                        </div>
-                    ))}
-                  </div>
-              )}
-              {rolQuitado && (
-                  <div className={vista.success}>
-                    <span className={vista.successIcon}>✓</span>
-                    <p>
-                      <strong>{ROLES_QUITABLES[rolQuitado].quitado}</strong> Inicia sesión de nuevo para aplicar el cambio.
-                    </p>
-                    <Button type="button" onClick={() => navigate('/auth', { replace: true })}>Iniciar sesión</Button>
-                  </div>
-              )}
+        {/* Sobre mi cuenta: siempre visible (excepto administradores) */}
+        {!esAdmin && (
+            <section className={styles.cuenta}>
+              <div>
+                <h2 className={reg.heroTitle}>
+                  Sobre mi <span className={styles.resaltadoPeligro}>cuenta</span>
+                </h2>
+                <p className={reg.heroSub}>
+                  Elige si usas OficioYa para trabajar, para contratar o para ambas. Tu información no se borra y puedes cambiarlo después.
+                </p>
+              </div>
+              <div className={`${reg.card} ${styles.cuentaLista}`}>
+                {rolesFaltantes.map((rol) => (
+                    <div key={rol} className={styles.cuentaFila}>
+                      <div>
+                        <strong className={styles.cuentaOpcion}>{ROLES_AGREGABLES[rol].boton}</strong>
+                        <p>{ROLES_AGREGABLES[rol].descripcion}</p>
+                      </div>
+                      <Button
+                          type="button"
+                          variant="danger"
+                          onClick={() => activarRol(rol)}
+                          disabled={ocupadoRol}
+                      >
+                        {rolGuardando === rol ? 'Guardando...' : 'Continuar'}
+                      </Button>
+                    </div>
+                ))}
+                {rolesQuitables.map((rol) => (
+                    <div key={rol} className={styles.cuentaFila}>
+                      <div>
+                        <strong className={styles.cuentaOpcion}>{ROLES_QUITABLES[rol].boton}</strong>
+                        <p>{ROLES_QUITABLES[rol].descripcion} <strong>{ROLES_QUITABLES[rol].aviso}</strong></p>
+                      </div>
+                      <Button
+                          type="button"
+                          variant="danger"
+                          onClick={() => setRolPorQuitar(rol)}
+                          disabled={ocupadoRol}
+                      >
+                        {rolQuitando === rol ? 'Procesando...' : 'Continuar'}
+                      </Button>
+                    </div>
+                ))}
+                {errorCuenta && (
+                    <div className={styles.cuentaError}>
+                      <ErrorMessage error={errorCuenta} />
+                    </div>
+                )}
+                {rolAgregado && (
+                    <div className={vista.success}>
+                      <span className={vista.successIcon}>✓</span>
+                      <p>
+                        <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
+                      </p>
+                    </div>
+                )}
+                {rolQuitado && (
+                    <div className={vista.success}>
+                      <span className={vista.successIcon}>✓</span>
+                      <p>
+                        <strong>{ROLES_QUITABLES[rolQuitado].quitado}</strong> Inicia sesión de nuevo para aplicar el cambio.
+                      </p>
+                      <Button type="button" onClick={() => navigate('/auth', { replace: true })}>Iniciar sesión</Button>
+                    </div>
+                )}
+              </div>
             </section>
         )}
 
         {rolPorQuitar && (
-            <ConfirmModal
-                title={ROLES_QUITABLES[rolPorQuitar].titulo}
-                text={ROLES_QUITABLES[rolPorQuitar].texto}
-                onCancel={() => setRolPorQuitar(null)}
-                onConfirm={confirmarQuitarRol}
-            />
+            <div className={styles.modalFondo} role="presentation">
+              <div aria-label={ROLES_QUITABLES[rolPorQuitar].titulo} aria-modal="true" className={styles.modal} role="dialog">
+                <span className={styles.modalIcono}><AlertIcon name="warning" size={36} /></span>
+                <h2>{ROLES_QUITABLES[rolPorQuitar].titulo}</h2>
+                <p>{ROLES_QUITABLES[rolPorQuitar].texto}</p>
+                <div className={styles.modalAcciones}>
+                  <Button type="button" onClick={() => setRolPorQuitar(null)} variant="outline">Cancelar</Button>
+                  <Button type="button" onClick={confirmarQuitarRol} variant="danger">Confirmar</Button>
+                </div>
+              </div>
+            </div>
         )}
       </>
   );

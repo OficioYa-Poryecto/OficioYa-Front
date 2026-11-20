@@ -1,0 +1,21 @@
+.estrellas {
+  display: inline-flex;
+  gap: 2px;
+  line-height: 1;
+}
+
+.estrellas button {
+  padding: 2px;
+  border: 0;
+  background: none;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.llena {
+  color: #e9a820;
+}
+
+.vacia {
+  color: var(--color-border);
+}

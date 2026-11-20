@@ -1,0 +1,16 @@
+.avatar {
+  display: inline-grid;
+  flex: none;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 28%;
+  background: var(--color-sage, #dfe9e1);
+  color: var(--color-sage-dark, #315f4f);
+  font-weight: 700;
+}
+
+.avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}

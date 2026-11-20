@@ -1,0 +1,32 @@
+.formulario {
+  display: grid;
+  gap: 14px;
+}
+
+.formulario p {
+  margin: 0;
+}
+
+.formulario textarea {
+  resize: vertical;
+}
+
+.centro {
+  display: grid;
+  justify-items: center;
+  gap: 6px;
+  color: var(--color-text-muted);
+}
+
+.contador {
+  justify-self: end;
+  color: var(--color-text-muted);
+  font-weight: 400;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 10px;
+}

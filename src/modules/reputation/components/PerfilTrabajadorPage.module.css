@@ -1,0 +1,126 @@
+.pagina {
+  display: grid;
+  grid-template-columns: minmax(0, 360px) minmax(0, 1fr);
+  align-items: start;
+  gap: 28px;
+}
+
+.estado {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.resumen {
+  display: grid;
+  gap: 18px;
+}
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 0;
+}
+
+.persona h1 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+
+.persona p {
+  margin: 0;
+}
+
+.pausado {
+  display: inline-block;
+  margin-top: 6px;
+  padding: 3px 10px;
+  border-radius: 20px;
+  background: var(--color-danger-soft, #fff0ef);
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.calificacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-alt);
+}
+
+.calificacion strong {
+  font-size: 2.1rem;
+}
+
+.calificacion p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.aviso {
+  margin: 0;
+  padding: 14px;
+  border-radius: var(--radius-sm);
+  background: var(--color-danger-soft, #fff0ef);
+  color: var(--color-danger);
+}
+
+.resenas {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.mensaje {
+  margin: 0;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.resena {
+  display: grid;
+  gap: 8px;
+  padding: 18px;
+}
+
+.resena p {
+  margin: 0;
+  color: var(--color-text);
+}
+
+.autor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.autor > div {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+}
+
+.autor small,
+.nota {
+  color: var(--color-text-muted);
+}
+
+.autor button {
+  padding: 8px 12px;
+  font-size: 0.85rem;
+}
+
+@media (max-width: 900px) {
+  .pagina {
+    grid-template-columns: minmax(0, 1fr);
+    max-width: 680px;
+    margin: 0 auto;
+  }
+}

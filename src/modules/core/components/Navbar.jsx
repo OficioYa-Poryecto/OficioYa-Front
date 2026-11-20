@@ -67,12 +67,32 @@ function Navbar() {
     return () => document.removeEventListener('mousedown', handleOutside);
   }, []);
 
-  const visibleLinks = navLinks.filter((link) => {
-    // Ocultar 'Registrarse' en el menú superior cuando ya hay sesión activa
-    if (session && link.to === '/register') return false;
-    if (!link.roles || link.roles.length === 0) return true;
-    return link.roles.some((r) => userRoles.includes(String(r).toUpperCase()));
-  });
+  const MENU_ORDER = [
+    '/home',
+    '/buscar',
+    '/nueva-solicitud',
+    '/solicitudes',
+    '/mis-servicios',
+    '/worker',
+  ];
+
+  const visibleLinks = navLinks
+    .filter((link) => {
+      // Quitar 'Mi perfil' del menu para evitar redundancia
+      if (link.to === '/users/me') return false;
+      // Ocultar 'Registrarse' en el menú superior cuando ya hay sesión activa
+      if (session && link.to === '/register') return false;
+      if (!link.roles || link.roles.length === 0) return true;
+      return link.roles.some((r) => userRoles.includes(String(r).toUpperCase()));
+    })
+    .sort((a, b) => {
+      const idxA = MENU_ORDER.indexOf(a.to);
+      const idxB = MENU_ORDER.indexOf(b.to);
+      if (idxA !== -1 && idxB !== -1) return idxA - idxB;
+      if (idxA !== -1) return -1;
+      if (idxB !== -1) return 1;
+      return 0;
+    });
 
   function handleLogout() {
     setMenuOpen(false);

@@ -31,6 +31,6 @@ export const routes = [
 ];
 
 export const navLinks = [
-  { label: 'Mis servicios', to: '/mis-servicios', roles: ['CONTRATANTE', 'TRABAJADOR'] },
+  { label: 'Mis Servicios', to: '/mis-servicios', roles: ['CONTRATANTE', 'TRABAJADOR'] },
   { label: 'Moderación', to: '/admin/moderacion', roles: ['ADMIN'] },
 ];

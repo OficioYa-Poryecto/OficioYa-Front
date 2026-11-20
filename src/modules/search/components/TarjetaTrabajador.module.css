@@ -1,0 +1,75 @@
+.tarjeta {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-width: 0;
+}
+
+.persona h3 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.persona p {
+  margin: 0;
+}
+
+.calificacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.calificacion strong {
+  font-size: 1.6rem;
+}
+
+.resenas {
+  color: var(--color-text-muted);
+  font-size: 0.85rem;
+}
+
+.pie {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-border);
+}
+
+.pie p {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.disponible {
+  color: var(--color-success) !important;
+  font-weight: 700;
+}
+
+.noDisponible {
+  font-weight: 700;
+}
+
+.perfil {
+  flex: none;
+  padding: 10px 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text);
+  font-size: 0.9rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.perfil:hover {
+  background: var(--color-surface-alt);
+}

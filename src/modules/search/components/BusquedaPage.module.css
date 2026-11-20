@@ -1,0 +1,108 @@
+.pagina {
+  display: grid;
+  gap: 18px;
+  min-width: 0;
+}
+
+.titulo {
+  font-size: clamp(2rem, 6vw, 2.8rem);
+  margin-top: 6px;
+}
+
+.buscador {
+  display: flex;
+  gap: 10px;
+}
+
+.buscador input {
+  flex: 1;
+  min-width: 0;
+  background: var(--color-surface);
+}
+
+.estado {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.resultados {
+  display: grid;
+  gap: 16px;
+  min-width: 0;
+}
+
+.resumen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.resumen h2 {
+  margin: 0;
+  font-size: 1.3rem;
+}
+
+.resumen span {
+  color: var(--color-text-muted);
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 300px), 1fr));
+  gap: 16px;
+}
+
+/* Filtros a la izquierda y resultados a la derecha, como en Mercado Libre. */
+.contenido {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  align-items: start;
+  gap: 24px;
+}
+
+.herramientas {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.orden {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.orden span {
+  white-space: nowrap;
+}
+
+.orden select {
+  width: auto;
+  padding: 8px 12px;
+  background: var(--color-surface);
+  font-weight: 600;
+}
+
+@media (max-width: 860px) {
+  .contenido {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .herramientas {
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 420px) {
+  .orden span {
+    display: none;
+  }
+}

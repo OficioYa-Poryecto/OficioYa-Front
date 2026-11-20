@@ -4,7 +4,7 @@ const BASE_URL = '/api/v1';
 const TOKEN_KEY = 'oy_token';
 const LOGIN_PATH = '/auth';
 
-export async function request(path, { method = 'GET', body, token } = {}) {
+export async function request(path, { method = 'GET', body, token, responseType = 'json' } = {}) {
   const headers = { 'Content-Type': 'application/json' };
   const jwt = localStorage.getItem(TOKEN_KEY) || token;
   if (jwt) {
@@ -32,10 +32,14 @@ export async function request(path, { method = 'GET', body, token } = {}) {
   if (!response.ok) {
     const apiError = await response.json().catch(() => ({}));
     const error = new Error(
-      apiError.message ?? apiError.mensaje ?? apiError.error ?? `Error ${response.status}`,
+      apiError.message ?? apiError.mensaje ?? apiError.detail ?? apiError.error ?? `Error ${response.status}`,
     );
     error.status = response.status;
     throw error;
+  }
+
+  if (responseType === 'blob') {
+    return response.blob();
   }
 
   const text = await response.text();

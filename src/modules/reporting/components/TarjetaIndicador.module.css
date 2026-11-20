@@ -1,0 +1,59 @@
+.tarjeta {
+  display: grid;
+  gap: 8px;
+}
+
+.tarjeta p {
+  margin: 0;
+}
+
+.tarjeta small {
+  color: var(--color-text-muted);
+}
+
+.valor {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.valor strong {
+  font-size: 2.1rem;
+  letter-spacing: -0.03em;
+}
+
+.valor .texto {
+  font-size: 1.6rem;
+  line-height: 1.15;
+}
+
+.secundario {
+  color: var(--color-text-muted);
+  font-size: 1.3rem;
+  font-weight: 700;
+}
+
+.proporcion {
+  display: block;
+  overflow: hidden;
+  height: 8px;
+  border-radius: 8px;
+  background: var(--color-border);
+}
+
+.proporcion span {
+  display: block;
+  height: 100%;
+  background: var(--color-success);
+}
+
+.sube {
+  color: var(--color-success);
+  font-weight: 700;
+}
+
+.baja {
+  color: var(--color-danger);
+  font-weight: 700;
+}

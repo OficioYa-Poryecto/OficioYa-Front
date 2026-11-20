@@ -38,6 +38,7 @@ function BusquedaPage() {
     filtros: busqueda.filtros,
     oficioId: busqueda.texto === null ? busqueda.oficioId : '',
     oficios: busqueda.oficios,
+    zonas: busqueda.zonas,
     alCambiarFiltro: busqueda.cambiarFiltro,
     alElegirOficio: elegirOficio,
     alLimpiar: busqueda.limpiarFiltros,
@@ -100,7 +101,7 @@ function Resultados({ busqueda, propsFiltros }) {
 }
 
 function ListaResultados({ busqueda }) {
-  const { cargando, error, oficioId, oficios, reintentar, resultado, texto } = busqueda;
+  const { cargando, error, oficioId, oficios, reintentar, resultado, sinCatalogo, texto } = busqueda;
 
   if (error) {
     return (
@@ -114,6 +115,9 @@ function ListaResultados({ busqueda }) {
   }
   if (cargando) {
     return <p className={styles.estado}>Buscando profesionales…</p>;
+  }
+  if (sinCatalogo || !resultado) {
+    return <p className={styles.estado}>Aún no hay oficios disponibles para buscar.</p>;
   }
   if (resultado.estado === 'REQUIERE_MAS_DETALLE' || resultado.estado === 'ERROR') {
     return <p className={styles.estado}>{resultado.mensaje}</p>;
@@ -130,7 +134,7 @@ function ListaResultados({ busqueda }) {
         <h2>{titulo}</h2>
         <span>{resultado.total} {resultado.total === 1 ? 'resultado' : 'resultados'}</span>
       </div>
-      {resultado.resultados.length === 0 ? (
+      {(resultado.resultados ?? []).length === 0 ? (
         <p className={styles.estado}>No hay trabajadores con estos filtros.</p>
       ) : (
         <div className={styles.lista}>

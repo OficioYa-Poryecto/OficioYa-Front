@@ -9,6 +9,11 @@ function criterios(filtros) {
   );
 }
 
+/** Zonas reales del Orchestrator: [{ id, name, locality }]. Son los ids que Worker guarda por trabajador. */
+export function listarZonas(token) {
+  return request('/zones', { token });
+}
+
 export function listarOficios(token) {
   return request(`${BASE}/oficios`, { token });
 }

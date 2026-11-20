@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BARRIOS, DIAS, FRANJAS, ORDENES } from '../config';
+import { DIAS, FRANJAS, ORDENES } from '../config';
 import styles from './PanelFiltros.module.css';
 
 // En PC todas las secciones van en una columna lateral (el orden va sobre los resultados).
@@ -62,7 +62,41 @@ function CampoPrecio({ id, etiqueta, ejemplo, valor, alCambiar }) {
   );
 }
 
-function Contenido({ seccion, filtros, oficioId, oficios, alCambiarFiltro, alElegirOficio }) {
+/** Agrupa las zonas por localidad, en orden alfabético, para la lista desplegable. */
+function zonasPorLocalidad(zonas) {
+  const grupos = new Map();
+  [...zonas]
+    .sort((a, b) => `${a.locality} ${a.name}`.localeCompare(`${b.locality} ${b.name}`, 'es'))
+    .forEach((zona) => {
+      const localidad = zona.locality || 'Otras';
+      grupos.set(localidad, [...(grupos.get(localidad) ?? []), zona]);
+    });
+  return [...grupos.entries()];
+}
+
+function SelectorZona({ zonas, valor, alElegir }) {
+  return (
+    <select
+      aria-label="Zona"
+      className={styles.selector}
+      value={valor}
+      onChange={(evento) => alElegir(evento.target.value)}
+    >
+      <option value="">Todas las zonas</option>
+      {zonasPorLocalidad(zonas).map(([localidad, lista]) => (
+        <optgroup key={localidad} label={localidad}>
+          {lista.map((zona) => (
+            <option key={zona.id} value={String(zona.id)}>
+              {zona.name}
+            </option>
+          ))}
+        </optgroup>
+      ))}
+    </select>
+  );
+}
+
+function Contenido({ seccion, filtros, oficioId, oficios, zonas = [], alCambiarFiltro, alElegirOficio }) {
   switch (seccion) {
     case 'disponibilidad':
       return (
@@ -86,10 +120,10 @@ function Contenido({ seccion, filtros, oficioId, oficios, alCambiarFiltro, alEle
       );
     case 'zona':
       return (
-        <Opciones
-          opciones={[{ valor: '', nombre: 'Todas las zonas' }, ...BARRIOS.map((b) => ({ valor: b.id, nombre: b.nombre }))]}
+        <SelectorZona
+          zonas={zonas}
           valor={filtros.barrioIds}
-          alElegir={(valor) => alCambiarFiltro('barrioIds', String(valor))}
+          alElegir={(valor) => alCambiarFiltro('barrioIds', valor)}
         />
       );
     case 'precio':

@@ -13,6 +13,8 @@ const FILTROS_INICIALES = {
 
 export function useBusqueda(token) {
   const [oficios, setOficios] = useState([]);
+  const [oficiosCargados, setOficiosCargados] = useState(false);
+  const [zonas, setZonas] = useState([]);
   const [errorOficios, setErrorOficios] = useState(null);
   const [oficioElegido, setOficioElegido] = useState(null);
   const [texto, setTexto] = useState(null);
@@ -23,13 +25,21 @@ export function useBusqueda(token) {
   // Sin elegir nada se muestra el primer oficio, como en el mockup.
   const oficioId = oficioElegido ?? oficios[0]?.id ?? null;
   const clave = JSON.stringify({ oficioId, texto, filtros, intento });
-  const cargando = respuesta?.clave !== clave;
+  // Sin oficios en el catálogo no hay nada que buscar: no se queda "cargando" para siempre.
+  const sinCatalogo = oficiosCargados && oficioId === null && texto === null;
+  const cargando = !sinCatalogo && respuesta?.clave !== clave;
 
   useEffect(() => {
     searchService
       .listarOficios(token)
-      .then(setOficios)
-      .catch((error) => setErrorOficios(error.message));
+      .then((lista) => setOficios(Array.isArray(lista) ? lista : []))
+      .catch((error) => setErrorOficios(error.message))
+      .finally(() => setOficiosCargados(true));
+    // Si las zonas no cargan, la búsqueda sigue funcionando; solo queda "Todas las zonas".
+    searchService
+      .listarZonas(token)
+      .then((lista) => setZonas(Array.isArray(lista) ? lista : []))
+      .catch(() => setZonas([]));
   }, [token]);
 
   useEffect(() => {
@@ -50,12 +60,14 @@ export function useBusqueda(token) {
 
   return {
     oficios,
+    zonas,
     oficioId,
     texto,
     filtros,
     cargando: cargando && !errorOficios,
-    resultado: cargando ? null : respuesta.resultado,
-    error: errorOficios ?? (cargando ? null : respuesta.error),
+    sinCatalogo,
+    resultado: cargando || sinCatalogo ? null : respuesta?.resultado,
+    error: errorOficios ?? (cargando || sinCatalogo ? null : respuesta?.error),
     elegirOficio(id) {
       setTexto(null);
       setOficioElegido(id);

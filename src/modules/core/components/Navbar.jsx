@@ -24,7 +24,7 @@ function Navbar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
   const isAuthPage = pathname.startsWith('/auth');
-  const session = getSession();
+  const [session, setSession] = useState(() => getSession());
   const userRoles = (session?.roles ?? []).map((r) => String(r).toUpperCase());
   const isAdmin = userRoles.includes('ADMIN');
 
@@ -41,6 +41,7 @@ function Navbar() {
       const stored = localStorage.getItem('oy_userName');
       if (stored) setUserName(stored);
       const currentSession = getSession();
+      setSession(currentSession);
       if (currentSession?.userId) {
         getProfilePhotoUrl(currentSession.userId, currentSession.token).then((url) => {
           setAvatarUrl(url);
@@ -54,7 +55,7 @@ function Navbar() {
       window.removeEventListener('oy-profile-updated', syncProfileName);
       window.removeEventListener('storage', syncProfileName);
     };
-  }, [session?.userId, session?.token]);
+  }, []);
 
   useEffect(() => {
     function handleOutside(e) {

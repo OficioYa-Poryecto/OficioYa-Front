@@ -7,6 +7,29 @@
   border-bottom: 1px solid #ece4d8;
 }
 
+.leftArea {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hamburgerBtn {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  color: #24312d;
+  transition: background-color 0.15s;
+}
+
+.hamburgerBtn:hover {
+  background: rgba(36, 49, 45, 0.07);
+}
+
 .brandLink {
   display: inline-flex;
   align-items: center;
@@ -160,6 +183,166 @@
   border-radius: 0 0 10px 10px;
 }
 
+/* ─── Drawer lateral (Mobile / Tablet) ─── */
+.drawerBackdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(36, 49, 45, 0.45);
+  backdrop-filter: blur(2px);
+  z-index: 100;
+  animation: fadeIn 0.18s ease-out;
+}
+
+.drawer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  width: 285px;
+  max-width: 85vw;
+  background: #ffffff;
+  z-index: 101;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 6px 0 28px rgba(36, 49, 45, 0.18);
+  animation: slideIn 0.22s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.drawerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #ece4d8;
+}
+
+.drawerLogo {
+  height: 32px;
+  object-fit: contain;
+}
+
+.closeBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  padding: 6px;
+  cursor: pointer;
+  color: #6c7773;
+}
+
+.closeBtn:hover {
+  background: #f1eae0;
+  color: #24312d;
+}
+
+.drawerLinks {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 14px;
+  gap: 6px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.drawerLink {
+  display: flex;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 12px;
+  text-decoration: none;
+  color: #55625e;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: background-color 0.15s, color 0.15s;
+}
+
+.drawerLink:hover {
+  background: #faf5ee;
+  color: #24312d;
+}
+
+.drawerActive {
+  background: #faefe4;
+  color: #c95d3b;
+  font-weight: 700;
+}
+
+.drawerFooter {
+  padding: 16px;
+  border-top: 1px solid #ece4d8;
+  background: #faf7f2;
+}
+
+.drawerUser {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #e9e1d4;
+}
+
+.drawerUserLinks {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.drawerItem {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #24312d;
+  font-family: inherit;
+  font-size: 0.88rem;
+  font-weight: 600;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.drawerItem:hover {
+  background: #f1eae0;
+}
+
+@media (max-width: 1024px) {
+  .hamburgerBtn {
+    display: inline-flex;
+  }
+
+  .links {
+    display: none;
+  }
+
+  .navbar {
+    padding: 10px 20px;
+  }
+}
+
 @media (max-width: 680px) {
   .navbar {
     padding: 10px 16px;
@@ -167,29 +350,15 @@
   }
 
   .logo {
-    height: 32px;
+    height: 30px;
   }
 
   .rightArea {
-    gap: 12px;
-  }
-
-  .links {
-    gap: 14px;
+    gap: 10px;
   }
 
   .divider,
   .accountText {
     display: none;
-  }
-}
-
-@media (max-width: 400px) {
-  .link {
-    font-size: 0.85rem;
-  }
-
-  .links {
-    gap: 10px;
   }
 }

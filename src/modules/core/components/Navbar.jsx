@@ -33,6 +33,7 @@ function Navbar() {
   );
   const [avatarUrl, setAvatarUrl] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const menuRef = useRef(null);
 
   useEffect(() => {
@@ -79,11 +80,48 @@ function Navbar() {
     navigate('/auth', { replace: true });
   }
 
+  useEffect(() => {
+    function handleKeyDown(e) {
+      if (e.key === 'Escape') {
+        setMenuOpen(false);
+        setDrawerOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   return (
     <header className={styles.navbar}>
-      <Link to={session ? '/home' : '/'} aria-label="OficioYa" className={styles.brandLink}>
-        <img src={logo} alt="OficioYa" className={styles.logo} />
-      </Link>
+      <div className={styles.leftArea}>
+        {!isAuthPage && (
+          <button
+            type="button"
+            className={styles.hamburgerBtn}
+            onClick={() => setDrawerOpen(true)}
+            aria-label="Abrir menú de navegación"
+            aria-expanded={drawerOpen}
+          >
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <line x1="3" y1="6" x2="21" y2="6" />
+              <line x1="3" y1="12" x2="21" y2="12" />
+              <line x1="3" y1="18" x2="21" y2="18" />
+            </svg>
+          </button>
+        )}
+        <Link to={session ? '/home' : '/'} aria-label="OficioYa" className={styles.brandLink}>
+          <img src={logo} alt="OficioYa" className={styles.logo} />
+        </Link>
+      </div>
 
       {/* En la página de autenticación no se muestran links de navegación */}
       {!isAuthPage && (
@@ -176,6 +214,115 @@ function Navbar() {
               </div>
             </>
           )}
+        </div>
+      )}
+
+      {/* Drawer lateral en pantallas pequeñas */}
+      {!isAuthPage && drawerOpen && (
+        <div
+          className={styles.drawerBackdrop}
+          onClick={() => setDrawerOpen(false)}
+          role="presentation"
+        >
+          <aside
+            className={styles.drawer}
+            onClick={(e) => e.stopPropagation()}
+            aria-label="Menú principal de navegación"
+          >
+            <div className={styles.drawerHeader}>
+              <img src={logo} alt="OficioYa" className={styles.drawerLogo} />
+              <button
+                type="button"
+                className={styles.closeBtn}
+                onClick={() => setDrawerOpen(false)}
+                aria-label="Cerrar menú"
+              >
+                <svg
+                  width="22"
+                  height="22"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <line x1="18" y1="6" x2="6" y2="18" />
+                  <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+              </button>
+            </div>
+
+            <nav className={styles.drawerLinks}>
+              {visibleLinks.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  onClick={() => setDrawerOpen(false)}
+                  className={({ isActive }) =>
+                    isActive
+                      ? `${styles.drawerLink} ${styles.drawerActive}`
+                      : styles.drawerLink
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
+
+            {session && (
+              <div className={styles.drawerFooter}>
+                <div className={styles.drawerUser}>
+                  <span className={styles.avatar}>
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt="" className={styles.avatarImg} />
+                    ) : (
+                      getInitials(userName)
+                    )}
+                  </span>
+                  <div>
+                    <div className={styles.accountName}>{userName || 'Usuario'}</div>
+                    <div className={styles.accountSub}>Sesión iniciada</div>
+                  </div>
+                </div>
+                <div className={styles.drawerUserLinks}>
+                  <Link
+                    to="/users/me"
+                    className={styles.drawerItem}
+                    onClick={() => setDrawerOpen(false)}
+                  >
+                    Ver mi perfil
+                  </Link>
+                  <Link
+                    to="/users/me/edit"
+                    className={styles.drawerItem}
+                    onClick={() => setDrawerOpen(false)}
+                  >
+                    Editar perfil
+                  </Link>
+                  {isAdmin && (
+                    <Link
+                      to="/admin/users"
+                      className={styles.drawerItem}
+                      onClick={() => setDrawerOpen(false)}
+                    >
+                      Gestión de usuarios
+                    </Link>
+                  )}
+                  <button
+                    type="button"
+                    className={`${styles.drawerItem} ${styles.logoutItem}`}
+                    onClick={() => {
+                      setDrawerOpen(false);
+                      handleLogout();
+                    }}
+                  >
+                    Cerrar sesión
+                  </button>
+                </div>
+              </div>
+            )}
+          </aside>
         </div>
       )}
     </header>

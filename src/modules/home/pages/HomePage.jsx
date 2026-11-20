@@ -239,7 +239,7 @@ export default function HomePage() {
             </span>
           </Link>
 
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/admin/moderacion" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <ClipboardIcon />
@@ -356,7 +356,7 @@ export default function HomePage() {
         </section>
 
         <section className={styles.grid4}>
-          <Link to="/maintenance" className={styles.actionCard}>
+          <Link to="/buscar" className={styles.actionCard}>
             <div>
               <div className={styles.iconBox}>
                 <SearchIcon />
@@ -550,7 +550,7 @@ export default function HomePage() {
       </section>
 
       <section className={styles.grid2}>
-        <Link to="/maintenance" className={styles.actionCard}>
+        <Link to="/buscar" className={styles.actionCard}>
           <div>
             <div className={styles.iconBox}>
               <SearchIcon />

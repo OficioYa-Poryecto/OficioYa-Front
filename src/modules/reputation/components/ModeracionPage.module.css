@@ -1,0 +1,108 @@
+.pagina {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.pagina h1 {
+  margin: 0;
+}
+
+.subtitulo {
+  margin: 6px 0 0;
+}
+
+.pestanas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.pestana {
+  padding: 8px 16px;
+  border: 1px solid var(--color-border, #e6ddd3);
+  border-radius: 999px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.pestanaActiva {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.mensaje {
+  margin: 0;
+  color: var(--color-success);
+  font-weight: 600;
+}
+
+.estado {
+  display: grid;
+  justify-items: center;
+  gap: 12px;
+  padding: 40px 16px;
+  text-align: center;
+}
+
+.lista {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 340px), 1fr));
+  gap: 16px;
+}
+
+.reporte {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.motivo {
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--color-danger-soft, #fff0ef);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+
+.descripcion {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.resena {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface-muted, #f6f1ea);
+}
+
+.resena p {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.resultado {
+  margin: 0;
+  font-weight: 600;
+}

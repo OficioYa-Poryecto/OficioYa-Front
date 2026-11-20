@@ -276,13 +276,6 @@ function Navbar() {
                   >
                     Ver mi perfil
                   </Link>
-                  <Link
-                    to="/users/me/edit"
-                    className={styles.drawerItem}
-                    onClick={() => setDrawerOpen(false)}
-                  >
-                    Editar perfil
-                  </Link>
                   {isAdmin && (
                     <Link
                       to="/admin/users"

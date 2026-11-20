@@ -185,11 +185,17 @@
 }
 
 .logoutItem {
-  color: #b42318;
+  color: #dc2626;
   border-top: 1px solid #f1eae0;
-  margin-top: 4px;
+  margin-top: 6px;
   padding-top: 10px;
-  border-radius: 0 0 10px 10px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.logoutItem:hover {
+  background-color: #fee2e2 !important;
+  color: #b91c1c !important;
 }
 
 /* ─── Drawer lateral (Mobile / Tablet) ─── */

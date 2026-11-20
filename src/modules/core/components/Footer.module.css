@@ -30,7 +30,7 @@
 }
 
 .logo {
-  height: 48px;
+  height: 56px;
   display: block;
   object-fit: contain;
 }
@@ -59,7 +59,7 @@
   }
 
   .logo {
-    height: 40px;
+    height: 48px;
   }
 
   .tagline {

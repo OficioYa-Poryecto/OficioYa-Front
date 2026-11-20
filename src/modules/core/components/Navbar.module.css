@@ -41,7 +41,7 @@
 }
 
 .logo {
-  height: 52px;
+  height: 62px;
   display: block;
   object-fit: contain;
   transition: transform 0.15s ease;
@@ -250,7 +250,7 @@
 }
 
 .drawerLogo {
-  height: 48px;
+  height: 54px;
   object-fit: contain;
 }
 
@@ -328,7 +328,7 @@
   }
 
   .logo {
-    height: 42px;
+    height: 50px;
   }
 
   .rightArea {

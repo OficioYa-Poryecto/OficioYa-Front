@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom';
-import logo from '../../../assets/logo.jpg';
+import logo from '../../../assets/Logo.png';
 import { getProfilePhotoUrl } from '../lib/imageService';
 import { clearSession, getSession } from '../lib/session';
 import { navLinks } from '../lib/moduleRegistry';

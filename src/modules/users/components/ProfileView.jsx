@@ -34,12 +34,6 @@ function ProfileView() {
     }
   }
 
-  // El token viejo no trae el rol nuevo: hay que volver a iniciar sesión
-  function irAlLogin() {
-    localStorage.removeItem('oy_token');
-    navigate('/auth');
-  }
-
   if (cargando || error) {
     return (
         <section className={`card ${styles.page}`}>
@@ -100,7 +94,7 @@ function ProfileView() {
                 <strong>{ROLES_AGREGABLES[rolAgregado].agregado}</strong> {ROLES_AGREGABLES[rolAgregado].detalle}
               </p>
               {rolAgregado === 'TRABAJADOR' && (
-                  <Button type="button" onClick={irAlLogin}>Iniciar sesión</Button>
+                  <Button type="button" onClick={() => navigate('/worker/dashboard')}>Ir a mi panel de trabajador</Button>
               )}
             </div>
         )}

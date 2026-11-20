@@ -1,4 +1,5 @@
 import { request } from '../../core/lib/httpClient';
+import { saveSession } from '../../core/lib/session';
 
 export function obtenerMiPerfil(token) {
   return request('/users/me', { token });
@@ -8,12 +9,58 @@ export function actualizarMiPerfil(datos, token) {
   return request('/users/me', { method: 'PATCH', body: datos, token });
 }
 
-export function agregarRol(rol, token) {
-  return request(`/users/me/roles/${rol}`, { method: 'POST', token });
+export async function agregarRol(rol, token) {
+  const data = await request(`/users/me/roles/${rol}`, { method: 'POST', token });
+  if (data?.token) {
+    saveSession({
+      token: data.token,
+      userId: data.id,
+      roles: data.roles,
+    });
+    window.dispatchEvent(new Event('oy-profile-updated'));
+  } else {
+    try {
+      const refreshed = await request('/auth/refresh', { method: 'POST', token });
+      if (refreshed?.token) {
+        saveSession({
+          token: refreshed.token,
+          userId: refreshed.userId,
+          roles: refreshed.roles,
+        });
+        window.dispatchEvent(new Event('oy-profile-updated'));
+      }
+    } catch {
+      // Si el endpoint no responde se conserva la sesion previa
+    }
+  }
+  return data;
 }
 
-export function quitarRol(rol, token) {
-  return request(`/users/me/roles/${rol}`, { method: 'DELETE', token });
+export async function quitarRol(rol, token) {
+  const data = await request(`/users/me/roles/${rol}`, { method: 'DELETE', token });
+  if (data?.token) {
+    saveSession({
+      token: data.token,
+      userId: data.id,
+      roles: data.roles,
+    });
+    window.dispatchEvent(new Event('oy-profile-updated'));
+  } else {
+    try {
+      const refreshed = await request('/auth/refresh', { method: 'POST', token });
+      if (refreshed?.token) {
+        saveSession({
+          token: refreshed.token,
+          userId: refreshed.userId,
+          roles: refreshed.roles,
+        });
+        window.dispatchEvent(new Event('oy-profile-updated'));
+      }
+    } catch {
+      // Si el endpoint no responde se conserva la sesion previa
+    }
+  }
+  return data;
 }
 
 export function obtenerMisTelefonos(token) {

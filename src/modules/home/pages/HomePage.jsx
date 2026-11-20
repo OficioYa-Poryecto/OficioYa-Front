@@ -148,10 +148,11 @@ export default function HomePage() {
       const current = getSession();
       if (current) {
         saveSession({
-          token: current.token,
+          token: updated?.token || current.token,
           userId: current.userId,
           roles: nextRoles,
         });
+        window.dispatchEvent(new Event('oy-profile-updated'));
       }
     } catch {
       const nextRoles = Array.from(new Set([...roles, targetRole]));

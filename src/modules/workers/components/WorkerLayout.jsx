@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
 import { clearSession, getSession } from '../../core/lib/session';
@@ -17,7 +18,19 @@ const TABS = [
 function WorkerLayout({ children }) {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  const roles = (getSession()?.roles ?? []).map((role) => String(role).toUpperCase());
+  const [session, setSession] = useState(() => getSession());
+
+  useEffect(() => {
+    const handleUpdate = () => setSession(getSession());
+    window.addEventListener('oy-profile-updated', handleUpdate);
+    window.addEventListener('storage', handleUpdate);
+    return () => {
+      window.removeEventListener('oy-profile-updated', handleUpdate);
+      window.removeEventListener('storage', handleUpdate);
+    };
+  }, []);
+
+  const roles = (session?.roles ?? []).map((role) => String(role).toUpperCase());
   const isWorker = roles.includes('TRABAJADOR');
 
   const loginAgain = () => {

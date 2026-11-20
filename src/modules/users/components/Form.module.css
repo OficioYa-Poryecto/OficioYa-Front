@@ -238,7 +238,8 @@
 }
 
 /* Campo de solo lectura, como el correo en la edición del perfil */
-.form input:disabled {
+.form input:disabled,
+.form textarea:disabled {
   color: var(--color-text-muted);
   background: var(--color-surface-alt);
   cursor: not-allowed;

@@ -12,3 +12,7 @@ export function getUser(id, token) {
 export function changeStatus(id, action, reason, token) {
   return request(`/admin/users/${id}/${action}`, { method: 'PATCH', body: { reason }, token });
 }
+
+export function removeRole(id, rol, token) {
+  return request(`/admin/users/${id}/roles/${rol}`, { method: 'DELETE', token });
+}

@@ -3,10 +3,9 @@
 // Solicitudes, Resenas y Reportes. Cada dominio pasa su propio token de sesion.
 //
 
-const IMAGES_BASE = '/api/v1/images';
-
 // Origen del orquestador (VITE_API_URL); acepta el valor con o sin "/api/v1" al final.
 const API_ORIGIN = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+const IMAGES_BASE = API_ORIGIN ? `${API_ORIGIN}/api/v1/images` : '/api/v1/images';
 
 // Mismos tipos y limites que ImageType en el back (imagenes activas por rootId).
 export const IMAGE_TYPES = {

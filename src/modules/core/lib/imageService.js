@@ -1,6 +1,7 @@
 import { getToken } from './session';
 
-const IMAGES_BASE = '/api/v1/images';
+const API_ORIGIN = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '').replace(/\/api\/v1$/, '');
+const IMAGES_BASE = API_ORIGIN ? `${API_ORIGIN}/api/v1/images` : '/api/v1/images';
 
 /**
  * Sube una imagen al microservicio de imágenes (POST /api/v1/images).
@@ -67,7 +68,11 @@ export async function getProfilePhotoUrl(userId, token) {
   try {
     const list = await getImagesByRoot(userId, { tipo: 'PROFILE', token });
     if (list.length > 0 && list[0].url) {
-      return list[0].url;
+      const url = list[0].url;
+      if (url.startsWith('http://') || url.startsWith('https://')) {
+        return url;
+      }
+      return API_ORIGIN ? `${API_ORIGIN}${url}` : url;
     }
     return null;
   } catch {

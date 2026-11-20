@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Oficio Ya - Escoger trabajadores (mockup)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: #0877BD;
+    --primary-dark: #066299;
+    --text: #080B0E;
+    --muted: #68717A;
+    --border: #DFE4E8;
+    --bg: #F7F9FA;
+    --selected-bg: #E7F4FC;
+    --success: #1F6B47;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'DM Sans', sans-serif;
+    background: #e9edf1;
+    display: flex;
+    justify-content: center;
+    padding: 24px;
+  }
+  .phone {
+    width: 390px;
+    height: 790px;
+    background: #fff;
+    border-radius: 32px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,.15);
+    display: flex;
+    flex-direction: column;
+  }
+  .status {
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .status-icons { display: flex; gap: 6px; align-items: center; }
+  .header {
+    padding: 8px 20px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .back { width: 32px; height: 32px; display: grid; place-items: center; border-radius: 8px; color: var(--muted); }
+  .header-center { text-align: center; }
+  .header-center small { display: block; color: var(--primary); font-size: 11px; font-weight: 700; letter-spacing: .6px; }
+  .header-center h1 { margin: 2px 0 0; font-size: 18px; color: var(--text); }
+  .logo { width: 32px; height: 32px; border-radius: 8px; background: var(--primary); color: #fff; display: grid; place-items: center; font-weight: 700; font-size: 12px; }
+  .steps {
+    padding: 0 20px 12px;
+  }
+  .tabs { display: flex; gap: 8px; }
+  .tab {
+    flex: 1;
+    text-align: center;
+    padding: 8px 6px;
+    border-radius: 10px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    background: #f1f4f7;
+  }
+  .tab.active { background: var(--primary); color: #fff; }
+  .progress-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .progress-row strong { color: var(--text); }
+  .bar { height: 6px; background: #eef2f5; border-radius: 999px; margin-top: 6px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--primary); width: 66%; border-radius: 999px; }
+  .content { flex: 1; overflow: auto; padding: 0 20px 16px; }
+  .section-head { display: flex; align-items: center; justify-content: space-between; margin: 14px 0 10px; }
+  .section-head h2 { margin: 0; font-size: 15px; color: var(--text); }
+  .section-head span { font-size: 13px; color: var(--muted); font-weight: 600; }
+  .card {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    display: grid;
+    grid-template-columns: 24px 44px 1fr auto;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 10px;
+    background: #fff;
+    cursor: pointer;
+    transition: all .15s ease;
+  }
+  .card.selected { border-color: var(--primary); background: var(--selected-bg); }
+  .checkbox {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--border);
+    display: grid; place-items: center;
+    background: #fff;
+  }
+  .card.selected .checkbox { background: var(--primary); border-color: var(--primary); color: #fff; }
+  .avatar {
+    width: 44px; height: 44px; border-radius: 50%;
+    background: #eef2f5; color: var(--primary-dark);
+    display: grid; place-items: center; font-weight: 700; font-size: 14px;
+  }
+  .info strong { display: block; font-size: 15px; color: var(--text); }
+  .info small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .rating { display: flex; align-items: center; gap: 4px; font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .rating svg { color: #f5a623; }
+  .side { text-align: right; }
+  .side b { display: block; font-size: 13px; color: var(--text); }
+  .side small { display: block; font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .summary {
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    margin: 14px 0;
+    background: #fff;
+  }
+  .summary img { width: 56px; height: 56px; border-radius: 10px; object-fit: cover; background: #eef2f5; }
+  .summary h3 { margin: 0; font-size: 14px; color: var(--text); }
+  .summary p { margin: 2px 0 0; font-size: 12px; color: var(--muted); }
+  .info-box {
+    display: flex; gap: 10px; align-items: flex-start;
+    padding: 12px; border-radius: 12px;
+    background: #f7f9fa; border: 1px solid var(--border);
+    font-size: 12px; color: var(--muted);
+  }
+  .info-box svg { color: var(--primary); flex-shrink: 0; }
+  .footer {
+    padding: 12px 20px 20px;
+    border-top: 1px solid var(--border);
+    background: #fff;
+  }
+  .btn {
+    width: 100%; border: none; border-radius: 14px;
+    padding: 14px; font-size: 15px; font-weight: 700;
+    background: var(--primary); color: #fff; cursor: pointer;
+  }
+  .btn:disabled { background: #b8c0c6; cursor: not-allowed; }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="status">
+    <span>9:41</span>
+    <div class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M1 9h2v2H1zM5 7h2v4H5zM9 5h2v6H9zM13 3h2v8h-2z" fill="currentColor"/></svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none"><path d="M8 2C5.5 2 3.2 3 1.5 4.6L8 11l6.5-6.4C12.8 3 10.5 2 8 2z" fill="currentColor"/></svg>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none"><rect x="1" y="2" width="18" height="8" rx="2" stroke="currentColor" fill="none"/><rect x="3" y="4" width="14" height="4" rx="1" fill="currentColor"/><rect x="20" y="4" width="2" height="4" rx="1" fill="currentColor"/></svg>
+    </div>
+  </div>
+
+  <div class="header">
+    <div class="back">‹</div>
+    <div class="header-center">
+      <small>ESCOGER TRABAJADORES</small>
+      <h1>¿A quién se la enviamos?</h1>
+    </div>
+    <div class="logo">OY</div>
+  </div>
+
+  <div class="steps">
+    <div class="tabs">
+      <div class="tab">1 Solicitud</div>
+      <div class="tab active">2 Trabajadores</div>
+      <div class="tab">3 Enviar</div>
+    </div>
+    <div class="progress-row">
+      <span>Selección de trabajadores</span>
+      <strong id="countText">1 de 3</strong>
+    </div>
+    <div class="bar"><div></div></div>
+  </div>
+
+  <div class="content">
+    <div class="section-head">
+      <h2>Trabajadores cerca de Laureles</h2>
+      <span id="selectedCount">1 seleccionado</span>
+    </div>
+
+    <div id="workerList"></div>
+
+    <div class="summary">
+      <img src="https://images.unsplash.com/photo-1585704032915-c3400ca199e7?w=120&h=120&fit=crop" alt="fuga" />
+      <div>
+        <h3>Reparación de fuga</h3>
+        <p>Lun. 2 de marzo · 10:30 a. m.</p>
+        <p style="display:flex;align-items:center;gap:4px;margin-top:4px;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 21s-7-4.35-7-10a7 7 0 1 1 14 0c0 5.65-7 10-7 10z"/></svg>
+          Laureles
+        </p>
+      </div>
+    </div>
+
+    <div class="info-box">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+      <span>Enviaremos la solicitud únicamente a los perfiles seleccionados.</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <button id="continueBtn" class="btn">Continuar con 1 trabajador</button>
+  </div>
+</div>
+
+<script>
+const workers = [
+  { id: 1, name: "Carlos Ramírez", initials: "CR", trade: "Plomero certificado", rating: "4.9", jobs: "128 servicios", distance: "1,2 km", available: "Disponible ahora", selected: true },
+  { id: 2, name: "Miguel Torres", initials: "MT", trade: "Técnico hidráulico", rating: "4.8", jobs: "94 servicios", distance: "2,1 km", available: "Disponible 10:00", selected: false },
+  { id: 3, name: "Andrés López", initials: "AL", trade: "Plomero residencial", rating: "4.7", jobs: "76 servicios", distance: "2,8 km", available: "Disponible 11:30", selected: false },
+];
+
+let selected = new Set(workers.filter(w => w.selected).map(w => w.id));
+
+function render() {
+  const list = document.getElementById('workerList');
+  list.innerHTML = '';
+  workers.forEach(w => {
+    const sel = selected.has(w.id);
+    const card = document.createElement('div');
+    card.className = 'card' + (sel ? ' selected' : '');
+    card.innerHTML = `
+      <div class="checkbox">${sel ? '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"/></svg>' : ''}</div>
+      <div class="avatar">${w.initials}</div>
+      <div class="info">
+        <strong>${w.name}</strong>
+        <small>${w.trade}</small>
+        <div class="rating">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          ${w.rating} <i>·</i> ${w.jobs}
+        </div>
+      </div>
+      <div class="side">
+        <b>${w.distance}</b>
+        <small>${w.available}</small>
+      </div>
+    `;
+    card.addEventListener('click', () => toggle(w.id));
+    list.appendChild(card);
+  });
+
+  const n = selected.size;
+  document.getElementById('selectedCount').textContent = n + (n === 1 ? ' seleccionado' : ' seleccionados');
+  document.getElementById('countText').textContent = n + ' de 3';
+  const btn = document.getElementById('continueBtn');
+  btn.textContent = 'Continuar con ' + n + ' trabajador' + (n === 1 ? '' : 'es');
+  btn.disabled = n === 0;
+}
+
+function toggle(id) {
+  if (selected.has(id)) selected.delete(id); else selected.add(id);
+  render();
+}
+
+render();
+</script>
+</body>
+</html>

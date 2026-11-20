@@ -1,0 +1,14 @@
+:root[data-theme='naranja'] {
+  --color-primary: #dc623f;
+  --color-primary-hover: #b7462b;
+  --color-primary-soft: #fff0e9;
+  --color-accent: #dc623f;
+  --color-bg: #f6f1e8;
+  --color-surface: #ffffff;
+  --color-border: #e4ded4;
+  --color-text: #24312d;
+  --color-text-muted: #68736f;
+  --radius-sm: 12px;
+  --radius-lg: 16px;
+  --shadow-card: 0 2px 10px rgba(36, 49, 45, 0.08);
+}

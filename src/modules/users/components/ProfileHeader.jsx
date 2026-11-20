@@ -16,10 +16,15 @@ function ProfileHeader({ nombre, roles, activo, esPropio, etiqueta, userId, avat
 
   useEffect(() => {
     if (!userId) return;
-    const session = getSession();
-    getProfilePhotoUrl(userId, session?.token).then((url) => {
-      setLoadedPhotoUrl(url);
-    });
+    function syncPhoto() {
+      const session = getSession();
+      getProfilePhotoUrl(userId, session?.token).then((url) => {
+        setLoadedPhotoUrl(url);
+      });
+    }
+    syncPhoto();
+    window.addEventListener('oy-profile-updated', syncPhoto);
+    return () => window.removeEventListener('oy-profile-updated', syncPhoto);
   }, [userId]);
 
   const finalPhotoUrl = avatarUrl || loadedPhotoUrl;

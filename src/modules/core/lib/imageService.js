@@ -75,3 +75,47 @@ export async function getProfilePhotoUrl(userId, token) {
   }
 }
 
+/**
+ * Obtiene la información completa de la foto de perfil activa ({ id, url, ... }), o null si no tiene.
+ */
+export async function getProfilePhoto(userId, token) {
+  try {
+    const list = await getImagesByRoot(userId, { tipo: 'PROFILE', token });
+    if (list.length > 0 && (list[0].id || list[0].url)) {
+      return list[0];
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Elimina una imagen por su ID (DELETE /api/v1/images/{id}).
+ */
+export async function deleteImage(id, token) {
+  if (!id) return false;
+  const jwt = token || getToken();
+  const headers = {};
+  if (jwt) {
+    headers.Authorization = `Bearer ${jwt}`;
+  }
+
+  const response = await fetch(`${IMAGES_BASE}/${id}`, {
+    method: 'DELETE',
+    headers,
+  });
+
+  if (!response.ok && response.status !== 404) {
+    const errBody = await response.json().catch(() => ({}));
+    const error = new Error(
+      errBody.message || errBody.error || `Error al eliminar la imagen (${response.status})`
+    );
+    error.status = response.status;
+    throw error;
+  }
+
+  return true;
+}
+
+

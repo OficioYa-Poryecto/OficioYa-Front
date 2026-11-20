@@ -1,8 +1,8 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useProfile } from '../hooks/useProfile';
 import { usePhones } from '../hooks/usePhones';
-import { uploadImage } from '../../core/lib/imageService';
+import { deleteImage, getProfilePhoto, uploadImage } from '../../core/lib/imageService';
 import { clearSession, getSession } from '../../core/lib/session';
 import { ROLES_AGREGABLES, ROLES_QUITABLES } from '../config';
 import AlertIcon from '../../workers/components/ui/Icon';
@@ -84,6 +84,9 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
   const [guardado, setGuardado] = useState(false);
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const [currentPhoto, setCurrentPhoto] = useState(null);
+  const [eliminandoFoto, setEliminandoFoto] = useState(false);
+  const [fotoEliminada, setFotoEliminada] = useState(false);
   const [rolGuardando, setRolGuardando] = useState(null);
   const [rolAgregado, setRolAgregado] = useState(null);
   const [rolPorQuitar, setRolPorQuitar] = useState(null);
@@ -151,6 +154,53 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
     }
   }
 
+  useEffect(() => {
+    if (!perfil?.id) return;
+    const session = getSession();
+    getProfilePhoto(perfil.id, session?.token).then((photo) => {
+      if (photo) {
+        setCurrentPhoto(photo);
+      }
+    });
+  }, [perfil?.id]);
+
+  async function handleEliminarFoto() {
+    setError(null);
+    setGuardado(false);
+
+    // Caso 1: Había seleccionado una imagen local pero no la había guardado
+    if (photoFile) {
+      if (photoPreview) URL.revokeObjectURL(photoPreview);
+      setPhotoFile(null);
+      setPhotoPreview(null);
+      if (!currentPhoto?.id) {
+        return;
+      }
+    }
+
+    // Caso 2: Tiene una foto activa en el backend
+    if (currentPhoto?.id) {
+      setEliminandoFoto(true);
+      try {
+        const session = getSession();
+        await deleteImage(currentPhoto.id, session?.token);
+        setCurrentPhoto(null);
+        if (photoPreview) {
+          URL.revokeObjectURL(photoPreview);
+          setPhotoPreview(null);
+        }
+        setPhotoFile(null);
+        window.dispatchEvent(new Event('oy-profile-updated'));
+        setFotoEliminada(true);
+        setTimeout(() => setFotoEliminada(false), 4000);
+      } catch (err) {
+        setError(err.message || 'Error al eliminar la foto de perfil.');
+      } finally {
+        setEliminandoFoto(false);
+      }
+    }
+  }
+
   function handleSelectPhoto(e) {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -191,12 +241,16 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
       await guardarTelefonos();
       if (photoFile && perfil?.id) {
         const session = getSession();
-        await uploadImage({
+        const uploaded = await uploadImage({
           file: photoFile,
           tipo: 'PROFILE',
           rootId: perfil.id,
           token: session?.token,
         });
+        if (uploaded) {
+          setCurrentPhoto(uploaded);
+        }
+        setPhotoFile(null);
       }
       // El Navbar muestra el nombre y foto guardados
       localStorage.setItem('oy_userName', name.trim());
@@ -265,16 +319,40 @@ function Contenido({ perfil, telefonos, onGuardar, onAgregarRol, onQuitarRol, on
                   type="button"
                   className={reg.btnPhotoUpload}
                   onClick={() => fileInputRef.current?.click()}
+                  disabled={eliminandoFoto}
               >
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
                   <polyline points="17 8 12 3 7 8" />
                   <line x1="12" y1="3" x2="12" y2="15" />
                 </svg>
-                {photoFile ? 'Cambiar foto' : 'Subir foto'}
+                {photoFile || currentPhoto ? 'Cambiar foto' : 'Subir foto'}
               </button>
+              {(currentPhoto || photoFile) && (
+                <button
+                    type="button"
+                    className={reg.btnPhotoRemove}
+                    onClick={handleEliminarFoto}
+                    disabled={eliminandoFoto}
+                >
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                    <polyline points="3 6 5 6 21 6" />
+                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                  </svg>
+                  {eliminandoFoto ? 'Eliminando...' : 'Eliminar foto'}
+                </button>
+              )}
             </div>
           </div>
+
+          {fotoEliminada && (
+            <div className={vista.success}>
+              <span className={vista.successIcon}>✓</span>
+              <p>
+                <strong>Foto eliminada.</strong> Se restableció el avatar predeterminado de tu perfil.
+              </p>
+            </div>
+          )}
 
           {/* Datos sensibles: solo texto, no se pueden modificar */}
           <div className={styles.encabezado}>

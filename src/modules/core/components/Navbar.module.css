@@ -304,7 +304,7 @@
 }
 
 .drawerFooter {
-  padding: 16px;
+  padding: 16px 20px;
   border-top: 1px solid #ece4d8;
   background: #faf7f2;
 }
@@ -313,35 +313,6 @@
   display: flex;
   align-items: center;
   gap: 12px;
-  margin-bottom: 12px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid #e9e1d4;
-}
-
-.drawerUserLinks {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-
-.drawerItem {
-  display: block;
-  width: 100%;
-  padding: 8px 12px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: #24312d;
-  font-family: inherit;
-  font-size: 0.88rem;
-  font-weight: 600;
-  text-align: left;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.drawerItem:hover {
-  background: #f1eae0;
 }
 
 @media (max-width: 1024px) {

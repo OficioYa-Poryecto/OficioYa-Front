@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import styles from './Avatar.module.css';
 
+// Sin nombre (Worker aún no lo entrega) se muestra un signo neutro en vez de fallar.
 function iniciales(nombre) {
-  return nombre.split(' ').slice(0, 2).map((parte) => parte[0]).join('').toUpperCase();
+  const partes = (nombre ?? '').trim().split(/\s+/).filter(Boolean);
+  if (partes.length === 0) {
+    return '·';
+  }
+  return partes.slice(0, 2).map((parte) => parte[0]).join('').toUpperCase();
 }
 
 function Avatar({ nombre, foto, tamano = 52 }) {

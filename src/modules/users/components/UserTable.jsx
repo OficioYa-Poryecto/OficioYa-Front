@@ -14,10 +14,19 @@ const FILTROS = [
     { id: 'INACTIVE', label: 'Inactivas' },
 ];
 
+const POR_PAGINA = 10;
+
+// Fotos ya cargadas, para no volver a pedirlas al regresar a una página
+const fotosCargadas = new Map();
+
+// Si se elimina o cambia una foto (detalle del admin o edición del perfil), se vuelven a pedir
+window.addEventListener('oy-profile-updated', () => fotosCargadas.clear());
+
 function UserTable() {
     const { users, loading, error } = useAdminUsers();
     const [busqueda, setBusqueda] = useState('');
     const [filtro, setFiltro] = useState('TODOS');
+    const [pagina, setPagina] = useState(1);
 
     const activas = users.filter((u) => u.accountStatus === 'ACTIVE').length;
     const inactivas = users.length - activas;
@@ -25,6 +34,10 @@ function UserTable() {
     const visibles = users.filter((u) =>
         (filtro === 'TODOS' || u.accountStatus === filtro)
         && (texto === '' || u.name.toLowerCase().includes(texto) || u.email.toLowerCase().includes(texto)));
+    const totalPaginas = Math.max(1, Math.ceil(visibles.length / POR_PAGINA));
+    const actual = Math.min(pagina, totalPaginas);
+    const inicio = (actual - 1) * POR_PAGINA;
+    const enPagina = visibles.slice(inicio, inicio + POR_PAGINA);
 
     return (
         <section className={vista.page}>
@@ -51,7 +64,10 @@ function UserTable() {
                         aria-label="Buscar usuario"
                         placeholder="Buscar por nombre o correo"
                         value={busqueda}
-                        onChange={(e) => setBusqueda(e.target.value)}
+                        onChange={(e) => {
+                            setBusqueda(e.target.value);
+                            setPagina(1);
+                        }}
                     />
                     <div className={styles.filters} role="group" aria-label="Filtrar por estado">
                         {FILTROS.map((f) => (
@@ -59,7 +75,10 @@ function UserTable() {
                                 key={f.id}
                                 type="button"
                                 className={filtro === f.id ? styles.filterActive : styles.filter}
-                                onClick={() => setFiltro(f.id)}
+                                onClick={() => {
+                                    setFiltro(f.id);
+                                    setPagina(1);
+                                }}
                             >
                                 {f.label}
                             </button>
@@ -83,11 +102,11 @@ function UserTable() {
                         </tr>
                         </thead>
                         <tbody>
-                        {visibles.map((user) => (
+                        {enPagina.map((user) => (
                             <tr key={user.id}>
                                 <td>
                                     <div className={styles.usuario}>
-                                        <Avatar userId={user.id} nombre={user.name} />
+                                        <Avatar key={`${user.id}-${actual}`} userId={user.id} nombre={user.name} />
                                         <div>
                                             <strong>{user.name}</strong>
                                             <small className={styles.roles}>{user.roles.map((r) => NOMBRES_ROL[r] ?? r).join(' · ')}</small>
@@ -108,6 +127,43 @@ function UserTable() {
                         </tbody>
                     </table>
                 )}
+
+                {visibles.length > POR_PAGINA && (
+                    <div className={styles.pagination}>
+                        <small>
+                            Mostrando {inicio + 1}-{inicio + enPagina.length} de {visibles.length}
+                        </small>
+                        <div className={styles.filters}>
+                            <button
+                                type="button"
+                                className={styles.filter}
+                                onClick={() => setPagina(actual - 1)}
+                                disabled={actual === 1}
+                            >
+                                Anterior
+                            </button>
+                            {Array.from({ length: totalPaginas }, (_, i) => i + 1).map((n) => (
+                                <button
+                                    key={n}
+                                    type="button"
+                                    className={n === actual ? styles.filterActive : styles.filter}
+                                    onClick={() => setPagina(n)}
+                                    aria-current={n === actual ? 'page' : undefined}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+                            <button
+                                type="button"
+                                className={styles.filter}
+                                onClick={() => setPagina(actual + 1)}
+                                disabled={actual === totalPaginas}
+                            >
+                                Siguiente
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
         </section>
     );
@@ -115,13 +171,15 @@ function UserTable() {
 
 // Foto de perfil del usuario (o sus iniciales si no tiene), igual que en ProfileHeader
 function Avatar({ userId, nombre }) {
-    const [foto, setFoto] = useState(null);
+    const [foto, setFoto] = useState(fotosCargadas.get(userId) ?? null);
     const partes = (nombre || 'Usuario').trim().split(/\s+/);
     const iniciales = (partes[0][0] + (partes.length > 1 ? partes[partes.length - 1][0] : partes[0][1] ?? '')).toUpperCase();
 
     useEffect(() => {
+        if (fotosCargadas.has(userId)) return;
         let activo = true;
         getProfilePhotoUrl(userId, getSession()?.token).then((url) => {
+            if (url) fotosCargadas.set(userId, url);
             if (activo) setFoto(url);
         });
         return () => {
@@ -129,9 +187,14 @@ function Avatar({ userId, nombre }) {
         };
     }, [userId]);
 
+    function fallo() {
+        fotosCargadas.delete(userId);
+        setFoto(null);
+    }
+
     return (
         <span className={styles.avatar}>
-            {foto ? <img src={foto} alt="" /> : iniciales}
+            {foto ? <img src={foto} alt="" onError={fallo} /> : iniciales}
         </span>
     );
 }
@@ -150,7 +213,6 @@ function porcentaje(parte, total) {
     return total === 0 ? '0 %' : `${Math.round((parte * 100) / total)} %`;
 }
 
-// En el listado el correo se oculta; completo solo en el detalle
 function enmascararCorreo(correo) {
     return '*****' + correo.slice(correo.indexOf('@'));
 }

@@ -85,6 +85,29 @@
   color: var(--color-accent);
 }
 
+/* Paginación: 10 cuentas por página */
+.pagination {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.pagination .filters {
+  flex-wrap: wrap;
+}
+
+.pagination small {
+  color: var(--color-text-muted);
+}
+
+.filter:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -101,6 +124,28 @@
 .table th {
   color: var(--color-text-muted);
   font-size: 0.85rem;
+}
+
+/* Columnas de ancho fijo: Estado y Acción quedan en el mismo lugar en todas las páginas */
+.table {
+  table-layout: fixed;
+}
+
+.table th:nth-child(1) {
+  width: 42%;
+}
+
+.table th:nth-child(2) {
+  width: 28%;
+}
+
+.table th:nth-child(3),
+.table th:nth-child(4) {
+  width: 15%;
+}
+
+.table td {
+  overflow-wrap: anywhere;
 }
 
 /* Foto (o iniciales) a la izquierda del nombre */
@@ -165,13 +210,11 @@
     grid-template-columns: 1fr;
   }
 
-  /* En celular se oculta la columna del correo */
   .table th:nth-child(2),
   .table td:nth-child(2) {
     display: none;
   }
 
-  /* Si aun así no cabe, la tabla se desplaza de lado en vez de desbordar la página */
   .table {
     display: block;
     overflow-x: auto;

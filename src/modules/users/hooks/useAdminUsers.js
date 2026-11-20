@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { ACCESS_TOKEN } from '../config';
-import { listUsers, getUser, changeStatus } from '../services/adminUserService';
+import { listUsers, getUser, changeStatus, removeRole } from '../services/adminUserService';
 
 // Listado de usuarios para /admin/users
 export function useAdminUsers() {
@@ -45,5 +45,17 @@ export function useAdminUser(id) {
     }
   }
 
-  return { user, loading, error, actionError, updateStatus };
+  async function quitarRol(rol) {
+    setActionError(null);
+    try {
+      const updated = await removeRole(id, rol, ACCESS_TOKEN);
+      setUser(updated);
+      return true;
+    } catch (e) {
+      setActionError(e.message);
+      return false;
+    }
+  }
+
+  return { user, loading, error, actionError, updateStatus, quitarRol };
 }

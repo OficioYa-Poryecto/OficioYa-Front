@@ -1,60 +1,43 @@
 import { request } from '../../core/lib/httpClient';
+import { tokenStorage } from '../../service/services/tokenStorage';
 
-const MOCK_WORKERS = [
-  {
-    id: '11111111-1111-1111-1111-111111111111',
-    name: 'Carlos Ramírez',
-    trade: 'Plomero certificado',
-    rating: 4.9,
-    services: 128,
-    distanceKm: 1.2,
-    availability: 'Disponible ahora',
-  },
-  {
-    id: '22222222-2222-2222-2222-222222222222',
-    name: 'Miguel Torres',
-    trade: 'Técnico hidráulico',
-    rating: 4.8,
-    services: 94,
-    distanceKm: 2.1,
-    availability: 'Disponible 10:00',
-  },
-];
+const NAME_PENDING = 'Trabajador';
 
-const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+const RATE_UNITS = {
+  PER_HOUR: 'por hora',
+  PER_JOB: 'por trabajo',
+  PER_DAY: 'por día',
+};
 
-// Cambia a false cuando el backend de Worker esté disponible
-const USE_MOCK = true;
+function formatRate(primaryTrade) {
+  const rate = primaryTrade?.approxRate;
+  if (rate == null) return '';
+  const amount = `$${Number(rate).toLocaleString('es-CO')}`;
+  const unit = RATE_UNITS[primaryTrade.rateUnit];
+  return unit ? `Aprox. ${amount} ${unit}` : `Aprox. ${amount}`;
+}
+
+function toWorker(raw, index) {
+  const trade = raw.primaryTrade?.trade?.name;
+  return {
+    id: raw.userId,
+    name: `${NAME_PENDING} ${index + 1}`,
+    trade: trade || 'Oficio sin especificar',
+    rate: formatRate(raw.primaryTrade),
+    availability: raw.availableNow ? 'Disponible ahora' : '',
+  };
+}
 
 export const workersService = {
-  isMock: USE_MOCK,
+  isMock: false,
+  notice:
+    'El servicio de trabajadores aún no entrega nombre, calificación ni distancia. Los nombres son provisionales.',
 
-  // Búsqueda de trabajadores por zona/fecha/hora
-  search: async ({ neighborhood, date, time }) => {
-    if (USE_MOCK) {
-      await wait(700);
-      const key = neighborhood.trim().toLowerCase();
-      if (key === 'error') {
-        throw new Error('No pudimos consultar los trabajadores. Intenta de nuevo.');
-      }
-      if (key === 'sin trabajadores') {
-        return [];
-      }
-      return MOCK_WORKERS;
-    }
-
-    // Integración real (Worker backend)
-    const params = new URLSearchParams({ neighborhood, date, time });
-    return request(`/workers/search?${params.toString()}`);
-  },
-
-  // Disponibilidad de un trabajador para una fecha/hora específica
-  getAvailability: async (workerId, { date, time, token }) => {
-    if (USE_MOCK) {
-      await wait(300);
-      return { workerId, available: true, nextSlot: time };
-    }
-    const params = new URLSearchParams({ date, time });
-    return request(`/workers/${workerId}/availability?${params.toString()}`, { token });
+  // GET /workers del servicio de Workers. Aún no filtra por barrio, fecha ni hora:
+  // ese servicio solo filtra por tradeId, zoneId, maxRate y availableNow.
+  search: async () => {
+    const token = tokenStorage.get();
+    const workers = await request('/workers', token ? { token } : undefined);
+    return (workers ?? []).filter((w) => w.userId).map(toWorker);
   },
 };

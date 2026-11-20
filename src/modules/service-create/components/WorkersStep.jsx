@@ -76,11 +76,7 @@ function WorkersStep({ values, onChange, onSubmit, onEditRequest }) {
 
   return (
     <form id={WORKERS_FORM_ID} className={styles.form} onSubmit={handleSubmit} noValidate>
-      {workersService.isMock && (
-        <p className={styles.notice}>
-          Datos de prueba: la búsqueda real de trabajadores aún no está conectada.
-        </p>
-      )}
+      {workersService.notice && <p className={styles.notice}>{workersService.notice}</p>}
 
       <div className={styles.heading}>
         <h2>Trabajadores cerca de {neighborhood}</h2>

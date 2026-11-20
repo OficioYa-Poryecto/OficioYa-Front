@@ -23,10 +23,13 @@ function WorkerCard({ worker, selected, onToggle }) {
       <span className={styles.info}>
         <strong className={styles.name}>{worker.name}</strong>
         <span className={styles.trade}>{worker.trade}</span>
-        <span className={styles.rating}>
-          <StarIcon size={14} />
-          {rating} · {jobs}
-        </span>
+        {rating != null && (
+          <span className={styles.rating}>
+            <StarIcon size={14} />
+            {rating} · {jobs}
+          </span>
+        )}
+        {worker.rate && <span className={styles.rating}>{worker.rate}</span>}
       </span>
       <span className={styles.side}>
         <span className={styles.distance}>{distance}</span>

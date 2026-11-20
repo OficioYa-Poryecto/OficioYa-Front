@@ -45,3 +45,4 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, () => {
   console.log(`Servidor de frontend corriendo en el puerto ${PORT}`);
 });
+

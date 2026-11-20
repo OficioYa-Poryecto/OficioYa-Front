@@ -123,59 +123,43 @@ function Navbar() {
         </Link>
       </div>
 
-      {/* En la página de autenticación no se muestran links de navegación */}
+      {/* Acceso a cuenta / perfil a la derecha */}
       {!isAuthPage && (
         <div className={styles.rightArea}>
-          <nav className={styles.links}>
-            {visibleLinks.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                className={({ isActive }) =>
-                  isActive ? `${styles.link} ${styles.active}` : styles.link
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
-
           {session && (
-            <>
-              <span className={styles.divider} aria-hidden="true" />
-              <div className={styles.accountWrap} ref={menuRef}>
-                <button
-                  type="button"
-                  className={styles.accountBtn}
-                  onClick={() => setMenuOpen((prev) => !prev)}
-                  aria-expanded={menuOpen}
-                >
-                  <span className={styles.avatar}>
-                    {avatarUrl ? (
-                      <img src={avatarUrl} alt="" className={styles.avatarImg} />
-                    ) : (
-                      getInitials(userName)
-                    )}
+            <div className={styles.accountWrap} ref={menuRef}>
+              <button
+                type="button"
+                className={styles.accountBtn}
+                onClick={() => setMenuOpen((prev) => !prev)}
+                aria-expanded={menuOpen}
+              >
+                <span className={styles.avatar}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="" className={styles.avatarImg} />
+                  ) : (
+                    getInitials(userName)
+                  )}
+                </span>
+                <span className={styles.accountText}>
+                  <span className={styles.accountName}>{getFirstName(userName)}</span>
+                  <span className={styles.accountSub}>
+                    Mi cuenta
+                    <svg
+                      width="11"
+                      height="11"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    >
+                      <polyline points="6 9 12 15 18 9" />
+                    </svg>
                   </span>
-                  <span className={styles.accountText}>
-                    <span className={styles.accountName}>{getFirstName(userName)}</span>
-                    <span className={styles.accountSub}>
-                      Mi cuenta
-                      <svg
-                        width="11"
-                        height="11"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="2.2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      >
-                        <polyline points="6 9 12 15 18 9" />
-                      </svg>
-                    </span>
-                  </span>
-                </button>
+                </span>
+              </button>
 
                 {menuOpen && (
                   <div className={styles.dropdown}>
@@ -212,7 +196,6 @@ function Navbar() {
                   </div>
                 )}
               </div>
-            </>
           )}
         </div>
       )}

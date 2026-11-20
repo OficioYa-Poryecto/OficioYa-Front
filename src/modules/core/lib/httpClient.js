@@ -1,6 +1,7 @@
 import { clearSession } from './session';
 
-const BASE_URL = '/api/v1';
+const API_URL = (import.meta.env.VITE_API_URL ?? '').trim().replace(/\/+$/, '');
+const BASE_URL = API_URL ? `${API_URL}/api/v1` : '/api/v1';
 const TOKEN_KEY = 'oy_token';
 const LOGIN_PATH = '/auth';
 

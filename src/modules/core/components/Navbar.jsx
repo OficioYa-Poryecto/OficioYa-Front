@@ -268,34 +268,6 @@ function Navbar() {
                     <div className={styles.accountSub}>Sesión iniciada</div>
                   </div>
                 </div>
-                <div className={styles.drawerUserLinks}>
-                  <Link
-                    to="/users/me"
-                    className={styles.drawerItem}
-                    onClick={() => setDrawerOpen(false)}
-                  >
-                    Ver mi perfil
-                  </Link>
-                  {isAdmin && (
-                    <Link
-                      to="/admin/users"
-                      className={styles.drawerItem}
-                      onClick={() => setDrawerOpen(false)}
-                    >
-                      Gestión de usuarios
-                    </Link>
-                  )}
-                  <button
-                    type="button"
-                    className={`${styles.drawerItem} ${styles.logoutItem}`}
-                    onClick={() => {
-                      setDrawerOpen(false);
-                      handleLogout();
-                    }}
-                  >
-                    Cerrar sesión
-                  </button>
-                </div>
               </div>
             )}
           </aside>

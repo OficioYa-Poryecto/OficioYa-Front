@@ -13,6 +13,5 @@ export const routes = [
 ];
 
 export const navLinks = [
-    { label: 'Mi perfil', to: '/users/me' },
     { label: 'Usuarios', to: '/admin/users', roles: ['ADMIN'] },
 ];

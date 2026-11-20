@@ -1,0 +1,125 @@
+/* ---------- Tabla del flujo de trabajo ---------- */
+.tablaContenedor {
+  overflow-x: auto;
+  margin-top: 12px;
+}
+
+.tabla {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.tabla th,
+.tabla td {
+  padding: 10px 8px;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+  white-space: nowrap;
+}
+
+.tabla thead th {
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.tabla tbody th {
+  font-weight: 600;
+}
+
+.tabla td {
+  font-variant-numeric: tabular-nums;
+}
+
+.tabla tfoot th,
+.tabla tfoot td {
+  border-bottom: none;
+  font-weight: 700;
+}
+
+.porcentaje {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.porcentaje .pista {
+  width: 90px;
+}
+
+/* ---------- Barras horizontales ---------- */
+.pista {
+  display: block;
+  overflow: hidden;
+  height: 8px;
+  border-radius: 8px;
+  background: var(--color-surface-alt);
+}
+
+.pista span {
+  display: block;
+  height: 100%;
+  border-radius: 8px;
+  background: var(--color-primary);
+}
+
+/* ---------- Ranking (zonas, categorías, tarifas) ---------- */
+.ranking {
+  display: grid;
+  gap: 14px;
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ranking li {
+  display: grid;
+  grid-template-columns: 26px 1fr auto;
+  align-items: center;
+  gap: 4px 10px;
+}
+
+.ranking .pista {
+  grid-column: 2 / 4;
+}
+
+.puesto {
+  display: grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  background: var(--color-primary-soft);
+  color: var(--color-accent);
+  font-size: 0.8rem;
+  font-weight: 700;
+}
+
+.nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ranking strong {
+  font-variant-numeric: tabular-nums;
+}
+
+@media (max-width: 480px) {
+  .porcentaje .pista {
+    display: none;
+  }
+
+  .tabla th,
+  .tabla td {
+    padding: 9px 4px;
+  }
+
+  .tabla thead th {
+    font-size: 0.7rem;
+    letter-spacing: 0.02em;
+  }
+}

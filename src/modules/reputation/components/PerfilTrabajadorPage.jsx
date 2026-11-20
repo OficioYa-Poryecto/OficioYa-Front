@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import Button from '../../core/design-system/Button';
 import ErrorMessage from '../../core/components/ErrorMessage';
 import { leerSesion } from '../sesion';
@@ -16,11 +16,13 @@ const PERFIL_DESCONOCIDO = { nombre: 'Profesional', oficio: '' };
 
 function PerfilTrabajadorPage() {
   const { id } = useParams();
+  const location = useLocation();
   const { token, roles } = leerSesion();
   const { cargando, error, reputacion, resenas, reintentar } = usePerfilTrabajador(id, token);
   const [enReporte, setEnReporte] = useState(null);
   const [mensaje, setMensaje] = useState(null);
-  const perfil = PERFILES[id] ?? PERFIL_DESCONOCIDO;
+  // Nombre y oficio llegan desde la tarjeta de búsqueda; los de la demo quedan como respaldo.
+  const perfil = PERFILES[id] ?? location.state ?? PERFIL_DESCONOCIDO;
   const puedeReportar = roles.includes('CONTRATANTE') || roles.includes('TRABAJADOR');
 
   function alReportar() {

@@ -1,5 +1,8 @@
 export function decimal(valor) {
-  return valor.toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  if (valor == null || Number.isNaN(Number(valor))) {
+    return '—';
+  }
+  return Number(valor).toLocaleString('es-CO', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 }
 
 export function fecha(valor) {

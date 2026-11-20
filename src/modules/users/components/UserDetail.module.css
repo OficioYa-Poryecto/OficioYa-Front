@@ -67,3 +67,38 @@
   background: #fdecea;
   color: var(--color-danger);
 }
+
+.sectionTitle {
+  margin: 0;
+  padding-top: 16px;
+  border-top: 1px solid var(--color-border);
+}
+
+.intro {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--color-text-muted);
+}
+
+.opciones {
+  display: grid;
+  gap: 12px;
+}
+
+.fila {
+  background: transparent;
+  border: 2px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.fila strong {
+  color: var(--color-text);
+}
+
+.pendiente {
+  border-color: var(--color-primary);
+}
+
+.pendiente strong {
+  color: var(--color-primary);
+}

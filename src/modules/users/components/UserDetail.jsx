@@ -12,7 +12,7 @@ import vista from './ProfileView.module.css';
 
 function UserDetail() {
   const { id } = useParams();
-  const { user, loading, error, actionError, updateStatus } = useAdminUser(id);
+  const { user, loading, error, actionError, updateStatus, quitarRol } = useAdminUser(id);
   const { perfil: me } = useProfile(); // usuario logueado (GET /users/me)
   const navigate = useNavigate();
 
@@ -42,7 +42,7 @@ function UserDetail() {
   return (
       <section className={vista.page}>
         <div className={vista.top}>
-          <ProfileHeader nombre={user.name} roles={user.roles} activo={isActive} etiqueta="Detalle de usuario" />
+          <ProfileHeader userId={user.id} nombre={user.name} roles={user.roles} activo={isActive} etiqueta="Detalle de usuario" />
           <div className={vista.actions}>
             <span className={styles.internal}>🛡 Acceso interno</span>
             {volver}
@@ -63,7 +63,7 @@ function UserDetail() {
             <div className={styles.statusHeader}>
               <div>
                 <span className="eyebrow">Moderación</span>
-                <h2>Estado de la cuenta</h2>
+                <h2>Información de la cuenta</h2>
               </div>
               <span className={isActive ? styles.pillActive : styles.pillInactive}>
               {isActive ? 'Activa' : 'Inactiva'}
@@ -77,10 +77,18 @@ function UserDetail() {
               <dd>{new Date(user.updatedAt).toLocaleString()}</dd>
             </dl>
 
+            <h2 className={styles.sectionTitle}>Estado de la cuenta</h2>
             {me && (isSelf ? (
                 <p>No puedes cambiar el estado de tu propia cuenta.</p>
             ) : (
-                <StatusSelector isActive={isActive} onSubmit={updateStatus} />
+                <StatusSelector
+                    key={user.accountStatus}
+                    userId={user.id}
+                    isActive={isActive}
+                    roles={user.roles ?? []}
+                    onSubmit={updateStatus}
+                    onRemoveRole={quitarRol}
+                />
             ))}
             <ErrorMessage error={actionError} />
           </div>

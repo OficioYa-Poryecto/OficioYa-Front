@@ -550,6 +550,580 @@
   text-decoration: underline;
 }
 
+/* ─── Hero Contratante (Figma) ─── */
+.heroContratante {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  padding: 38px 44px;
+  border-radius: 26px;
+  border: 1px solid #ebdcd0;
+  background: linear-gradient(135deg, #f9eae0 0%, #f7dfce 55%, #f5d4be 100%);
+  box-shadow: 0 10px 30px rgba(224, 103, 56, 0.05);
+  gap: 16px;
+}
+
+.heroDecoCircle1 {
+  position: absolute;
+  top: -60px;
+  right: -40px;
+  width: 260px;
+  height: 260px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(235, 160, 126, 0.35) 0%, rgba(235, 160, 126, 0) 70%);
+  pointer-events: none;
+}
+
+.heroDecoCircle2 {
+  position: absolute;
+  bottom: -90px;
+  right: 60px;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(224, 137, 100, 0.22) 0%, rgba(224, 137, 100, 0) 70%);
+  pointer-events: none;
+}
+
+.heroTopRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 1;
+}
+
+.eyebrowText {
+  color: #c45230;
+  font-size: 0.72rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.rolePillContratante {
+  display: inline-flex;
+  align-items: center;
+  padding: 5px 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #c65331;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid rgba(224, 103, 56, 0.18);
+  box-shadow: 0 2px 8px rgba(36, 49, 45, 0.04);
+}
+
+.heroTitleContratante {
+  margin: 0;
+  font-size: clamp(2.3rem, 4.2vw, 3.2rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -0.035em;
+  color: #1a2522;
+  z-index: 1;
+}
+
+.heroDescContratante {
+  margin: 0;
+  font-size: 1.05rem;
+  line-height: 1.55;
+  color: #5d6764;
+  max-width: 600px;
+  z-index: 1;
+}
+
+.heroActions {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-top: 6px;
+  z-index: 1;
+}
+
+.primaryPillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #c65331;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 13px 26px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(198, 83, 49, 0.25);
+  transition: background 0.15s ease, transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.primaryPillBtn:hover {
+  background: #b24524;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(198, 83, 49, 0.32);
+}
+
+.secondaryPillBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #1f2d2a;
+  border-radius: 999px;
+  padding: 13px 26px;
+  font-size: 0.95rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #e2d7cb;
+  cursor: pointer;
+  box-shadow: 0 3px 10px rgba(36, 49, 45, 0.04);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.secondaryPillBtn:hover {
+  background: #faf6f0;
+  transform: translateY(-1px);
+}
+
+/* ─── Sección "Así funciona OficioYa" ─── */
+.howItWorksSection {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  margin-top: 6px;
+}
+
+.sectionHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.sectionTitle {
+  margin: 0;
+  font-size: 1.55rem;
+  font-weight: 800;
+  color: #1a2522;
+  letter-spacing: -0.025em;
+}
+
+.sectionSubtitle {
+  margin: 0;
+  font-size: 0.96rem;
+  color: #6c7773;
+}
+
+.howItWorksGrid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.stepCard {
+  background: #ffffff;
+  border: 1px solid #ede4da;
+  border-radius: 22px;
+  padding: 26px 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 6px 20px rgba(36, 49, 45, 0.03);
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.stepCard:hover {
+  transform: translateY(-2px);
+  border-color: #dfcebf;
+}
+
+.stepCardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.stepIconBox {
+  width: 44px;
+  height: 44px;
+  border-radius: 13px;
+  background: #fdeee5;
+  color: #c65331;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stepNumber {
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #eed4c4;
+  letter-spacing: -0.02em;
+}
+
+.stepTitle {
+  margin: 18px 0 6px;
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a2522;
+  letter-spacing: -0.015em;
+}
+
+.stepDesc {
+  margin: 0;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: #68736f;
+}
+
+/* ─── Sección "¿Qué quieres hacer hoy?" ─── */
+.todayCard {
+  background: #ffffff;
+  border: 1px solid #ece4da;
+  border-radius: 26px;
+  padding: 34px 32px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 8px 24px rgba(36, 49, 45, 0.04);
+  gap: 24px;
+}
+
+.todayHeader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+}
+
+.todayTitle {
+  margin: 0;
+  font-size: 1.65rem;
+  font-weight: 800;
+  color: #1a2522;
+  letter-spacing: -0.025em;
+}
+
+.todaySubtitle {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #6c7773;
+}
+
+.todayGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.todayActionCard {
+  background: #fdf6f0;
+  border: 1px solid #f2e3d7;
+  border-radius: 22px;
+  padding: 30px 28px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  transition: transform 0.16s ease, border-color 0.16s ease;
+}
+
+.todayActionCard:hover {
+  transform: translateY(-2px);
+  border-color: #e8d0be;
+}
+
+.todayIconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #fbe6d9;
+  color: #c65331;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 4px;
+}
+
+.todayActionTitle {
+  margin: 16px 0 8px;
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: #1a2522;
+  letter-spacing: -0.02em;
+}
+
+.todayActionDesc {
+  margin: 0 0 24px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: #68736f;
+  flex: 1;
+}
+
+.todayPrimaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #c65331;
+  color: #ffffff;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  width: fit-content;
+  min-width: 175px;
+  box-shadow: 0 4px 14px rgba(198, 83, 49, 0.22);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.todayPrimaryBtn:hover {
+  background: #b24524;
+  transform: translateY(-1px);
+}
+
+.todaySecondaryBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #ffffff;
+  color: #1f2d2a;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  border: 1px solid #e4d7cb;
+  width: fit-content;
+  min-width: 175px;
+  box-shadow: 0 2px 8px rgba(36, 49, 45, 0.04);
+  transition: background 0.15s ease, transform 0.15s ease;
+}
+
+.todaySecondaryBtn:hover {
+  background: #faf6f0;
+  transform: translateY(-1px);
+}
+
+/* ─── Sección "Oficios populares" ─── */
+.popularTradesSection {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 4px;
+}
+
+.tradesChipsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+
+.tradeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: #ffffff;
+  border: 1px solid #e7ded4;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #22302c;
+  text-decoration: none;
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(36, 49, 45, 0.02);
+  transition: background 0.14s ease, border-color 0.14s ease, transform 0.14s ease;
+}
+
+.tradeChip:hover {
+  background: #faf6f0;
+  border-color: #d8c9b9;
+  transform: translateY(-1px);
+}
+
+.tradeDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #d65b38;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.tradeChipMore {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: #fae4d7;
+  border: 1px solid #f4cfbe;
+  border-radius: 999px;
+  padding: 9px 18px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #c65331;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.14s ease, transform 0.14s ease;
+}
+
+.tradeChipMore:hover {
+  background: #f7d6c4;
+  transform: translateY(-1px);
+}
+
+/* ─── Sección "Una cuenta, dos roles" (Figma) ─── */
+.twoRolesCard {
+  background: #fbf3eb;
+  border: 1px solid #ebdcd0;
+  border-radius: 26px;
+  padding: 34px 38px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  box-shadow: 0 8px 24px rgba(36, 49, 45, 0.04);
+  margin-top: 4px;
+}
+
+.twoRolesLeft {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.twoRolesHeader {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.briefcaseIconBox {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #c65331;
+  border: 1px solid #ebdcd0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  box-shadow: 0 2px 6px rgba(36, 49, 45, 0.03);
+}
+
+.twoRolesTitle {
+  margin: 0;
+  font-size: 1.45rem;
+  font-weight: 800;
+  color: #1a2522;
+  letter-spacing: -0.025em;
+}
+
+.twoRolesDesc {
+  margin: 14px 0 16px;
+  font-size: 0.94rem;
+  line-height: 1.55;
+  color: #626e6a;
+  max-width: 600px;
+}
+
+.roleChipsRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.roleChipActive {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: #ffffff;
+  border: 1.5px solid #d65b38;
+  color: #c65331;
+  font-size: 0.82rem;
+  font-weight: 700;
+}
+
+.roleChipProspective {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1.5px dashed #cfc2b4;
+  color: #76817d;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.benefitsList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+.benefitItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.92rem;
+  color: #2b3935;
+  font-weight: 500;
+}
+
+.twoRolesRight {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.addRoleBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 28px;
+  border-radius: 999px;
+  border: 1px solid #dcd1c4;
+  background: #ffffff;
+  color: #1f2d2a;
+  font-family: inherit;
+  font-size: 0.92rem;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  white-space: nowrap;
+  box-shadow: 0 4px 14px rgba(36, 49, 45, 0.05);
+  transition: background 0.15s ease, transform 0.15s ease, border-color 0.15s ease;
+}
+
+.addRoleBtn:hover:not(:disabled) {
+  background: #faf5ee;
+  border-color: #cfbeac;
+  transform: translateY(-1px);
+}
+
+.addRoleBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
 /* ─── Responsive ─── */
 @media (max-width: 920px) {
   .grid4 {
@@ -558,6 +1132,18 @@
   .grid3,
   .kpiGrid {
     grid-template-columns: 1fr;
+  }
+  .twoRolesCard {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 30px 28px;
+    gap: 24px;
+  }
+  .twoRolesRight {
+    width: 100%;
+  }
+  .addRoleBtn {
+    width: 100%;
   }
 }
 
@@ -580,6 +1166,62 @@
   .accountActions {
     width: 100%;
     flex-wrap: wrap;
+  }
+  .heroContratante {
+    padding: 26px 20px;
+    gap: 14px;
+  }
+  .heroTitleContratante {
+    font-size: 2.1rem;
+  }
+  .heroDescContratante {
+    font-size: 0.95rem;
+  }
+  .heroActions {
+    flex-direction: column;
+    width: 100%;
+    gap: 10px;
+  }
+  .primaryPillBtn,
+  .secondaryPillBtn {
+    width: 100%;
+  }
+  .howItWorksGrid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+  .todayCard {
+    padding: 26px 18px;
+  }
+  .todayTitle {
+    font-size: 1.45rem;
+  }
+  .todayGrid {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  .todayActionCard {
+    padding: 24px 20px;
+  }
+  .todayPrimaryBtn,
+  .todaySecondaryBtn {
+    width: 100%;
+  }
+  .twoRolesCard {
+    padding: 24px 20px;
+    gap: 20px;
+  }
+  .twoRolesTitle {
+    font-size: 1.25rem;
+  }
+  .twoRolesDesc {
+    font-size: 0.88rem;
+  }
+  .benefitsList {
+    gap: 8px;
+  }
+  .benefitItem {
+    font-size: 0.86rem;
   }
 }
 

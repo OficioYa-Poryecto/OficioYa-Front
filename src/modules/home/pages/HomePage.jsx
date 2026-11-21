@@ -86,6 +86,43 @@ function BriefcaseIcon() {
   );
 }
 
+function CheckCircleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#d65b38" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <path d="m9 12 2 2 4-4" />
+    </svg>
+  );
+}
+
+function CheckIcon() {
+  return (
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="20 6 9 17 4 12" />
+    </svg>
+  );
+}
+
+function ArrowRightIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.3" strokeLinecap="round" strokeLinejoin="round">
+      <line x1="5" y1="12" x2="19" y2="12" />
+      <polyline points="12 5 19 12 12 19" />
+    </svg>
+  );
+}
+
+const POPULAR_TRADES = [
+  'Plomería',
+  'Electricidad',
+  'Pintura',
+  'Carpintería',
+  'Cerrajería',
+  'Jardinería',
+  'Reparaciones',
+  'Mudanzas',
+];
+
 function normalizeRoles(raw) {
   if (!raw) return [];
   const list = Array.isArray(raw) ? raw : [raw];
@@ -526,84 +563,234 @@ export default function HomePage() {
   }
 
   /* ─────────────────────────────────────────────────────────────────
-   * 4. HOME SOLO CONTRATANTE (default)
+   * 4. HOME SOLO CONTRATANTE (propuesta oficial Figma)
    * ───────────────────────────────────────────────────────────────── */
+  function handleScrollToHowItWorks() {
+    const el = document.getElementById('como-funciona');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth' });
+    }
+  }
+
   return (
     <div className={styles.page}>
-      <section className={styles.hero}>
-        <div className={styles.heroContent}>
-          <span className={styles.eyebrowPill}>INICIO</span>
-          <h1 className={styles.heroTitle}>
-            {firstName ? (
-              <>
-                Hola, <span className={styles.heroNameHighlight}>{firstName}</span>
-              </>
-            ) : (
-              'Hola'
-            )}
-          </h1>
-          <p className={styles.heroSubtitle}>¿Qué quieres hacer hoy?</p>
+      {/* 1. Hero Banner */}
+      <section className={styles.heroContratante}>
+        <div className={styles.heroDecoCircle1} aria-hidden="true" />
+        <div className={styles.heroDecoCircle2} aria-hidden="true" />
+
+        <div className={styles.heroTopRow}>
+          <span className={styles.eyebrowText}>INICIO</span>
+          <span className={styles.rolePillContratante}>Contratante</span>
         </div>
-        <div className={styles.roleBadges}>
-          <span className={styles.roleBadgePrimary}>Contratante</span>
+
+        <h1 className={styles.heroTitleContratante}>
+          Hola, <span className={styles.heroNameHighlight}>{firstName || 'Usuario'}</span>
+        </h1>
+
+        <p className={styles.heroDescContratante}>
+          Encuentra personas de confianza para arreglar, instalar o construir lo que necesites, cerca de ti. Todo en un solo lugar.
+        </p>
+
+        <div className={styles.heroActions}>
+          <Link to="/buscar" className={styles.primaryPillBtn}>
+            <span>Buscar un oficio</span>
+            <ArrowRightIcon />
+          </Link>
+          <button
+            type="button"
+            onClick={handleScrollToHowItWorks}
+            className={styles.secondaryPillBtn}
+          >
+            Cómo funciona
+          </button>
         </div>
       </section>
 
-      <section className={styles.grid2}>
-        <Link to="/buscar" className={styles.actionCard}>
-          <div>
-            <div className={styles.iconBox}>
+      {/* 2. Así funciona OficioYa */}
+      <section id="como-funciona" className={styles.howItWorksSection}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Así funciona OficioYa</h2>
+          <p className={styles.sectionSubtitle}>
+            Contratar un servicio es fácil y todo queda en un solo lugar.
+          </p>
+        </div>
+
+        <div className={styles.howItWorksGrid}>
+          {/* Paso 01 */}
+          <div className={styles.stepCard}>
+            <div className={styles.stepCardTop}>
+              <div className={styles.stepIconBox}>
+                <SearchIcon />
+              </div>
+              <span className={styles.stepNumber}>01</span>
+            </div>
+            <h3 className={styles.stepTitle}>Busca</h3>
+            <p className={styles.stepDesc}>
+              Elige el oficio que necesitas y encuentra perfiles de confianza cerca de ti.
+            </p>
+          </div>
+
+          {/* Paso 02 */}
+          <div className={styles.stepCard}>
+            <div className={styles.stepCardTop}>
+              <div className={styles.stepIconBox}>
+                <ClipboardIcon />
+              </div>
+              <span className={styles.stepNumber}>02</span>
+            </div>
+            <h3 className={styles.stepTitle}>Solicita</h3>
+            <p className={styles.stepDesc}>
+              Envía tu solicitud a la persona que más te convenga.
+            </p>
+          </div>
+
+          {/* Paso 03 */}
+          <div className={styles.stepCard}>
+            <div className={styles.stepCardTop}>
+              <div className={styles.stepIconBox}>
+                <CheckCircleIcon />
+              </div>
+              <span className={styles.stepNumber}>03</span>
+            </div>
+            <h3 className={styles.stepTitle}>Haz seguimiento</h3>
+            <p className={styles.stepDesc}>
+              Revisa el estado de tus servicios desde tu cuenta, cuando quieras.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* 3. ¿Qué quieres hacer hoy? */}
+      <section className={styles.todayCard}>
+        <div className={styles.todayHeader}>
+          <h2 className={styles.todayTitle}>¿Qué quieres hacer hoy?</h2>
+          <p className={styles.todaySubtitle}>Elige una opción para empezar.</p>
+        </div>
+
+        <div className={styles.todayGrid}>
+          {/* Opción 1: Buscar un oficio */}
+          <div className={styles.todayActionCard}>
+            <div className={styles.todayIconBox}>
               <SearchIcon />
             </div>
-            <h2 className={styles.cardTitle}>Buscar un oficio</h2>
-            <p className={styles.cardDesc}>
-              Encuentra personas de confianza cerca de ti.
+            <h3 className={styles.todayActionTitle}>Buscar un oficio</h3>
+            <p className={styles.todayActionDesc}>
+              Explora plomeros, electricistas, carpinteros y más. Encuentra a alguien de confianza cerca de ti.
             </p>
+            <Link to="/buscar" className={styles.todayPrimaryBtn}>
+              <span>Buscar ahora</span>
+              <ArrowRightIcon />
+            </Link>
           </div>
-          <span className={styles.cardLink}>
-            Abrir <ChevronRightIcon />
-          </span>
-        </Link>
 
-        <Link to="/solicitudes" className={styles.actionCard}>
-          <div>
-            <div className={styles.iconBox}>
+          {/* Opción 2: Mis servicios */}
+          <div className={styles.todayActionCard}>
+            <div className={styles.todayIconBox}>
               <ClipboardIcon />
             </div>
-            <h2 className={styles.cardTitle}>Mis servicios</h2>
-            <p className={styles.cardDesc}>
-              Revisa tus solicitudes y su estado.
+            <h3 className={styles.todayActionTitle}>Mis servicios</h3>
+            <p className={styles.todayActionDesc}>
+              Mira cómo van tus solicitudes, su estado y retoma lo que dejaste pendiente.
             </p>
-          </div>
-          <span className={styles.cardLink}>
-            Abrir <ChevronRightIcon />
-          </span>
-        </Link>
-      </section>
-
-      <section className={styles.upsellBanner}>
-        <div className={styles.upsellLeft}>
-          <div className={styles.upsellIconBox}>
-            <BriefcaseIcon />
-          </div>
-          <div>
-            <h3 className={styles.upsellTitle}>
-              ¿También ofreces un oficio?
-            </h3>
-            <p className={styles.upsellDesc}>
-              Agrega el rol de trabajador y usa la misma cuenta para recibir solicitudes.
-            </p>
+            <Link to="/solicitudes" className={styles.todaySecondaryBtn}>
+              <span>Ver mis servicios</span>
+              <ArrowRightIcon />
+            </Link>
           </div>
         </div>
-        <button
-          type="button"
-          className={styles.upsellBtn}
-          onClick={() => handleAddRole('TRABAJADOR')}
-          disabled={addingRole}
-        >
-          <span>+</span>
-          <span>{addingRole ? 'Agregando...' : 'Agregar rol de trabajador'}</span>
-        </button>
+      </section>
+
+      {/* 4. Oficios populares */}
+      <section className={styles.popularTradesSection}>
+        <div className={styles.sectionHeader}>
+          <h2 className={styles.sectionTitle}>Oficios populares</h2>
+          <p className={styles.sectionSubtitle}>Empieza por uno de los más buscados.</p>
+        </div>
+
+        <div className={styles.tradesChipsWrap}>
+          {POPULAR_TRADES.map((trade) => (
+            <Link
+              key={trade}
+              to={`/buscar?q=${encodeURIComponent(trade)}`}
+              className={styles.tradeChip}
+            >
+              <span className={styles.tradeDot} aria-hidden="true" />
+              <span>{trade}</span>
+            </Link>
+          ))}
+          <Link to="/buscar" className={styles.tradeChipMore}>
+            <span>Ver todos</span>
+            <ArrowRightIcon />
+          </Link>
+        </div>
+      </section>
+
+      {/* 5. Una cuenta, dos roles */}
+      <section className={styles.twoRolesCard}>
+        <div className={styles.twoRolesLeft}>
+          <div className={styles.twoRolesHeader}>
+            <div className={styles.briefcaseIconBox}>
+              <BriefcaseIcon />
+            </div>
+            <h2 className={styles.twoRolesTitle}>Una cuenta, dos roles</h2>
+          </div>
+
+          <p className={styles.twoRolesDesc}>
+            En OficioYa puedes contratar y también ofrecer tu oficio. Usa la misma cuenta para ambas cosas, sin registrarte de nuevo.
+          </p>
+
+          <div className={styles.roleChipsRow}>
+            <span className={styles.roleChipActive}>
+              <CheckIcon />
+              Contratante
+            </span>
+            {isTrabajador ? (
+              <span className={styles.roleChipActive}>
+                <CheckIcon />
+                Trabajador
+              </span>
+            ) : (
+              <span className={styles.roleChipProspective}>
+                <span>+</span>
+                Trabajador
+              </span>
+            )}
+          </div>
+
+          <ul className={styles.benefitsList}>
+            <li className={styles.benefitItem}>
+              <CheckCircleIcon />
+              <span>Recibe solicitudes de personas cerca de ti</span>
+            </li>
+            <li className={styles.benefitItem}>
+              <CheckCircleIcon />
+              <span>Arma tu perfil de trabajo</span>
+            </li>
+            <li className={styles.benefitItem}>
+              <CheckCircleIcon />
+              <span>Cambia de rol cuando quieras</span>
+            </li>
+          </ul>
+        </div>
+
+        <div className={styles.twoRolesRight}>
+          {isTrabajador ? (
+            <Link to="/worker/dashboard" className={styles.addRoleBtn}>
+              Ir a mi panel de trabajador
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className={styles.addRoleBtn}
+              onClick={() => handleAddRole('TRABAJADOR')}
+              disabled={addingRole}
+            >
+              <span>+</span>
+              <span>{addingRole ? 'Agregando...' : 'Agregar rol de trabajador'}</span>
+            </button>
+          )}
+        </div>
       </section>
     </div>
   );
